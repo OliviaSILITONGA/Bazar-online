@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detail Produk — BazarUSU</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark:  #5a7a1a;
+    --green-mid:   #7aab22;
+    --green-light: #a8cc4f;
+    --yellow-pale: #f8f7dc;
+    --cream:       #fafaf0;
+    --white:       #ffffff;
+    --gray-100:    #f0f0ec;
+    --gray-200:    #ddddd4;
+    --gray-400:    #a0a096;
+    --gray-600:    #666660;
+    --gray-800:    #333330;
+    --red:         #e53e3e;
+    --orange:      #d97706;
+    --radius-sm:   8px;
+    --radius-md:   14px;
+    --radius-lg:   20px;
+    --radius-xl:   28px;
+    --shadow-sm:   0 2px 8px rgba(90,122,26,0.10);
+    --shadow-md:   0 4px 20px rgba(90,122,26,0.14);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--cream);
+    color: var(--gray-800);
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 64px;
+    background: linear-gradient(180deg, #e8f5b8 0%, #f5f0b0 100%);
+    border-right: 1px solid var(--gray-200);
+    display: flex; flex-direction: column;
+    align-items: center;
+    padding: 1.2rem 0; gap: 6px;
+    position: fixed; top: 0; left: 0; bottom: 0;
+    z-index: 100;
+  }
+  .sidebar .logo {
+    width: 38px; height: 38px;
+    background: var(--green-mid);
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 10px; box-shadow: var(--shadow-sm);
+  }
+  .sidebar .logo span {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 16px; color: #fff;
+  }
+  .nav-item {
+    width: 44px; height: 44px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative;
+    transition: background 0.18s, transform 0.15s;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: rgba(122,171,34,0.18); transform: scale(1.07); }
+  .nav-item.active { background: var(--green-mid); box-shadow: var(--shadow-sm); }
+  .nav-item svg { width: 22px; height: 22px; stroke: var(--green-dark); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-item.active svg { stroke: #fff; }
+  .nav-item .badge { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--red); border: 1.5px solid var(--yellow-pale); }
+  .sidebar .spacer { flex: 1; }
+  .nav-item.add-btn { background: var(--green-light); border: 2px dashed var(--green-dark); }
+  .nav-item.add-btn svg { stroke: var(--green-dark); }
+  .nav-item.add-btn:hover { background: var(--green-mid); border-style: solid; }
+  .nav-item.add-btn:hover svg { stroke: #fff; }
+  .nav-item::after {
+    content: attr(data-label);
+    position: absolute; left: 54px;
+    background: var(--gray-800); color: #fff;
+    font-size: 11px; font-family: 'Nunito', sans-serif; font-weight: 600;
+    padding: 4px 8px; border-radius: 6px;
+    white-space: nowrap; pointer-events: none;
+    opacity: 0; transform: translateX(-4px);
+    transition: opacity 0.15s, transform 0.15s; z-index: 999;
+  }
+  .nav-item:hover::after { opacity: 1; transform: translateX(0); }
+
+  /* ── MAIN ── */
+  .main {
+    margin-left: 64px;
+    flex: 1;
+    padding: 1.4rem 2rem;
+    width: calc(100vw - 64px);
+    min-width: 0;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 1.4rem;
+  }
+  .back-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--white); border: 1px solid var(--gray-200);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+    transition: background 0.15s;
+    text-decoration: none;
+  }
+  .back-btn:hover { background: var(--gray-100); }
+  .back-btn svg { width: 18px; height: 18px; stroke: var(--gray-600); fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .search-wrap { flex: 1; position: relative; }
+  .search-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; stroke: var(--gray-400); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .search-wrap input {
+    width: 100%; height: 46px;
+    background: var(--white); border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-xl); padding: 0 1rem 0 42px;
+    font-family: 'Nunito Sans', sans-serif; font-size: 14px; color: var(--gray-800);
+    outline: none; transition: border-color 0.18s, box-shadow 0.18s;
+  }
+  .search-wrap input:focus { border-color: var(--green-light); box-shadow: 0 0 0 3px rgba(122,171,34,0.14); }
+  .search-wrap input::placeholder { color: var(--gray-400); }
+  .avatar-btn {
+    width: 46px; height: 46px; border-radius: 50%;
+    overflow: hidden; cursor: pointer; flex-shrink: 0;
+    border: 2.5px solid var(--green-light); box-shadow: var(--shadow-sm);
+    transition: transform 0.15s;
+  }
+  .avatar-btn:hover { transform: scale(1.06); }
+  .avatar-placeholder {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, var(--green-light), var(--green-mid));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 16px; color: #fff;
+  }
+
+  /* ── LABEL ATAS ── */
+  .page-label {
+    font-size: 11px; color: var(--gray-400);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+  }
+
+  /* ── LAYOUT PRODUK ── */
+  .product-layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  /* ── FOTO PRODUK ── */
+  .product-gallery {}
+  .main-img {
+    width: 100%; aspect-ratio: 1/1;
+    background: var(--gray-100);
+    border-radius: var(--radius-lg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 80px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .thumb-row { display: flex; gap: 8px; }
+  .thumb {
+    width: 64px; height: 64px;
+    background: var(--gray-100); border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.15s;
+    overflow: hidden;
+  }
+  .thumb.active { border-color: var(--green-mid); }
+  .thumb:hover { border-color: var(--green-light); }
+
+  /* ── INFO PRODUK ── */
+  .product-info {}
+
+  .badge-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+  .badge {
+    font-size: 11px; font-family: 'Nunito', sans-serif; font-weight: 700;
+    padding: 3px 10px; border-radius: 99px;
+  }
+  .badge-cat { background: #eaf3de; color: var(--green-dark); }
+  .badge-new { background: #faeeda; color: #854f0b; }
+
+  .product-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 26px;
+    color: var(--gray-800); margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  .product-subtitle {
+    font-size: 14px; color: var(--gray-400);
+    margin-bottom: 14px;
+  }
+
+  .seller-card-mini {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: box-shadow 0.15s;
+    text-decoration: none;
+  }
+  .seller-card-mini:hover { box-shadow: var(--shadow-sm); }
+  .seller-dot {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--green-mid);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Nunito', sans-serif; font-weight: 800;
+    font-size: 13px; color: #fff; flex-shrink: 0;
+  }
+  .seller-mini-info {}
+  .seller-mini-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: var(--gray-800); }
+  .seller-mini-loc { font-size: 11px; color: var(--gray-400); }
+  .seller-mini-arrow { margin-left: auto; }
+  .seller-mini-arrow svg { width: 16px; height: 16px; stroke: var(--gray-400); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* like count */
+  .like-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 16px;
+  }
+  .like-count-badge {
+    display: flex; align-items: center; gap: 5px;
+    background: #fff0f0; border-radius: 99px;
+    padding: 5px 12px;
+    font-family: 'Nunito', sans-serif; font-weight: 700;
+    font-size: 13px; color: var(--red);
+  }
+  .like-count-badge svg { width: 15px; height: 15px; stroke: var(--red); fill: var(--red); stroke-width: 1.5; }
+  .like-text { font-size: 12px; color: var(--gray-400); }
+
+  /* harga */
+  .price-section {
+    background: linear-gradient(135deg, #d4e87a 0%, #eaf5a0 100%);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .price-label { font-size: 12px; color: var(--green-dark); margin-bottom: 2px; }
+  .price-value {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 28px;
+    color: var(--green-dark);
+  }
+  .ongkir-info { text-align: right; }
+  .ongkir-label { font-size: 11px; color: var(--green-dark); opacity: 0.7; }
+  .ongkir-value { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; color: var(--green-dark); }
+
+  /* qty + tombol */
+  .action-row {
+    display: flex; gap: 10px; align-items: center;
+    margin-bottom: 12px;
+  }
+  .qty-wrap {
+    display: flex; align-items: center; gap: 0;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    overflow: hidden;
+  }
+  .qty-btn {
+    width: 36px; height: 44px;
+    background: none; border: none;
+    font-family: 'Nunito', sans-serif; font-weight: 700;
+    font-size: 18px; cursor: pointer; color: var(--green-dark);
+    transition: background 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .qty-btn:hover { background: var(--gray-100); }
+  .qty-num {
+    width: 36px; text-align: center;
+    font-family: 'Nunito', sans-serif; font-weight: 700;
+    font-size: 15px; color: var(--gray-800);
+    border-left: 1px solid var(--gray-200);
+    border-right: 1px solid var(--gray-200);
+  }
+  .btn-cart {
+    flex: 1; height: 44px;
+    background: linear-gradient(135deg, #d4e87a, var(--green-mid));
+    border: none; border-radius: var(--radius-md);
+    font-family: 'Nunito', sans-serif; font-weight: 700;
+    font-size: 14px; color: var(--green-dark);
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: opacity 0.18s, transform 0.15s;
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-cart:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-cart svg { width: 18px; height: 18px; stroke: var(--green-dark); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .btn-chat {
+    height: 44px; padding: 0 16px;
+    background: var(--white); border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    font-family: 'Nunito', sans-serif; font-weight: 700;
+    font-size: 14px; color: var(--gray-600);
+    cursor: pointer; display: flex; align-items: center; gap: 7px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .btn-chat:hover { border-color: var(--green-light); background: var(--gray-100); }
+  .btn-chat svg { width: 17px; height: 17px; stroke: var(--gray-600); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* toast */
+  #toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--gray-800); color: #fff;
+    padding: 10px 22px; border-radius: var(--radius-xl);
+    font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 13px;
+    opacity: 0; transition: all 0.3s; z-index: 9999;
+    display: flex; align-items: center; gap: 8px;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast svg { width: 16px; height: 16px; stroke: var(--green-light); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* deskripsi */
+  .desc-box {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md); padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .desc-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: var(--gray-600); margin-bottom: 8px; }
+  .desc-text { font-size: 13px; color: var(--gray-600); line-height: 1.6; }
+  .desc-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .desc-tag { font-size: 11px; padding: 3px 10px; background: var(--gray-100); border-radius: 99px; color: var(--gray-600); }
+
+  /* ── DIVIDER ── */
+  .divider { height: 1px; background: var(--gray-200); margin: 2rem 0; }
+
+  /* ── ULASAN ── */
+  .section-title {
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px;
+    color: var(--green-dark); margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .review-summary {
+    display: flex; gap: 16px; align-items: center;
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg); padding: 16px 20px;
+    margin-bottom: 1.2rem;
+  }
+  .review-big-num {
+    font-family: 'Nunito', sans-serif; font-weight: 800;
+    font-size: 48px; color: var(--red); line-height: 1;
+  }
+  .review-big-icon { font-size: 20px; }
+  .review-stats { flex: 1; }
+  .review-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .review-bar-label { font-size: 11px; color: var(--gray-400); width: 28px; }
+  .review-bar-track { flex: 1; height: 6px; background: var(--gray-100); border-radius: 99px; overflow: hidden; }
+  .review-bar-fill { height: 100%; background: var(--red); border-radius: 99px; transition: width 0.6s ease; }
+  .review-total { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
+
+  .review-list { display: flex; flex-direction: column; gap: 14px; }
+  .review-card {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg); padding: 14px 16px;
+  }
+  .review-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .reviewer-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--green-mid);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 12px; color: #fff;
+    flex-shrink: 0;
+  }
+  .reviewer-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: var(--gray-800); }
+  .reviewer-date { font-size: 11px; color: var(--gray-400); }
+  .review-liked { margin-left: auto; display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--red); font-family: 'Nunito', sans-serif; font-weight: 700; }
+  .review-liked svg { width: 14px; height: 14px; stroke: var(--red); fill: var(--red); }
+  .review-text { font-size: 13px; color: var(--gray-600); line-height: 1.6; margin-bottom: 8px; }
+  .review-img-row { display: flex; gap: 8px; }
+  .review-img {
+    width: 64px; height: 64px; border-radius: var(--radius-sm);
+    background: var(--gray-100); object-fit: cover;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; overflow: hidden; border: 1px solid var(--gray-200);
+  }
+
+  /* ── TULIS ULASAN PANEL ── */
+  .write-review-panel {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg); padding: 18px 20px;
+    margin-bottom: 1.4rem;
+  }
+  .wr-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; color: var(--gray-800); margin-bottom: 12px; }
+  .like-toggle-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .like-toggle-btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 7px 16px; border-radius: 99px;
+    border: 1.5px solid var(--gray-200);
+    background: var(--white); cursor: pointer;
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px;
+    color: var(--gray-600); transition: all 0.18s;
+  }
+  .like-toggle-btn svg { width: 16px; height: 16px; stroke: var(--gray-400); fill: none; stroke-width: 2; transition: all 0.18s; }
+  .like-toggle-btn.liked { background: #fff0f0; border-color: var(--red); color: var(--red); }
+  .like-toggle-btn.liked svg { stroke: var(--red); fill: var(--red); }
+  .like-toggle-label { font-size: 12px; color: var(--gray-400); }
+  .wr-textarea {
+    width: 100%; min-height: 90px;
+    border: 1.5px solid var(--gray-200); border-radius: var(--radius-md);
+    padding: 10px 14px; font-family: 'Nunito Sans', sans-serif;
+    font-size: 13px; color: var(--gray-800);
+    resize: vertical; outline: none;
+    transition: border-color 0.18s; margin-bottom: 10px;
+  }
+  .wr-textarea:focus { border-color: var(--green-light); box-shadow: 0 0 0 3px rgba(122,171,34,0.1); }
+  .wr-textarea::placeholder { color: var(--gray-400); }
+  .wr-upload {
+    border: 2px dashed var(--gray-200); border-radius: var(--radius-md);
+    padding: 18px; text-align: center; cursor: pointer;
+    transition: border-color 0.18s, background 0.18s;
+    margin-bottom: 12px; position: relative;
+  }
+  .wr-upload:hover { border-color: var(--green-light); background: #f5fbea; }
+  .wr-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .wr-upload svg { width: 28px; height: 28px; stroke: var(--gray-400); fill: none; stroke-width: 1.6; margin-bottom: 6px; stroke-linecap: round; stroke-linejoin: round; }
+  .wr-upload p { font-size: 12px; color: var(--gray-400); }
+  .wr-upload span { font-size: 11px; color: var(--gray-400); margin-top: 2px; display: block; }
+  .wr-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .wr-preview-item {
+    width: 64px; height: 64px; border-radius: var(--radius-sm);
+    background: var(--gray-100); overflow: hidden;
+    position: relative; border: 1px solid var(--gray-200);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .wr-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+  .wr-preview-item .remove-img {
+    position: absolute; top: 2px; right: 2px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(0,0,0,0.55); color: #fff;
+    font-size: 11px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-weight: 700; line-height: 1;
+  }
+  .btn-kirim {
+    width: 100%; height: 44px;
+    background: var(--red); border: none; border-radius: var(--radius-md);
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; color: #fff;
+    cursor: pointer; transition: opacity 0.18s, transform 0.15s;
+  }
+  .btn-kirim:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  /* produk serupa */
+  .similar-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+  .similar-row::-webkit-scrollbar { display: none; }
+  .sim-card {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg); padding: 10px;
+    min-width: 130px; flex-shrink: 0; cursor: pointer;
+    transition: transform 0.18s, box-shadow 0.18s;
+    text-decoration: none;
+  }
+  .sim-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+  .sim-img { width: 100%; aspect-ratio: 1/1; background: var(--gray-100); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 30px; margin-bottom: 8px; }
+  .sim-name { font-size: 12px; color: var(--gray-600); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sim-price { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: var(--gray-800); }
+
+  /* animasi */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  .fadeup { animation: fadeUp 0.35s ease both; }
+
+  /* responsive */
+  @media (max-width: 860px) {
+    .product-layout { grid-template-columns: 1fr; }
+    .main-img { max-width: 360px; }
+  }
+  @media (max-width: 600px) {
+    .sidebar { width: 54px; }
+    .main { margin-left: 54px; width: calc(100vw - 54px); padding: 1rem; }
+    .main-img { max-width: 100%; }
+    .price-value { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="logo"><span>BU</span></div>
+  <a class="nav-item" data-label="Beranda" href="index.html">
+    <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+  </a>
+  <a class="nav-item" data-label="Keranjang" href="cart.html">
+    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+    <span class="badge"></span>
+  </a>
+  <a class="nav-item" data-label="Pesanan" href="orders.html">
+    <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg>
+  </a>
+  <a class="nav-item" data-label="Pesan" href="messages.html">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <span class="badge"></span>
+  </a>
+  <div class="spacer"></div>
+  <a class="nav-item add-btn" data-label="Jual Produk" href="add-product.html">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </a>
+  <a class="nav-item" data-label="Pengaturan" href="settings.html" style="margin-top:6px;">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+  </a>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <a class="back-btn" href="index.html">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </a>
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Mau makan apa hari ini...">
+    </div>
+    <a class="avatar-btn" href="profile.html">
+      <div class="avatar-placeholder">CA</div>
+    </a>
+  </div>
+
+  <p class="page-label">Pilihan yang bagus ✨</p>
+
+  <!-- Layout utama produk -->
+  <div class="product-layout fadeup">
+
+    <!-- Kiri: foto -->
+    <div class="product-gallery">
+      <div class="main-img" id="mainImg">🍗</div>
+      <div class="thumb-row">
+        <div class="thumb active" onclick="setThumb(this,'🍗')">🍗</div>
+        <div class="thumb" onclick="setThumb(this,'🍽️')">🍽️</div>
+        <div class="thumb" onclick="setThumb(this,'🌶️')">🌶️</div>
+        <div class="thumb" onclick="setThumb(this,'📦')">📦</div>
+      </div>
+    </div>
+
+    <!-- Kanan: info -->
+    <div class="product-info">
+
+      <div class="badge-row">
+        <span class="badge badge-cat">makanan</span>
+        <span class="badge badge-new">baru ditambah</span>
+      </div>
+
+      <h1 class="product-title">Ayam Penyet</h1>
+      <p class="product-subtitle">ayam + estes · porsi penuh</p>
+
+      <!-- Penjual -->
+      <a class="seller-card-mini" href="profile-orang.html">
+        <div class="seller-dot">OG</div>
+        <div class="seller-mini-info">
+          <div class="seller-mini-name">Olivia Gabriella <span style="font-weight:400;color:var(--gray-400);font-size:11px;">· Olip</span></div>
+          <div class="seller-mini-loc">📍 Jalan pembangunan, no 5</div>
+        </div>
+        <div class="seller-mini-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </a>
+
+      <!-- Like count -->
+      <div class="like-row">
+        <div class="like-count-badge">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          <span id="likeCountDisplay">24</span> suka
+        </div>
+        <span class="like-text">orang menyukai produk ini</span>
+      </div>
+
+      <!-- Harga -->
+      <div class="price-section">
+        <div>
+          <div class="price-label">Bayar dengan harga...</div>
+          <div class="price-value">Rp 13.000</div>
+        </div>
+        <div class="ongkir-info">
+          <div class="ongkir-label">Ongkir dalam kampus</div>
+          <div class="ongkir-value">Rp 2.000</div>
+        </div>
+      </div>
+
+      <!-- Qty + tombol -->
+      <div class="action-row">
+        <div class="qty-wrap">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <span class="qty-num" id="qtyNum">1</span>
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+        <button class="btn-cart" onclick="addToCart()">
+          <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          Masuk Keranjang
+        </button>
+        <button class="btn-chat" onclick="window.location='messages.html'">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Chat
+        </button>
+      </div>
+
+      <!-- Deskripsi -->
+      <div class="desc-box">
+        <div class="desc-title">Deskripsi Produk</div>
+        <div class="desc-text">
+          Ayam penyet sambel bawang, cocok buat makan siang! Porsi besar, nasi + ayam + tempe + tahu. Pedes bisa request sesuai selera. Tersedia setiap hari mulai jam 10 pagi.
+        </div>
+        <div class="desc-tags">
+          <span class="desc-tag">halal</span>
+          <span class="desc-tag">tanpa MSG</span>
+          <span class="desc-tag">pesan sehari sebelum</span>
+          <span class="desc-tag">COD / transfer</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── SECTION ULASAN ── -->
+  <div class="fadeup" style="animation-delay:0.1s">
+    <p class="section-title">
+      ❤️ Ulasan Pembeli
+      <span style="font-size:13px;font-weight:400;color:var(--gray-400);">(5 ulasan)</span>
+    </p>
+
+    <!-- Ringkasan statistik ulasan -->
+    <div class="review-summary">
+      <div style="text-align:center;">
+        <div class="review-big-num">24</div>
+        <div class="review-big-icon">❤️</div>
+        <div style="font-size:11px;color:var(--gray-400);margin-top:2px;">total suka</div>
+      </div>
+      <div class="review-stats">
+        <div class="review-bar-row">
+          <span class="review-bar-label" style="font-size:13px;">❤️</span>
+          <div class="review-bar-track"><div class="review-bar-fill" style="width:80%;background:var(--red);"></div></div>
+          <span style="font-size:11px;color:var(--gray-400);">4</span>
+        </div>
+        <div class="review-bar-row">
+          <span class="review-bar-label" style="font-size:13px;">🤍</span>
+          <div class="review-bar-track"><div class="review-bar-fill" style="width:20%;background:var(--gray-400);"></div></div>
+          <span style="font-size:11px;color:var(--gray-400);">1</span>
+        </div>
+        <div class="review-total">dari 5 pembeli yang mengulas</div>
+      </div>
+    </div>
+
+    <!-- Tulis ulasan (tampil hanya jika sudah terima pesanan) -->
+    <div class="write-review-panel">
+      <div class="wr-title">✍️ Tulis Ulasanmu</div>
+      <div class="like-toggle-row">
+        <button class="like-toggle-btn" id="likeToggleBtn" onclick="toggleLike()">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          Berikan like
+        </button>
+        <span class="like-toggle-label">Suka produk ini?</span>
+      </div>
+      <textarea class="wr-textarea" id="reviewText" placeholder="Apa yang kamu suka dan tidak suka dari produk ini? Ceritain jujur ya!"></textarea>
+      <div class="wr-upload" id="uploadArea">
+        <input type="file" accept="image/*,video/*" multiple onchange="handleFiles(event)">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <p>Tambahkan foto atau video produk</p>
+        <span>JPG, PNG, MP4 · maks 10MB</span>
+      </div>
+      <div class="wr-preview" id="previewArea"></div>
+      <button class="btn-kirim" onclick="kirimUlasan()">Kirimkan Ulasan</button>
+    </div>
+
+    <!-- List ulasan -->
+    <div class="review-list" id="reviewList">
+
+      <div class="review-card">
+        <div class="review-header">
+          <div class="reviewer-avatar" style="background:#e67e22;">RA</div>
+          <div>
+            <div class="reviewer-name">Rara Fitri</div>
+            <div class="reviewer-date">2 hari lalu</div>
+          </div>
+          <div class="review-liked"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Suka</div>
+        </div>
+        <p class="review-text">Enak banget! Ayamnya empuk, sambelnya nampol. Porsinya juga besar, worth it banget buat harga segitu. Recommended buat mahasiswa yang lagi hemat 👍</p>
+        <div class="review-img-row">
+          <div class="review-img">🍗</div>
+          <div class="review-img">🍽️</div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-header">
+          <div class="reviewer-avatar" style="background:#8e44ad;">MQ</div>
+          <div>
+            <div class="reviewer-name">M. Qistan</div>
+            <div class="reviewer-date">5 hari lalu</div>
+          </div>
+          <div class="review-liked"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Suka</div>
+        </div>
+        <p class="review-text">Pesannya gampang, Kak Olip juga ramah. Cuma kemarin agak lama nunggu, tapi overall oke lah buat jadi langganan.</p>
+      </div>
+
+      <div class="review-card">
+        <div class="review-header">
+          <div class="reviewer-avatar" style="background:#2980b9;">SD</div>
+          <div>
+            <div class="reviewer-name">Sari Dewi</div>
+            <div class="reviewer-date">1 minggu lalu</div>
+          </div>
+          <div class="review-liked" style="color:var(--gray-400);"><svg viewBox="0 0 24 24" style="stroke:var(--gray-400);fill:none;"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Kurang</div>
+        </div>
+        <p class="review-text">Rasanya enak sih, tapi porsi tempe+tahunya kurang. Semoga next time bisa diperbanyak ya kak!</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Produk serupa -->
+  <div class="fadeup" style="animation-delay:0.2s">
+    <p class="section-title">Produk Serupa</p>
+    <div class="similar-row">
+      <a class="sim-card" href="product.html"><div class="sim-img">🍖</div><div class="sim-name">Ayam Bakar</div><div class="sim-price">Rp 15.000</div></a>
+      <a class="sim-card" href="product.html"><div class="sim-img">🍱</div><div class="sim-name">Nasi Kotak</div><div class="sim-price">Rp 12.000</div></a>
+      <a class="sim-card" href="product.html"><div class="sim-img">🍜</div><div class="sim-name">Mie Ayam</div><div class="sim-price">Rp 10.000</div></a>
+      <a class="sim-card" href="product.html"><div class="sim-img">🥘</div><div class="sim-name">Nasi Uduk</div><div class="sim-price">Rp 8.000</div></a>
+      <a class="sim-card" href="product.html"><div class="sim-img">🌮</div><div class="sim-name">Cireng Isi</div><div class="sim-price">Rp 5.000</div></a>
+    </div>
+  </div>
+
+</main>
+
+<!-- Toast notifikasi -->
+<div id="toast">
+  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg">Berhasil ditambahkan ke keranjang!</span>
+</div>
+
+<script>
+  let qty = 1;
+  let liked = false;
+  let likeCount = 24;
+
+  function changeQty(delta) {
+    qty = Math.max(1, qty + delta);
+    document.getElementById('qtyNum').textContent = qty;
+  }
+
+  function addToCart() {
+    showToast('🛒 ' + qty + ' item ditambahkan ke keranjang!');
+    const badge = document.querySelectorAll('.badge');
+  }
+
+  function setThumb(el, emoji) {
+    document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('mainImg').textContent = emoji;
+  }
+
+  function toggleLike() {
+    liked = !liked;
+    const btn = document.getElementById('likeToggleBtn');
+    btn.classList.toggle('liked', liked);
+    btn.querySelector('svg').style.fill = liked ? 'var(--red)' : 'none';
+    btn.innerHTML = (liked
+      ? '<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--red);fill:var(--red);stroke-width:2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Sudah like!'
+      : '<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--gray-400);fill:none;stroke-width:2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Berikan like');
+    if (liked) btn.classList.add('liked'); else btn.classList.remove('liked');
+    likeCount += liked ? 1 : -1;
+    document.getElementById('likeCountDisplay').textContent = likeCount;
+  }
+
+  function handleFiles(e) {
+    const files = Array.from(e.target.files);
+    const preview = document.getElementById('previewArea');
+    files.forEach(f => {
+      const item = document.createElement('div');
+      item.className = 'wr-preview-item';
+      if (f.type.startsWith('image/')) {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(f);
+        item.appendChild(img);
+      } else {
+        item.textContent = '🎬';
+      }
+      const rm = document.createElement('div');
+      rm.className = 'remove-img';
+      rm.textContent = '×';
+      rm.onclick = () => item.remove();
+      item.appendChild(rm);
+      preview.appendChild(item);
+    });
+  }
+
+  function kirimUlasan() {
+    const txt = document.getElementById('reviewText').value.trim();
+    if (!txt) { showToast('⚠️ Tulis ulasanmu dulu ya!'); return; }
+
+    const list = document.getElementById('reviewList');
+    const card = document.createElement('div');
+    card.className = 'review-card fadeup';
+    card.innerHTML = `
+      <div class="review-header">
+        <div class="reviewer-avatar" style="background:var(--green-mid);">CA</div>
+        <div>
+          <div class="reviewer-name">Cindy Aulia <span style="font-size:11px;color:var(--green-dark);font-weight:400;">· kamu</span></div>
+          <div class="reviewer-date">Baru saja</div>
+        </div>
+        <div class="review-liked" style="${liked ? '' : 'color:var(--gray-400);'}">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:${liked ? 'var(--red)' : 'var(--gray-400)'};fill:${liked ? 'var(--red)' : 'none'};"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          ${liked ? 'Suka' : 'Kurang'}
+        </div>
+      </div>
+      <p class="review-text">${txt}</p>
+    `;
+    list.insertBefore(card, list.firstChild);
+    document.getElementById('reviewText').value = '';
+    document.getElementById('previewArea').innerHTML = '';
+    showToast('✅ Ulasan berhasil dikirim!');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+</script>
+
+</body>
+</html>

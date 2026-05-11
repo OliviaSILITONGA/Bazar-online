@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BazarUSU — Jajan di Kampus, Gampang!</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark:  #5a7a1a;
+    --green-mid:   #7aab22;
+    --green-light: #a8cc4f;
+    --yellow-soft: #f0eebc;
+    --yellow-pale: #f8f7dc;
+    --cream:       #fafaf0;
+    --white:       #ffffff;
+    --gray-100:    #f0f0ec;
+    --gray-200:    #ddddd4;
+    --gray-400:    #a0a096;
+    --gray-600:    #666660;
+    --gray-800:    #333330;
+    --radius-sm:   8px;
+    --radius-md:   14px;
+    --radius-lg:   20px;
+    --radius-xl:   28px;
+    --shadow-sm:   0 2px 8px rgba(90,122,26,0.10);
+    --shadow-md:   0 4px 20px rgba(90,122,26,0.14);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--cream);
+    color: var(--gray-800);
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── NAVBAR SAMPING ─────────────────────────── */
+  .sidebar {
+    width: 64px;
+    background: linear-gradient(180deg, #e8f5b8 0%, #f5f0b0 100%);
+    border-right: 1px solid var(--gray-200);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.2rem 0;
+    gap: 6px;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+  }
+
+  .sidebar .logo {
+    width: 38px; height: 38px;
+    background: var(--green-mid);
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow-sm);
+  }
+  .sidebar .logo span {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 16px;
+    color: #fff; letter-spacing: -0.5px;
+  }
+
+  .nav-item {
+    width: 44px; height: 44px;
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.18s, transform 0.15s;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: rgba(122,171,34,0.18); transform: scale(1.07); }
+  .nav-item.active { background: var(--green-mid); box-shadow: var(--shadow-sm); }
+  .nav-item svg { width: 22px; height: 22px; stroke: var(--green-dark); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-item.active svg { stroke: #fff; }
+
+  .nav-item .badge {
+    position: absolute; top: 6px; right: 6px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #e53e3e; border: 1.5px solid var(--yellow-pale);
+  }
+
+  .sidebar .spacer { flex: 1; }
+
+  .nav-item.add-btn {
+    background: var(--green-light);
+    border: 2px dashed var(--green-dark);
+  }
+  .nav-item.add-btn svg { stroke: var(--green-dark); }
+  .nav-item.add-btn:hover { background: var(--green-mid); border-style: solid; }
+  .nav-item.add-btn:hover svg { stroke: #fff; }
+
+  /* tooltip label */
+  .nav-item::after {
+    content: attr(data-label);
+    position: absolute; left: 54px;
+    background: var(--gray-800); color: #fff;
+    font-size: 11px; font-family: 'Nunito', sans-serif; font-weight: 600;
+    padding: 4px 8px; border-radius: 6px;
+    white-space: nowrap; pointer-events: none;
+    opacity: 0; transform: translateX(-4px);
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 999;
+  }
+  .nav-item:hover::after { opacity: 1; transform: translateX(0); }
+
+  /* ── MAIN CONTENT ───────────────────────────── */
+  .main {
+    margin-left: 64px;
+    flex: 1;
+    padding: 1.4rem 2rem;
+    min-width: 0;
+    width: calc(100vw - 64px);
+  }
+
+  /* ── TOP BAR ──────────────────────────────── */
+  .topbar {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 1.4rem;
+  }
+
+  .search-wrap {
+    flex: 1;
+    position: relative;
+  }
+  .search-wrap svg {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    width: 18px; height: 18px;
+    stroke: var(--gray-400); fill: none; stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .search-wrap input {
+    width: 100%; height: 46px;
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-xl);
+    padding: 0 1rem 0 42px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 14px; color: var(--gray-800);
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+  }
+  .search-wrap input:focus {
+    border-color: var(--green-light);
+    box-shadow: 0 0 0 3px rgba(122,171,34,0.14);
+  }
+  .search-wrap input::placeholder { color: var(--gray-400); }
+
+  .avatar-btn {
+    width: 46px; height: 46px; border-radius: 50%;
+    overflow: hidden; cursor: pointer; flex-shrink: 0;
+    border: 2.5px solid var(--green-light);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s;
+  }
+  .avatar-btn:hover { transform: scale(1.06); }
+  .avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar-btn .avatar-placeholder {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, var(--green-light), var(--green-mid));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Nunito', sans-serif; font-weight: 800;
+    font-size: 16px; color: #fff;
+  }
+
+  /* ── SECTION TITLE ────────────────────────── */
+  .section-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700; font-size: 16px;
+    color: var(--green-dark);
+    margin-bottom: 1rem;
+  }
+
+  /* ── PRODUK CARDS (horizontal scroll) ──────── */
+  .products-row {
+    display: flex; gap: 12px;
+    overflow-x: auto; padding-bottom: 8px;
+    margin-bottom: 1.6rem;
+    scrollbar-width: none;
+  }
+  .products-row::-webkit-scrollbar { display: none; }
+
+  .product-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 10px;
+    min-width: 140px; flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 0.18s, box-shadow 0.18s;
+    position: relative;
+    overflow: hidden;
+  }
+  .product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+
+  .product-img {
+    width: 100%; aspect-ratio: 1/1;
+    background: var(--gray-100);
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+    overflow: hidden; position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .product-img img { width: 100%; height: 100%; object-fit: cover; }
+  .product-img .img-placeholder {
+    font-size: 32px;
+  }
+
+  .product-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--green-mid);
+    display: inline-block; margin-right: 5px;
+    vertical-align: middle;
+  }
+  .product-name {
+    font-size: 12px; color: var(--gray-600);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 2px;
+  }
+  .product-price {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700; font-size: 13px;
+    color: var(--gray-800);
+  }
+  .product-likes {
+    position: absolute; top: 14px; right: 10px;
+    background: rgba(255,255,255,0.92);
+    border-radius: 99px; padding: 2px 7px;
+    font-size: 11px; color: #e53e3e;
+    display: flex; align-items: center; gap: 3px;
+    font-family: 'Nunito', sans-serif; font-weight: 700;
+    backdrop-filter: blur(4px);
+  }
+
+  /* ── KATEGORI FILTER ────────────────────────── */
+  .categories {
+    display: flex; gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 1.4rem;
+  }
+  .cat-btn {
+    padding: 7px 18px;
+    border-radius: var(--radius-xl);
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid var(--gray-200);
+    background: var(--white);
+    color: var(--gray-600);
+    transition: all 0.18s;
+  }
+  .cat-btn:hover { border-color: var(--green-light); color: var(--green-dark); }
+  .cat-btn.active {
+    background: var(--green-mid);
+    border-color: var(--green-mid);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(122,171,34,0.30);
+  }
+
+  /* ── SELLER CARDS ─────────────────────────── */
+  .sellers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .seller-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+    display: flex; gap: 12px;
+    cursor: pointer;
+    transition: transform 0.18s, box-shadow 0.18s;
+    align-items: center;
+  }
+  .seller-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+
+  .seller-img {
+    width: 72px; height: 68px;
+    background: var(--gray-100);
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+  }
+  .seller-img img { width: 100%; height: 100%; object-fit: cover; }
+
+  .seller-info { flex: 1; min-width: 0; }
+  .seller-header {
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 2px;
+  }
+  .seller-avatar {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--green-mid);
+    flex-shrink: 0;
+  }
+  .seller-name {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700; font-size: 13px;
+    color: var(--gray-800);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .seller-loc {
+    font-size: 11px; color: var(--gray-400);
+    margin-bottom: 4px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .seller-product {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600; font-size: 13px;
+    color: var(--gray-800);
+  }
+  .seller-price {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700; font-size: 13px;
+    color: var(--green-dark);
+    margin-top: 2px;
+  }
+
+  .sellers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+
+  /* ── SCROLL ARROW ─────────────────────────── */
+  .row-wrapper { position: relative; }
+  .scroll-arrows {
+    position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+    display: flex; gap: 6px;
+    z-index: 10;
+  }
+  .scroll-arrow {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--white); border: 1px solid var(--gray-200);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: var(--shadow-sm);
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .scroll-arrow:hover { background: var(--green-mid); }
+  .scroll-arrow:hover svg { stroke: #fff; }
+  .scroll-arrow svg { width: 14px; height: 14px; stroke: var(--gray-600); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .scroll-arrow.disabled { opacity: 0.3; pointer-events: none; }
+
+  /* padding kanan biar kartu terakhir tidak ketutup panah */
+  .products-row { padding-right: 80px; }
+
+  /* ── GREETING BANNER ──────────────────────── */
+  .greeting {
+    background: linear-gradient(135deg, #d4e87a 0%, #eaf5a0 60%, #f5f5c0 100%);
+    border-radius: var(--radius-lg);
+    padding: 14px 18px;
+    margin-bottom: 1.4rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .greeting-text h2 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 15px;
+    color: var(--green-dark); margin-bottom: 2px;
+  }
+  .greeting-text p {
+    font-size: 12px; color: var(--gray-600);
+  }
+  .greeting-emoji { font-size: 28px; }
+
+  /* ── ANIMASI MASUK ────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .main > * {
+    animation: fadeUp 0.4s ease both;
+  }
+  .main > *:nth-child(1) { animation-delay: 0.05s; }
+  .main > *:nth-child(2) { animation-delay: 0.10s; }
+  .main > *:nth-child(3) { animation-delay: 0.15s; }
+  .main > *:nth-child(4) { animation-delay: 0.20s; }
+  .main > *:nth-child(5) { animation-delay: 0.25s; }
+  .main > *:nth-child(6) { animation-delay: 0.30s; }
+
+  /* ── RESPONSIVE ───────────────────────────── */
+  @media (max-width: 768px) {
+    .sidebar { width: 54px; }
+    .main { margin-left: 54px; width: calc(100vw - 54px); padding: 1rem; }
+    .sellers-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .sellers-grid { grid-template-columns: 1fr; }
+    .product-card { min-width: 120px; }
+    .greeting-emoji { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR NAVBAR ═══ -->
+<nav class="sidebar">
+  <div class="logo"><span>BU</span></div>
+
+  <a class="nav-item active" data-label="Beranda" href="#">
+    <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+  </a>
+
+  <a class="nav-item" data-label="Keranjang" href="cart.html">
+    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+    <span class="badge"></span>
+  </a>
+
+  <a class="nav-item" data-label="Pesanan" href="orders.html">
+    <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg>
+  </a>
+
+  <a class="nav-item" data-label="Pesan" href="messages.html">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <span class="badge"></span>
+  </a>
+
+  <div class="spacer"></div>
+
+  <a class="nav-item add-btn" data-label="Jual Produk" href="add-product.html">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </a>
+
+  <a class="nav-item" data-label="Pengaturan" href="settings.html" style="margin-top:6px;">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+  </a>
+</nav>
+
+<!-- ═══ MAIN CONTENT ═══ -->
+<main class="main">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Mau makan apa hari ini..." id="searchInput" oninput="filterProducts()">
+    </div>
+    <div class="avatar-btn" onclick="window.location='profile.html'">
+      <div class="avatar-placeholder">CA</div>
+    </div>
+  </div>
+
+  <!-- Greeting -->
+  <div class="greeting">
+    <div class="greeting-text">
+      <h2>Halo, Cindy! 👋</h2>
+      <p>Ada 12 produk baru dari temanmu hari ini</p>
+    </div>
+    <span class="greeting-emoji">🛒</span>
+  </div>
+
+  <!-- Rekomendasi -->
+  <div>
+    <p class="section-title">Rekomendasi Untukmu</p>
+    <div class="row-wrapper">
+      <div class="products-row" id="productsRow">
+
+        <div class="product-card" onclick="window.location='product.html'">
+          <div class="product-img">
+            <span class="img-placeholder">🍗</span>
+          </div>
+          <div class="product-likes">❤️ 24</div>
+          <div class="product-name"><span class="product-dot"></span>Ayam Penyet</div>
+          <div class="product-price">Rp 13.000</div>
+        </div>
+
+        <div class="product-card" onclick="window.location='product.html'">
+          <div class="product-img">
+            <span class="img-placeholder">🍩</span>
+          </div>
+          <div class="product-likes">❤️ 17</div>
+          <div class="product-name"><span class="product-dot"></span>Donat</div>
+          <div class="product-price">Rp 3.000</div>
+        </div>
+
+        <div class="product-card" onclick="window.location='product.html'">
+          <div class="product-img">
+            <span class="img-placeholder">💧</span>
+          </div>
+          <div class="product-likes">❤️ 9</div>
+          <div class="product-name"><span class="product-dot"></span>Air Mineral</div>
+          <div class="product-price">Rp 5.000</div>
+        </div>
+
+        <div class="product-card" onclick="window.location='product.html'">
+          <div class="product-img">
+            <span class="img-placeholder">🥭</span>
+          </div>
+          <div class="product-likes">❤️ 31</div>
+          <div class="product-name"><span class="product-dot"></span>Jus Mangga</div>
+          <div class="product-price">Rp 10.000</div>
+        </div>
+
+        <div class="product-card" onclick="window.location='product.html'">
+          <div class="product-img">
+            <span class="img-placeholder">🥤</span>
+          </div>
+          <div class="product-likes">❤️ 12</div>
+          <div class="product-name"><span class="product-dot"></span>Es Teh Manis</div>
+          <div class="product-price">Rp 4.000</div>
+        </div>
+
+        <div class="product-card" onclick="window.location='product.html'">
+          <div class="product-img">
+            <span class="img-placeholder">🌮</span>
+          </div>
+          <div class="product-likes">❤️ 8</div>
+          <div class="product-name"><span class="product-dot"></span>Cireng</div>
+          <div class="product-price">Rp 5.000</div>
+        </div>
+
+      </div>
+      <div class="scroll-arrows">
+        <div class="scroll-arrow disabled" id="arrowLeft" onclick="scrollRow(-160)">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </div>
+        <div class="scroll-arrow" id="arrowRight" onclick="scrollRow(160)">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kategori -->
+  <div class="categories" id="categoryFilter">
+    <button class="cat-btn active" onclick="setCategory(this,'semua')">semua</button>
+    <button class="cat-btn" onclick="setCategory(this,'makanan')">makanan</button>
+    <button class="cat-btn" onclick="setCategory(this,'minuman')">minuman</button>
+    <button class="cat-btn" onclick="setCategory(this,'jajanan')">jajanan</button>
+  </div>
+
+  <!-- Seller / Produk List -->
+  <div>
+    <p class="section-title" id="sellerSectionTitle">Semua Produk</p>
+    <div class="sellers-grid" id="sellersGrid">
+
+      <div class="seller-card" data-category="jajanan" onclick="window.location='product.html'">
+        <div class="seller-img">🍢</div>
+        <div class="seller-info">
+          <div class="seller-header">
+            <div class="seller-avatar"></div>
+            <span class="seller-name">Olivia Gabriella</span>
+          </div>
+          <div class="seller-loc">Jalan pembangunan, no 5</div>
+          <div class="seller-product">Cireng</div>
+          <div class="seller-price">Rp 5.000</div>
+        </div>
+      </div>
+
+      <div class="seller-card" data-category="makanan" onclick="window.location='product.html'">
+        <div class="seller-img">🎂</div>
+        <div class="seller-info">
+          <div class="seller-header">
+            <div class="seller-avatar"></div>
+            <span class="seller-name">Alfiyana</span>
+          </div>
+          <div class="seller-loc">Setia Budi, pasar 5</div>
+          <div class="seller-product">Kue Kukus</div>
+          <div class="seller-price">Rp 12.000</div>
+        </div>
+      </div>
+
+      <div class="seller-card" data-category="makanan" onclick="window.location='product.html'">
+        <div class="seller-img">🍗</div>
+        <div class="seller-info">
+          <div class="seller-header">
+            <div class="seller-avatar"></div>
+            <span class="seller-name">Olivia Gabriella</span>
+          </div>
+          <div class="seller-loc">Jalan pembangunan, no 5</div>
+          <div class="seller-product">Ayam Penyet</div>
+          <div class="seller-price">Rp 13.000</div>
+        </div>
+      </div>
+
+      <div class="seller-card" data-category="minuman" onclick="window.location='product.html'">
+        <div class="seller-img">🥭</div>
+        <div class="seller-info">
+          <div class="seller-header">
+            <div class="seller-avatar"></div>
+            <span class="seller-name">Muhammad Qistan</span>
+          </div>
+          <div class="seller-loc">Asrama Putra USU, blok B</div>
+          <div class="seller-product">Jus Mangga</div>
+          <div class="seller-price">Rp 10.000</div>
+        </div>
+      </div>
+
+      <div class="seller-card" data-category="jajanan" onclick="window.location='product.html'">
+        <div class="seller-img">🍩</div>
+        <div class="seller-info">
+          <div class="seller-header">
+            <div class="seller-avatar"></div>
+            <span class="seller-name">Sari Dewi</span>
+          </div>
+          <div class="seller-loc">Kos Mekar, jl. Dr. Mansur</div>
+          <div class="seller-product">Donat Coklat</div>
+          <div class="seller-price">Rp 3.000</div>
+        </div>
+      </div>
+
+      <div class="seller-card" data-category="minuman" onclick="window.location='product.html'">
+        <div class="seller-img">🥤</div>
+        <div class="seller-info">
+          <div class="seller-header">
+            <div class="seller-avatar"></div>
+            <span class="seller-name">Rara Fitri</span>
+          </div>
+          <div class="seller-loc">Padang Bulan, gang 3</div>
+          <div class="seller-product">Es Teh Tarik</div>
+          <div class="seller-price">Rp 6.000</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<script>
+  /* ── Kategori filter ── */
+  function setCategory(btn, cat) {
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cards = document.querySelectorAll('.seller-card');
+    const title = document.getElementById('sellerSectionTitle');
+    const labels = { semua:'Semua Produk', makanan:'Makanan', minuman:'Minuman', jajanan:'Jajanan & Camilan' };
+    title.textContent = labels[cat] || 'Semua Produk';
+    cards.forEach(c => {
+      if (cat === 'semua' || c.dataset.category === cat) {
+        c.style.display = 'flex';
+        c.style.animation = 'fadeUp 0.3s ease both';
+      } else {
+        c.style.display = 'none';
+      }
+    });
+  }
+
+  /* ── Search filter ── */
+  function filterProducts() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('.seller-card').forEach(c => {
+      const text = c.textContent.toLowerCase();
+      c.style.display = (!q || text.includes(q)) ? 'flex' : 'none';
+    });
+  }
+
+  /* ── Scroll arrows + state ── */
+  const row = document.getElementById('productsRow');
+  const arrowL = document.getElementById('arrowLeft');
+  const arrowR = document.getElementById('arrowRight');
+
+  function updateArrows() {
+    arrowL.classList.toggle('disabled', row.scrollLeft <= 0);
+    arrowR.classList.toggle('disabled', row.scrollLeft >= row.scrollWidth - row.clientWidth - 2);
+  }
+
+  function scrollRow(amount) {
+    row.scrollBy({ left: amount, behavior: 'smooth' });
+    setTimeout(updateArrows, 350);
+  }
+
+  row.addEventListener('scroll', updateArrows);
+
+  /* ── Mouse drag to scroll ── */
+  let isDown = false, startX, scrollLeft;
+
+  row.addEventListener('mousedown', e => {
+    isDown = true;
+    row.style.cursor = 'grabbing';
+    startX = e.pageX - row.offsetLeft;
+    scrollLeft = row.scrollLeft;
+  });
+  row.addEventListener('mouseleave', () => { isDown = false; row.style.cursor = 'grab'; });
+  row.addEventListener('mouseup', () => { isDown = false; row.style.cursor = 'grab'; });
+  row.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - row.offsetLeft;
+    row.scrollLeft = scrollLeft - (x - startX) * 1.2;
+    updateArrows();
+  });
+
+  row.style.cursor = 'grab';
+</script>
+
+</body>
+</html>

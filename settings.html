@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pengaturan — BazarUSU</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark:#5a7a1a; --green-mid:#7aab22; --green-light:#a8cc4f;
+    --yellow-pale:#f8f7dc; --cream:#fafaf0; --white:#ffffff;
+    --gray-100:#f0f0ec; --gray-200:#ddddd4; --gray-400:#a0a096;
+    --gray-600:#666660; --gray-800:#333330; --red:#e53e3e;
+    --radius-sm:8px; --radius-md:14px; --radius-lg:20px; --radius-xl:28px;
+    --shadow-sm:0 2px 8px rgba(90,122,26,0.10); --shadow-md:0 4px 20px rgba(90,122,26,0.14);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Nunito Sans',sans-serif; background:var(--cream); color:var(--gray-800); display:flex; min-height:100vh; }
+
+  /* SIDEBAR */
+  .sidebar { width:64px; background:linear-gradient(180deg,#e8f5b8,#f5f0b0); border-right:1px solid var(--gray-200); display:flex; flex-direction:column; align-items:center; padding:1.2rem 0; gap:6px; position:fixed; top:0; left:0; bottom:0; z-index:100; }
+  .sidebar .logo { width:38px; height:38px; background:var(--green-mid); border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
+  .sidebar .logo span { font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; color:#fff; }
+  .nav-item { width:44px; height:44px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:background .18s,transform .15s; text-decoration:none; }
+  .nav-item:hover { background:rgba(122,171,34,.18); transform:scale(1.07); }
+  .nav-item.active { background:var(--green-mid); }
+  .nav-item svg { width:22px; height:22px; stroke:var(--green-dark); fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .nav-item.active svg { stroke:#fff; }
+  .nav-item .dot { position:absolute; top:6px; right:6px; width:8px; height:8px; border-radius:50%; background:var(--red); border:1.5px solid var(--yellow-pale); }
+  .sidebar .spacer { flex:1; }
+  .nav-item.add-btn { background:var(--green-light); border:2px dashed var(--green-dark); }
+  .nav-item.add-btn:hover { background:var(--green-mid); border-style:solid; }
+  .nav-item.add-btn:hover svg { stroke:#fff; }
+  .nav-item::after { content:attr(data-label); position:absolute; left:54px; background:var(--gray-800); color:#fff; font-size:11px; font-family:'Nunito',sans-serif; font-weight:600; padding:4px 8px; border-radius:6px; white-space:nowrap; pointer-events:none; opacity:0; transform:translateX(-4px); transition:opacity .15s,transform .15s; z-index:999; }
+  .nav-item:hover::after { opacity:1; transform:translateX(0); }
+
+  /* MAIN */
+  .main { margin-left:64px; flex:1; padding:1.4rem 2rem 2rem; width:calc(100vw - 64px); max-width:720px; }
+
+  /* TOPBAR */
+  .topbar { display:flex; align-items:center; gap:12px; margin-bottom:1.6rem; }
+  .back-btn { width:40px; height:40px; border-radius:50%; background:var(--white); border:1px solid var(--gray-200); display:flex; align-items:center; justify-content:center; cursor:pointer; text-decoration:none; transition:background .15s; flex-shrink:0; }
+  .back-btn:hover { background:var(--gray-100); }
+  .back-btn svg { width:18px; height:18px; stroke:var(--gray-600); fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+  .page-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:20px; flex:1; }
+
+  /* USER CARD */
+  .user-card { background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius-lg); padding:18px 20px; margin-bottom:1.4rem; display:flex; align-items:center; gap:14px; }
+  .user-avatar { width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,var(--green-light),var(--green-mid)); display:flex; align-items:center; justify-content:center; font-family:'Nunito',sans-serif; font-weight:800; font-size:20px; color:#fff; flex-shrink:0; }
+  .user-info { flex:1; }
+  .user-name { font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; color:var(--gray-800); }
+  .user-email { font-size:13px; color:var(--gray-400); margin-top:2px; }
+  .user-badge { display:inline-flex; align-items:center; gap:4px; margin-top:6px; font-size:11px; padding:2px 10px; border-radius:99px; background:#eaf3de; color:var(--green-dark); font-family:'Nunito',sans-serif; font-weight:700; }
+  .btn-edit-profile { padding:8px 18px; border-radius:var(--radius-xl); background:var(--green-mid); border:none; font-family:'Nunito',sans-serif; font-weight:700; font-size:12px; color:#fff; cursor:pointer; text-decoration:none; transition:opacity .18s; flex-shrink:0; }
+  .btn-edit-profile:hover { opacity:.88; }
+
+  /* SECTION */
+  .settings-section { background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius-lg); margin-bottom:14px; overflow:hidden; }
+  .section-header { padding:14px 18px 10px; border-bottom:1px solid var(--gray-100); }
+  .section-title { font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; color:var(--gray-600); text-transform:uppercase; letter-spacing:.06em; }
+
+  /* SETTING ROW */
+  .setting-row { display:flex; align-items:center; gap:14px; padding:14px 18px; border-bottom:1px solid var(--gray-100); cursor:pointer; transition:background .15s; }
+  .setting-row:last-child { border-bottom:none; }
+  .setting-row:hover { background:var(--gray-100); }
+  .setting-icon { width:36px; height:36px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .setting-icon svg { width:18px; height:18px; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .setting-body { flex:1; }
+  .setting-label { font-family:'Nunito',sans-serif; font-weight:700; font-size:14px; color:var(--gray-800); }
+  .setting-desc { font-size:12px; color:var(--gray-400); margin-top:1px; }
+  .setting-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+  .setting-value { font-size:12px; color:var(--gray-400); }
+  .setting-arrow svg { width:16px; height:16px; stroke:var(--gray-400); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* TOGGLE SWITCH */
+  .toggle { width:44px; height:24px; background:var(--gray-200); border-radius:99px; position:relative; cursor:pointer; transition:background .2s; flex-shrink:0; }
+  .toggle.on { background:var(--green-mid); }
+  .toggle::after { content:''; position:absolute; width:18px; height:18px; border-radius:50%; background:#fff; top:3px; left:3px; transition:transform .2s; box-shadow:0 1px 4px rgba(0,0,0,.2); }
+  .toggle.on::after { transform:translateX(20px); }
+
+  /* DANGER ZONE */
+  .setting-row.danger .setting-label { color:var(--red); }
+  .setting-row.danger .setting-icon { background:#fff0f0; }
+  .setting-row.danger .setting-icon svg { stroke:var(--red); }
+  .setting-row.danger:hover { background:#fff0f0; }
+
+  /* MODAL */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter:blur(4px); z-index:500; display:none; align-items:center; justify-content:center; }
+  .modal-overlay.show { display:flex; }
+  .modal-box { background:var(--white); border-radius:var(--radius-lg); padding:28px 24px; width:400px; max-width:92vw; box-shadow:0 10px 50px rgba(0,0,0,.2); animation:fadeUp .25s ease; }
+  .modal-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:17px; color:var(--gray-800); margin-bottom:6px; }
+  .modal-sub { font-size:13px; color:var(--gray-600); margin-bottom:18px; line-height:1.6; }
+  .modal-field { margin-bottom:12px; }
+  .modal-label { font-size:12px; font-weight:600; color:var(--gray-600); display:block; margin-bottom:6px; }
+  .modal-input { width:100%; height:44px; border:1.5px solid var(--gray-200); border-radius:var(--radius-md); padding:0 14px; font-family:'Nunito Sans',sans-serif; font-size:14px; color:var(--gray-800); outline:none; transition:border-color .18s; }
+  .modal-input:focus { border-color:var(--green-light); box-shadow:0 0 0 3px rgba(122,171,34,.10); }
+  .modal-btns { display:flex; gap:8px; margin-top:16px; }
+  .btn-modal-cancel { flex:1; height:42px; background:var(--gray-100); border:none; border-radius:var(--radius-md); font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; color:var(--gray-600); cursor:pointer; transition:background .15s; }
+  .btn-modal-cancel:hover { background:var(--gray-200); }
+  .btn-modal-ok { flex:2; height:42px; background:var(--green-mid); border:none; border-radius:var(--radius-md); font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; color:#fff; cursor:pointer; transition:opacity .18s; }
+  .btn-modal-ok:hover { opacity:.88; }
+  .btn-modal-danger { flex:2; height:42px; background:var(--red); border:none; border-radius:var(--radius-md); font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; color:#fff; cursor:pointer; transition:opacity .18s; }
+  .btn-modal-danger:hover { opacity:.88; }
+
+  /* LOGOUT BTN */
+  .btn-logout { width:100%; height:48px; background:#fff0f0; border:1.5px solid #fecaca; border-radius:var(--radius-lg); font-family:'Nunito',sans-serif; font-weight:800; font-size:15px; color:var(--red); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-top:8px; transition:background .18s; }
+  .btn-logout:hover { background:#fee2e2; }
+  .btn-logout svg { width:18px; height:18px; stroke:var(--red); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* version */
+  .version-info { text-align:center; margin-top:20px; font-size:12px; color:var(--gray-400); }
+  .version-info span { font-family:'Nunito',sans-serif; font-weight:700; color:var(--green-mid); }
+
+  /* TOAST */
+  #toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(30px); background:var(--gray-800); color:#fff; padding:10px 22px; border-radius:var(--radius-xl); font-family:'Nunito',sans-serif; font-weight:600; font-size:13px; opacity:0; transition:all .3s; z-index:9999; pointer-events:none; white-space:nowrap; }
+  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);} }
+
+  @media(max-width:600px){ .sidebar{width:54px;} .main{margin-left:54px;width:calc(100vw - 54px);padding:1rem;} }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="logo"><span>BU</span></div>
+  <a class="nav-item" data-label="Beranda" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></a>
+  <a class="nav-item" data-label="Keranjang" href="cart.html"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></a>
+  <a class="nav-item" data-label="Pesanan" href="orders.html"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg></a>
+  <a class="nav-item" data-label="Pesan" href="messages.html"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span class="dot"></span></a>
+  <div class="spacer"></div>
+  <a class="nav-item add-btn" data-label="Jual Produk" href="add-product.html"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></a>
+  <a class="nav-item active" data-label="Pengaturan" href="settings.html" style="margin-top:6px;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></a>
+</nav>
+
+<main class="main">
+
+  <div class="topbar">
+    <a class="back-btn" href="index.html"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></a>
+    <span class="page-title">⚙️ Pengaturan</span>
+  </div>
+
+  <!-- User card -->
+  <div class="user-card">
+    <div class="user-avatar">CA</div>
+    <div class="user-info">
+      <div class="user-name">Cindy Aulia</div>
+      <div class="user-email">cindy@students.usu.ac.id</div>
+      <div class="user-badge">🌿 Mahasiswa USU</div>
+    </div>
+    <a class="btn-edit-profile" href="profile.html">Edit Profil</a>
+  </div>
+
+  <!-- AKUN -->
+  <div class="settings-section">
+    <div class="section-header"><div class="section-title">Akun</div></div>
+
+    <div class="setting-row" onclick="bukaModal('nama')">
+      <div class="setting-icon" style="background:#eaf3de;"><svg viewBox="0 0 24 24" style="stroke:var(--green-mid)"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <div class="setting-body"><div class="setting-label">Nama Tampilan</div><div class="setting-desc">Nama yang terlihat di profil dan produkmu</div></div>
+      <div class="setting-right"><span class="setting-value">Cindy Aulia</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+    </div>
+
+    <div class="setting-row" onclick="bukaModal('username')">
+      <div class="setting-icon" style="background:#e6f1fb;"><svg viewBox="0 0 24 24" style="stroke:#0c447c"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <div class="setting-body"><div class="setting-label">Username</div><div class="setting-desc">ID unikmu di BazarUSU</div></div>
+      <div class="setting-right"><span class="setting-value">@ciau</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+    </div>
+
+    <div class="setting-row" onclick="bukaModal('email')">
+      <div class="setting-icon" style="background:#faeeda;"><svg viewBox="0 0 24 24" style="stroke:#d97706"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+      <div class="setting-body"><div class="setting-label">Email</div><div class="setting-desc">Digunakan untuk login dan notifikasi</div></div>
+      <div class="setting-right"><span class="setting-value">cindy@usu.ac.id</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+    </div>
+
+    <div class="setting-row" onclick="bukaModal('password')">
+      <div class="setting-icon" style="background:#f0f0ec;"><svg viewBox="0 0 24 24" style="stroke:var(--gray-600)"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+      <div class="setting-body"><div class="setting-label">Ganti Password</div><div class="setting-desc">Pastikan password kamu kuat dan aman</div></div>
+      <div class="setting-right"><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+    </div>
+
+    <div class="setting-row" onclick="bukaModal('nohp')">
+      <div class="setting-icon" style="background:#eaf3de;"><svg viewBox="0 0 24 24" style="stroke:var(--green-mid)"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.34a16 16 0 006.29 6.29l1.41-1.41a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
+      <div class="setting-body"><div class="setting-label">Nomor HP</div><div class="setting-desc">Untuk dihubungi penjual/pembeli</div></div>
+      <div class="setting-right"><span class="setting-value">Belum diisi</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+    </div>
+  </div>
+
+  <!-- NOTIFIKASI -->
+  <div class="settings-section">
+    <div class="section-header"><div class="section-title">Notifikasi</div></div>
+
+    <div class="setting-row">
+      <div class="setting-icon" style="background:#faeeda;"><svg viewBox="0 0 24 24" style="stroke:#d97706"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
+      <div class="setting-body"><div class="setting-label">Notifikasi Pesanan</div><div class="setting-desc">Update status pesanan kamu</div></div>
+      <div class="toggle on" onclick="toggleSwitch(this)"></div>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-icon" style="background:#e6f1fb;"><svg viewBox="0 0 24 24" style="stroke:#0c447c"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+      <div class="setting-body"><div class="setting-label">Notifikasi Pesan</div><div class="setting-desc">Pesan baru dari penjual/pembeli</div></div>
+      <div class="toggle on" onclick="toggleSwitch(this)"></div>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-icon" style="background:#eaf3de;"><svg viewBox="0 0 24 24" style="stroke:var(--green-mid)"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+      <div class="setting-body"><div class="setting-label">Notifikasi Like</div><div class="setting-desc">Saat ada yang menyukai produkmu</div></div>
+      <div class="toggle" onclick="toggleSwitch(this)"></div>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-icon" style="background:#f0f0ec;"><svg viewBox="0 0 24 24" style="stroke:var(--gray-600)"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+      <div class="setting-body"><div class="setting-label">Notifikasi Follower Baru</div><div class="setting-desc">Saat ada yang mengikutimu</div></div>
+      <div class="toggle on" onclick="toggleSwitch(this)"></div>
+    </div>
+  </div>
+
+  <!-- PRIVASI -->
+  <div class="settings-section">
+    <div class="section-header"><div class="section-title">Privasi & Keamanan</div></div>
+
+    <div class="setting-row" onclick="toast('🔒 Fitur ini akan tersedia setelah integrasi Supabase')">
+      <div class="setting-icon" style="background:#eaf3de;"><svg viewBox="0 0 24 24" style="stroke:var(--green-mid)"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div class="setting-body"><div class="setting-label">Verifikasi Dua Langkah</div><div class="setting-desc">Tambah lapisan keamanan akun</div></div>
+      <div class="setting-right"><span class="setting-value" style="color:var(--red);">Nonaktif</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-icon" style="background:#f0f0ec;"><svg viewBox="0 0 24 24" style="stroke:var(--gray-600)"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <div class="setting-body"><div class="setting-label">Profil Publik</div><div class="setting-desc">Profilmu bisa dilihat semua pengguna</div></div>
+      <div class="toggle on" onclick="toggleSwitch(this)"></div>
+    </div>
+  </div>
+
+  <!-- TENTANG -->
+  <div class="settings-section">
+    <div class="section-header"><div class="section-title">Tentang</div></div>
+
+    <div class="setting-row" onclick="toast('📋 BazarUSU v1.0.0 — Dibuat dengan ❤️ oleh mahasiswa USU')">
+      <div class="setting-icon" style="background:#eaf3de;"><svg viewBox="0 0 24 24" style="stroke:var(--green-mid)"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+      <div class="setting-body"><div class="setting-label">Tentang BazarUSU</div><div class="setting-desc">Versi 1.0.0</div></div>
+      <div class="setting-right"><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+    </div>
+
+    <div class="setting-row" onclick="toast('📄 Syarat & Ketentuan BazarUSU')">
+      <div class="setting-icon" style="background:#f0f0ec;"><svg viewBox="0 0 24 24" style="stroke:var(--gray-600)"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <div class="setting-body"><div class="setting-label">Syarat & Ketentuan</div></div>
+      <div class="setting-right"><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+    </div>
+
+    <div class="setting-row" onclick="toast('🔐 Kebijakan Privasi BazarUSU')">
+      <div class="setting-icon" style="background:#f0f0ec;"><svg viewBox="0 0 24 24" style="stroke:var(--gray-600)"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div class="setting-body"><div class="setting-label">Kebijakan Privasi</div></div>
+      <div class="setting-right"><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+    </div>
+
+    <!-- Danger zone -->
+    <div class="setting-row danger" onclick="bukaModal('hapusAkun')">
+      <div class="setting-icon"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></div>
+      <div class="setting-body"><div class="setting-label">Hapus Akun</div><div class="setting-desc" style="color:#fca5a5;">Tindakan ini tidak bisa dibatalkan</div></div>
+    </div>
+  </div>
+
+  <!-- LOGOUT -->
+  <button class="btn-logout" onclick="bukaModal('logout')">
+    <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    Keluar dari Akun
+  </button>
+
+  <div class="version-info">BazarUSU <span>v1.0.0</span> · Dibuat dengan ❤️ untuk mahasiswa USU</div>
+
+</main>
+
+<!-- Modal ganti nama -->
+<div class="modal-overlay" id="modal-nama" onclick="tutupModal(event,'modal-nama')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">✏️ Ganti Nama Tampilan</div>
+    <div class="modal-sub">Nama ini akan terlihat di profil dan produkmu.</div>
+    <div class="modal-field"><label class="modal-label">Nama Baru</label><input type="text" class="modal-input" placeholder="Nama kamu" value="Cindy Aulia"></div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="tutupModal(null,'modal-nama')">Batal</button>
+      <button class="btn-modal-ok" onclick="simpan('modal-nama','✅ Nama berhasil diperbarui!')">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal ganti username -->
+<div class="modal-overlay" id="modal-username" onclick="tutupModal(event,'modal-username')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">✏️ Ganti Username</div>
+    <div class="modal-sub">Username unik yang dipakai di BazarUSU. Tidak bisa sama dengan pengguna lain.</div>
+    <div class="modal-field"><label class="modal-label">Username Baru</label><input type="text" class="modal-input" placeholder="contoh: ciau_usu" value="ciau"></div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="tutupModal(null,'modal-username')">Batal</button>
+      <button class="btn-modal-ok" onclick="simpan('modal-username','✅ Username berhasil diperbarui!')">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal ganti email -->
+<div class="modal-overlay" id="modal-email" onclick="tutupModal(event,'modal-email')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">✉️ Ganti Email</div>
+    <div class="modal-sub">Kamu akan menerima email konfirmasi ke alamat baru.</div>
+    <div class="modal-field"><label class="modal-label">Email Baru</label><input type="email" class="modal-input" placeholder="email@students.usu.ac.id"></div>
+    <div class="modal-field"><label class="modal-label">Password (untuk konfirmasi)</label><input type="password" class="modal-input" placeholder="Password kamu"></div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="tutupModal(null,'modal-email')">Batal</button>
+      <button class="btn-modal-ok" onclick="simpan('modal-email','✅ Cek emailmu untuk konfirmasi!')">Kirim Konfirmasi</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal ganti password -->
+<div class="modal-overlay" id="modal-password" onclick="tutupModal(event,'modal-password')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">🔒 Ganti Password</div>
+    <div class="modal-sub">Gunakan password yang kuat dan belum pernah dipakai sebelumnya.</div>
+    <div class="modal-field"><label class="modal-label">Password Lama</label><input type="password" class="modal-input" placeholder="Password sekarang"></div>
+    <div class="modal-field"><label class="modal-label">Password Baru</label><input type="password" class="modal-input" placeholder="Min. 8 karakter"></div>
+    <div class="modal-field"><label class="modal-label">Konfirmasi Password Baru</label><input type="password" class="modal-input" placeholder="Ulangi password baru"></div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="tutupModal(null,'modal-password')">Batal</button>
+      <button class="btn-modal-ok" onclick="simpan('modal-password','✅ Password berhasil diperbarui!')">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal ganti no HP -->
+<div class="modal-overlay" id="modal-nohp" onclick="tutupModal(event,'modal-nohp')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">📱 Tambah Nomor HP</div>
+    <div class="modal-sub">Nomor HP memudahkan penjual/pembeli menghubungimu.</div>
+    <div class="modal-field"><label class="modal-label">Nomor HP</label><input type="tel" class="modal-input" placeholder="0812-xxxx-xxxx"></div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="tutupModal(null,'modal-nohp')">Batal</button>
+      <button class="btn-modal-ok" onclick="simpan('modal-nohp','✅ Nomor HP berhasil disimpan!')">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal logout -->
+<div class="modal-overlay" id="modal-logout" onclick="tutupModal(event,'modal-logout')">
+  <div class="modal-box" onclick="event.stopPropagation()" style="text-align:center;">
+    <div style="font-size:48px;margin-bottom:12px;">👋</div>
+    <div class="modal-title" style="text-align:center;">Keluar dari Akun?</div>
+    <div class="modal-sub" style="text-align:center;">Kamu harus login lagi untuk mengakses BazarUSU.</div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="tutupModal(null,'modal-logout')">Batal</button>
+      <button class="btn-modal-danger" onclick="doLogout()">Ya, Keluar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal hapus akun -->
+<div class="modal-overlay" id="modal-hapusAkun" onclick="tutupModal(event,'modal-hapusAkun')">
+  <div class="modal-box" onclick="event.stopPropagation()" style="text-align:center;">
+    <div style="font-size:48px;margin-bottom:12px;">⚠️</div>
+    <div class="modal-title" style="text-align:center;color:var(--red);">Hapus Akun?</div>
+    <div class="modal-sub" style="text-align:center;">Semua data, produk, dan riwayat pesananmu akan dihapus permanen. Tindakan ini tidak bisa dibatalkan!</div>
+    <div class="modal-field"><label class="modal-label" style="text-align:left;">Ketik <strong>HAPUS AKUN</strong> untuk konfirmasi</label><input type="text" class="modal-input" id="hapusConfirm" placeholder="HAPUS AKUN"></div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="tutupModal(null,'modal-hapusAkun')">Batal</button>
+      <button class="btn-modal-danger" onclick="doHapusAkun()">Hapus Selamanya</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  function bukaModal(id) {
+    document.getElementById('modal-'+id).classList.add('show');
+  }
+  function tutupModal(e, id) {
+    if (!e || e.target.id === id) document.getElementById(id).classList.remove('show');
+  }
+  function simpan(id, msg) {
+    document.getElementById(id).classList.remove('show');
+    toast(msg);
+  }
+  function toggleSwitch(el) {
+    el.classList.toggle('on');
+    toast(el.classList.contains('on') ? '🔔 Notifikasi diaktifkan' : '🔕 Notifikasi dinonaktifkan');
+  }
+  function doLogout() {
+    document.getElementById('modal-logout').classList.remove('show');
+    toast('👋 Sampai jumpa! Kamu berhasil keluar.');
+    setTimeout(() => window.location.href = 'login.html', 1800);
+  }
+  function doHapusAkun() {
+    const konfirm = document.getElementById('hapusConfirm').value.trim();
+    if (konfirm !== 'HAPUS AKUN') { toast('⚠️ Ketik HAPUS AKUN dengan benar untuk konfirmasi'); return; }
+    document.getElementById('modal-hapusAkun').classList.remove('show');
+    toast('🗑️ Akun berhasil dihapus. Sampai jumpa!');
+    setTimeout(() => window.location.href = 'login.html', 2000);
+  }
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+</script>
+</body>
+</html>

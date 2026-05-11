@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pesan — BazarUSU</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark:#5a7a1a; --green-mid:#7aab22; --green-light:#a8cc4f;
+    --yellow-pale:#f8f7dc; --cream:#fafaf0; --white:#ffffff;
+    --gray-100:#f0f0ec; --gray-200:#ddddd4; --gray-400:#a0a096;
+    --gray-600:#666660; --gray-800:#333330; --red:#e53e3e;
+    --radius-sm:8px; --radius-md:14px; --radius-lg:20px; --radius-xl:28px;
+    --shadow-sm:0 2px 8px rgba(90,122,26,0.10); --shadow-md:0 4px 20px rgba(90,122,26,0.14);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Nunito Sans',sans-serif; background:var(--cream); color:var(--gray-800); display:flex; min-height:100vh; overflow:hidden; }
+
+  /* ── SIDEBAR ── */
+  .sidebar { width:64px; background:linear-gradient(180deg,#e8f5b8,#f5f0b0); border-right:1px solid var(--gray-200); display:flex; flex-direction:column; align-items:center; padding:1.2rem 0; gap:6px; position:fixed; top:0; left:0; bottom:0; z-index:100; flex-shrink:0; }
+  .sidebar .logo { width:38px; height:38px; background:var(--green-mid); border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
+  .sidebar .logo span { font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; color:#fff; }
+  .nav-item { width:44px; height:44px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:background .18s,transform .15s; text-decoration:none; }
+  .nav-item:hover { background:rgba(122,171,34,.18); transform:scale(1.07); }
+  .nav-item.active { background:var(--green-mid); }
+  .nav-item svg { width:22px; height:22px; stroke:var(--green-dark); fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .nav-item.active svg { stroke:#fff; }
+  .nav-item .dot { position:absolute; top:6px; right:6px; width:8px; height:8px; border-radius:50%; background:var(--red); border:1.5px solid var(--yellow-pale); }
+  .sidebar .spacer { flex:1; }
+  .nav-item.add-btn { background:var(--green-light); border:2px dashed var(--green-dark); }
+  .nav-item.add-btn:hover { background:var(--green-mid); border-style:solid; }
+  .nav-item.add-btn:hover svg { stroke:#fff; }
+  .nav-item::after { content:attr(data-label); position:absolute; left:54px; background:var(--gray-800); color:#fff; font-size:11px; font-family:'Nunito',sans-serif; font-weight:600; padding:4px 8px; border-radius:6px; white-space:nowrap; pointer-events:none; opacity:0; transform:translateX(-4px); transition:opacity .15s,transform .15s; z-index:999; }
+  .nav-item:hover::after { opacity:1; transform:translateX(0); }
+
+  /* ── CHAT LAYOUT ── */
+  .chat-wrap { margin-left:64px; display:flex; width:calc(100vw - 64px); height:100vh; overflow:hidden; }
+
+  /* ── KONTAK LIST (kiri) ── */
+  .contacts { width:300px; flex-shrink:0; border-right:1px solid var(--gray-200); background:var(--white); display:flex; flex-direction:column; height:100vh; }
+
+  .contacts-header { padding:1.2rem 1rem 0.8rem; border-bottom:1px solid var(--gray-100); flex-shrink:0; }
+  .contacts-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:17px; color:var(--gray-800); margin-bottom:10px; }
+  .search-contact { position:relative; }
+  .search-contact svg { position:absolute; left:10px; top:50%; transform:translateY(-50%); width:15px; height:15px; stroke:var(--gray-400); fill:none; stroke-width:2; stroke-linecap:round; }
+  .search-contact input { width:100%; height:36px; border:1.5px solid var(--gray-200); border-radius:var(--radius-xl); padding:0 12px 0 34px; font-family:'Nunito Sans',sans-serif; font-size:13px; color:var(--gray-800); outline:none; background:var(--gray-100); transition:border-color .18s,background .18s; }
+  .search-contact input:focus { border-color:var(--green-light); background:var(--white); }
+  .search-contact input::placeholder { color:var(--gray-400); }
+
+  .contact-list { flex:1; overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--gray-200) transparent; }
+  .contact-list::-webkit-scrollbar { width:4px; }
+  .contact-list::-webkit-scrollbar-thumb { background:var(--gray-200); border-radius:99px; }
+
+  .contact-item { display:flex; align-items:center; gap:10px; padding:12px 14px; cursor:pointer; transition:background .15s; border-bottom:1px solid var(--gray-100); position:relative; }
+  .contact-item:hover { background:var(--gray-100); }
+  .contact-item.active { background:#f0f7e0; }
+  .contact-item.active::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--green-mid); border-radius:0 3px 3px 0; }
+
+  .contact-avatar { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Nunito',sans-serif; font-weight:800; font-size:15px; color:#fff; flex-shrink:0; position:relative; }
+  .contact-online { position:absolute; bottom:1px; right:1px; width:11px; height:11px; border-radius:50%; background:#22c55e; border:2px solid var(--white); }
+
+  .contact-body { flex:1; min-width:0; }
+  .contact-name { font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; color:var(--gray-800); margin-bottom:2px; }
+  .contact-preview { font-size:12px; color:var(--gray-400); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .contact-preview.unread { color:var(--gray-800); font-weight:600; }
+
+  .contact-meta { display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0; }
+  .contact-time { font-size:10px; color:var(--gray-400); }
+  .unread-badge { width:18px; height:18px; border-radius:50%; background:var(--green-mid); color:#fff; font-family:'Nunito',sans-serif; font-weight:700; font-size:10px; display:flex; align-items:center; justify-content:center; }
+
+  /* ── CHAT AREA (kanan) ── */
+  .chat-area { flex:1; display:flex; flex-direction:column; min-width:0; background:var(--cream); height:100vh; }
+
+  /* chat header */
+  .chat-header { padding:1rem 1.4rem; background:var(--white); border-bottom:1px solid var(--gray-200); display:flex; align-items:center; gap:12px; flex-shrink:0; box-shadow:var(--shadow-sm); }
+  .chat-header-avatar { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Nunito',sans-serif; font-weight:800; font-size:14px; color:#fff; flex-shrink:0; position:relative; }
+  .chat-header-online { position:absolute; bottom:1px; right:1px; width:10px; height:10px; border-radius:50%; background:#22c55e; border:2px solid var(--white); }
+  .chat-header-info { flex:1; }
+  .chat-header-name { font-family:'Nunito',sans-serif; font-weight:700; font-size:15px; color:var(--gray-800); }
+  .chat-header-status { font-size:11px; color:#22c55e; font-weight:600; }
+  .chat-header-status.offline { color:var(--gray-400); }
+
+  .chat-header-actions { display:flex; gap:8px; }
+  .hdr-btn { width:36px; height:36px; border-radius:50%; background:var(--gray-100); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s; text-decoration:none; }
+  .hdr-btn:hover { background:var(--gray-200); }
+  .hdr-btn svg { width:17px; height:17px; stroke:var(--gray-600); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* chat messages */
+  .chat-messages { flex:1; overflow-y:auto; padding:1.2rem 1.4rem; display:flex; flex-direction:column; gap:12px; scrollbar-width:thin; scrollbar-color:var(--gray-200) transparent; }
+  .chat-messages::-webkit-scrollbar { width:4px; }
+  .chat-messages::-webkit-scrollbar-thumb { background:var(--gray-200); border-radius:99px; }
+
+  /* date separator */
+  .date-sep { text-align:center; margin:6px 0; }
+  .date-sep span { background:var(--gray-200); color:var(--gray-600); font-size:11px; font-family:'Nunito',sans-serif; font-weight:600; padding:3px 12px; border-radius:99px; }
+
+  /* bubble */
+  .bubble-row { display:flex; align-items:flex-end; gap:8px; }
+  .bubble-row.me { flex-direction:row-reverse; }
+
+  .bubble-avatar { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Nunito',sans-serif; font-weight:800; font-size:10px; color:#fff; flex-shrink:0; }
+
+  .bubble { max-width:65%; padding:10px 14px; border-radius:18px; font-size:13px; line-height:1.5; position:relative; }
+  .bubble.them { background:var(--white); border:1px solid var(--gray-200); border-bottom-left-radius:4px; color:var(--gray-800); }
+  .bubble.me { background:var(--green-mid); border-bottom-right-radius:4px; color:#fff; }
+  .bubble-time { font-size:10px; margin-top:4px; }
+  .bubble.them .bubble-time { color:var(--gray-400); }
+  .bubble.me .bubble-time { color:rgba(255,255,255,.7); text-align:right; }
+
+  /* read receipt */
+  .read-tick { font-size:10px; color:rgba(255,255,255,.7); }
+  .read-tick.read { color:#a8f0c6; }
+
+  /* produk context bubble */
+  .product-bubble { background:var(--gray-100); border:1px solid var(--gray-200); border-radius:var(--radius-md); padding:10px 12px; display:flex; align-items:center; gap:10px; margin-bottom:6px; cursor:pointer; text-decoration:none; transition:background .15s; }
+  .product-bubble:hover { background:var(--gray-200); }
+  .product-bubble-img { font-size:24px; }
+  .product-bubble-info {}
+  .product-bubble-name { font-family:'Nunito',sans-serif; font-weight:700; font-size:12px; color:var(--gray-800); }
+  .product-bubble-price { font-size:11px; color:var(--green-dark); font-weight:600; }
+
+  /* gambar dalam chat */
+  .chat-img { max-width:200px; border-radius:var(--radius-md); cursor:pointer; display:block; transition:opacity .15s; }
+  .chat-img:hover { opacity:.85; }
+
+  /* typing indicator */
+  .typing { display:flex; align-items:center; gap:4px; padding:10px 14px; background:var(--white); border:1px solid var(--gray-200); border-radius:18px; border-bottom-left-radius:4px; width:fit-content; }
+  .typing span { width:6px; height:6px; border-radius:50%; background:var(--gray-400); animation:blink 1.2s infinite; }
+  .typing span:nth-child(2) { animation-delay:.2s; }
+  .typing span:nth-child(3) { animation-delay:.4s; }
+  @keyframes blink { 0%,80%,100%{opacity:.3;transform:scale(.8);} 40%{opacity:1;transform:scale(1);} }
+
+  /* chat input */
+  .chat-input-wrap { padding:0.9rem 1.4rem; background:var(--white); border-top:1px solid var(--gray-200); flex-shrink:0; }
+  .chat-input-row { display:flex; align-items:flex-end; gap:8px; }
+  .input-actions { display:flex; gap:4px; flex-shrink:0; }
+  .input-btn { width:36px; height:36px; border-radius:50%; background:none; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s; }
+  .input-btn:hover { background:var(--gray-100); }
+  .input-btn svg { width:18px; height:18px; stroke:var(--gray-400); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .input-btn:hover svg { stroke:var(--green-mid); }
+
+  .chat-textarea-wrap { flex:1; background:var(--gray-100); border-radius:var(--radius-xl); border:1.5px solid var(--gray-200); padding:8px 14px; transition:border-color .18s,background .18s; }
+  .chat-textarea-wrap:focus-within { border-color:var(--green-light); background:var(--white); }
+  .chat-textarea { width:100%; border:none; background:transparent; font-family:'Nunito Sans',sans-serif; font-size:14px; color:var(--gray-800); outline:none; resize:none; max-height:100px; min-height:22px; line-height:1.5; }
+  .chat-textarea::placeholder { color:var(--gray-400); }
+
+  .btn-send { width:42px; height:42px; border-radius:50%; background:var(--green-mid); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; box-shadow:var(--shadow-sm); transition:opacity .18s,transform .15s; }
+  .btn-send:hover { opacity:.88; transform:scale(1.06); }
+  .btn-send svg { width:18px; height:18px; stroke:#fff; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* emoji picker mini */
+  .emoji-row { display:flex; gap:6px; flex-wrap:wrap; padding:8px 0 4px; }
+  .emoji-pick { font-size:20px; cursor:pointer; padding:2px; border-radius:var(--radius-sm); transition:background .12s; }
+  .emoji-pick:hover { background:var(--gray-200); }
+  .emoji-row { display:none; }
+  .emoji-row.show { display:flex; }
+
+  /* empty chat */
+  .empty-chat { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:var(--gray-400); }
+  .empty-chat .big { font-size:56px; }
+  .empty-chat p { font-family:'Nunito',sans-serif; font-weight:700; font-size:15px; color:var(--gray-600); }
+  .empty-chat small { font-size:13px; }
+
+  /* mobile: sembunyikan contact list kalau chat aktif */
+  @media(max-width:700px) {
+    .sidebar { width:54px; }
+    .chat-wrap { margin-left:54px; width:calc(100vw - 54px); }
+    .contacts { position:absolute; left:54px; top:0; bottom:0; z-index:50; transform:translateX(-110%); transition:transform .3s; width:calc(100vw - 54px); max-width:300px; }
+    .contacts.show { transform:translateX(0); box-shadow:var(--shadow-md); }
+    .chat-area { width:100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="logo"><span>BU</span></div>
+  <a class="nav-item" data-label="Beranda" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></a>
+  <a class="nav-item" data-label="Keranjang" href="cart.html"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></a>
+  <a class="nav-item" data-label="Pesanan" href="orders.html"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg></a>
+  <a class="nav-item active" data-label="Pesan" href="messages.html"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></a>
+  <div class="spacer"></div>
+  <a class="nav-item add-btn" data-label="Jual Produk" href="add-product.html"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></a>
+  <a class="nav-item" data-label="Pengaturan" href="settings.html" style="margin-top:6px;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></a>
+</nav>
+
+<div class="chat-wrap">
+
+  <!-- ══ KONTAK LIST ══ -->
+  <div class="contacts" id="contacts">
+    <div class="contacts-header">
+      <div class="contacts-title">💬 Pesan</div>
+      <div class="search-contact">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Cari kontak..." oninput="filterContacts(this.value)">
+      </div>
+    </div>
+
+    <div class="contact-list" id="contactList">
+
+      <div class="contact-item active" onclick="bukaChat(this,'olip')" data-name="Olivia Gabriella">
+        <div class="contact-avatar" style="background:var(--green-mid);">OG
+          <span class="contact-online"></span>
+        </div>
+        <div class="contact-body">
+          <div class="contact-name">Olivia Gabriella</div>
+          <div class="contact-preview unread">Oke kak, nanti aku anterin ya!</div>
+        </div>
+        <div class="contact-meta">
+          <span class="contact-time">09:34</span>
+          <span class="unread-badge">2</span>
+        </div>
+      </div>
+
+      <div class="contact-item" onclick="bukaChat(this,'yana')" data-name="Alfiyana">
+        <div class="contact-avatar" style="background:#e67e22;">AL</div>
+        <div class="contact-body">
+          <div class="contact-name">Alfiyana</div>
+          <div class="contact-preview">Siap kak! Pesanannya udah ready 😊</div>
+        </div>
+        <div class="contact-meta">
+          <span class="contact-time">Kemarin</span>
+        </div>
+      </div>
+
+      <div class="contact-item" onclick="bukaChat(this,'qistan')" data-name="Muhammad Qistan">
+        <div class="contact-avatar" style="background:#8e44ad;">MQ
+          <span class="contact-online"></span>
+        </div>
+        <div class="contact-body">
+          <div class="contact-name">Muhammad Qistan</div>
+          <div class="contact-preview">Jus mangganya masih ada kak?</div>
+        </div>
+        <div class="contact-meta">
+          <span class="contact-time">Kemarin</span>
+          <span class="unread-badge">1</span>
+        </div>
+      </div>
+
+      <div class="contact-item" onclick="bukaChat(this,'sari')" data-name="Sari Dewi">
+        <div class="contact-avatar" style="background:#2980b9;">SD</div>
+        <div class="contact-body">
+          <div class="contact-name">Sari Dewi</div>
+          <div class="contact-preview">Donat coklat masih ada ga kak?</div>
+        </div>
+        <div class="contact-meta">
+          <span class="contact-time">Sen</span>
+        </div>
+      </div>
+
+      <div class="contact-item" onclick="bukaChat(this,'rara')" data-name="Rara Fitri">
+        <div class="contact-avatar" style="background:#c0392b;">RF</div>
+        <div class="contact-body">
+          <div class="contact-name">Rara Fitri</div>
+          <div class="contact-preview">Makasih pesanannya kak!</div>
+        </div>
+        <div class="contact-meta">
+          <span class="contact-time">Ming</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ CHAT AREA ══ -->
+  <div class="chat-area">
+
+    <!-- Header chat -->
+    <div class="chat-header" id="chatHeader">
+      <button class="hdr-btn" id="btnBack" onclick="kembaliKontak()" style="display:none;">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="chat-header-avatar" id="headerAvatar" style="background:var(--green-mid);">OG
+        <span class="chat-header-online"></span>
+      </div>
+      <div class="chat-header-info">
+        <div class="chat-header-name" id="headerName">Olivia Gabriella</div>
+        <div class="chat-header-status" id="headerStatus">● Online</div>
+      </div>
+      <div class="chat-header-actions">
+        <a class="hdr-btn" href="profile-orang.html" title="Lihat profil">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+        <a class="hdr-btn" href="product.html" title="Lihat produk">
+          <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Pesan-pesan -->
+    <div class="chat-messages" id="chatMessages">
+
+      <div class="date-sep"><span>Hari ini</span></div>
+
+      <!-- Konteks produk yang ditanyakan -->
+      <div class="bubble-row">
+        <div class="bubble-avatar" style="background:var(--green-mid);">OG</div>
+        <div>
+          <a class="product-bubble" href="product.html">
+            <span class="product-bubble-img">🍢</span>
+            <div class="product-bubble-info">
+              <div class="product-bubble-name">Cireng Isi — Bumbu Rujak</div>
+              <div class="product-bubble-price">Rp 5.000</div>
+            </div>
+          </a>
+          <div class="bubble them">
+            Halo kak! Mau tanya cirengnya masih ada ga hari ini? 😊
+            <div class="bubble-time">09.20</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bubble-row me">
+        <div class="bubble-avatar" style="background:var(--green-light);">CA</div>
+        <div class="bubble me">
+          Masih ada kak! Mau pesan berapa? Satu porsi isi 5 biji ya 😄
+          <div class="bubble-time">09.22 <span class="read-tick read">✓✓</span></div>
+        </div>
+      </div>
+
+      <div class="bubble-row">
+        <div class="bubble-avatar" style="background:var(--green-mid);">OG</div>
+        <div class="bubble them">
+          Mau 2 porsi kak! Bisa COD di depan gedung B FEB jam 12 siang ga?
+          <div class="bubble-time">09.25</div>
+        </div>
+      </div>
+
+      <div class="bubble-row me">
+        <div class="bubble-avatar" style="background:var(--green-light);">CA</div>
+        <div class="bubble me">
+          Bisa banget kak! Nanti aku hubungi lagi ya kalau udah berangkat 🙏
+          <div class="bubble-time">09.28 <span class="read-tick read">✓✓</span></div>
+        </div>
+      </div>
+
+      <div class="bubble-row">
+        <div class="bubble-avatar" style="background:var(--green-mid);">OG</div>
+        <div class="bubble them">
+          Oke kak, nanti aku anterin ya!
+          <div class="bubble-time">09.34</div>
+        </div>
+      </div>
+
+      <!-- Typing indicator (tersembunyi) -->
+      <div class="bubble-row" id="typingRow" style="display:none;">
+        <div class="bubble-avatar" style="background:var(--green-mid);">OG</div>
+        <div class="typing"><span></span><span></span><span></span></div>
+      </div>
+
+    </div>
+
+    <!-- Input area -->
+    <div class="chat-input-wrap">
+      <div class="emoji-row" id="emojiRow">
+        <span class="emoji-pick" onclick="insertEmoji('😊')">😊</span>
+        <span class="emoji-pick" onclick="insertEmoji('🙏')">🙏</span>
+        <span class="emoji-pick" onclick="insertEmoji('😄')">😄</span>
+        <span class="emoji-pick" onclick="insertEmoji('👍')">👍</span>
+        <span class="emoji-pick" onclick="insertEmoji('❤️')">❤️</span>
+        <span class="emoji-pick" onclick="insertEmoji('🎉')">🎉</span>
+        <span class="emoji-pick" onclick="insertEmoji('😅')">😅</span>
+        <span class="emoji-pick" onclick="insertEmoji('🥰')">🥰</span>
+        <span class="emoji-pick" onclick="insertEmoji('😋')">😋</span>
+        <span class="emoji-pick" onclick="insertEmoji('🔥')">🔥</span>
+        <span class="emoji-pick" onclick="insertEmoji('✨')">✨</span>
+        <span class="emoji-pick" onclick="insertEmoji('💪')">💪</span>
+      </div>
+      <div class="chat-input-row">
+        <div class="input-actions">
+          <button class="input-btn" onclick="toggleEmoji()" title="Emoji">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+          </button>
+          <button class="input-btn" onclick="document.getElementById('fileInput').click()" title="Kirim gambar">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </button>
+          <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="kirimGambar(event)">
+        </div>
+        <div class="chat-textarea-wrap">
+          <textarea class="chat-textarea" id="msgInput" placeholder="Ketik pesan..." rows="1"
+            onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        </div>
+        <button class="btn-send" onclick="kirimPesan()" title="Kirim">
+          <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </div><!-- end chat-area -->
+
+</div><!-- end chat-wrap -->
+
+<script>
+  /* ── Data percakapan per kontak ── */
+  const chatData = {
+    olip: {
+      name: 'Olivia Gabriella',
+      initial: 'OG',
+      color: '#7aab22',
+      online: true,
+      messages: [] // sudah dirender di HTML
+    },
+    yana: {
+      name: 'Alfiyana',
+      initial: 'AL',
+      color: '#e67e22',
+      online: false,
+      messages: [
+        { me:false, text:'Halo kak, pesanan kue kukusnya sudah ready!', time:'Kemarin 14.10' },
+        { me:true,  text:'Wah makasih ya kak! Nanti aku jemput jam 2 siang 🙏', time:'Kemarin 14.12' },
+        { me:false, text:'Siap kak! Pesanannya udah ready 😊', time:'Kemarin 14.15' },
+      ]
+    },
+    qistan: {
+      name: 'Muhammad Qistan',
+      initial: 'MQ',
+      color: '#8e44ad',
+      online: true,
+      messages: [
+        { me:false, text:'Kak, jual jus mangga ga?', time:'Kemarin 10.00' },
+        { me:true,  text:'Ada kak! Mau pesan? Rp 10.000 per gelas 😄', time:'Kemarin 10.05' },
+        { me:false, text:'Jus mangganya masih ada kak?', time:'Kemarin 10.08' },
+      ]
+    },
+    sari: {
+      name: 'Sari Dewi',
+      initial: 'SD',
+      color: '#2980b9',
+      online: false,
+      messages: [
+        { me:false, text:'Halo kak! Donat coklat masih ada ga?', time:'Sen 09.00' },
+        { me:true,  text:'Masih ada kak, mau pesan berapa?', time:'Sen 09.05' },
+      ]
+    },
+    rara: {
+      name: 'Rara Fitri',
+      initial: 'RF',
+      color: '#c0392b',
+      online: false,
+      messages: [
+        { me:false, text:'Makasih pesanannya kak! Enak banget 😍', time:'Ming 15.00' },
+        { me:true,  text:'Makasih juga udah pesan ya kak! 🙏', time:'Ming 15.02' },
+      ]
+    },
+  };
+
+  let activeContact = 'olip';
+
+  /* ── Buka chat ── */
+  function bukaChat(el, id) {
+    document.querySelectorAll('.contact-item').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    // hapus unread badge
+    const badge = el.querySelector('.unread-badge');
+    if (badge) badge.remove();
+    const preview = el.querySelector('.contact-preview');
+    if (preview) preview.classList.remove('unread');
+
+    activeContact = id;
+    const d = chatData[id];
+
+    // update header
+    document.getElementById('headerAvatar').textContent = d.initial;
+    document.getElementById('headerAvatar').style.background = d.color;
+    document.getElementById('headerName').textContent = d.name;
+    const statusEl = document.getElementById('headerStatus');
+    statusEl.textContent = d.online ? '● Online' : '○ Offline';
+    statusEl.className = 'chat-header-status' + (d.online ? '' : ' offline');
+
+    // render pesan
+    const box = document.getElementById('chatMessages');
+    if (id === 'olip') {
+      // sudah ada di HTML, scroll ke bawah saja
+      box.scrollTop = box.scrollHeight;
+      return;
+    }
+    box.innerHTML = '<div class="date-sep"><span>Kemarin</span></div>';
+    d.messages.forEach(m => renderBubble(m.text, m.time, m.me, d.initial, d.color));
+    box.scrollTop = box.scrollHeight;
+
+    // mobile: sembunyikan kontak
+    if (window.innerWidth <= 700) {
+      document.getElementById('contacts').classList.remove('show');
+      document.getElementById('btnBack').style.display = 'flex';
+    }
+  }
+
+  /* ── Render bubble ── */
+  function renderBubble(text, time, isMe, initial, color) {
+    const box = document.getElementById('chatMessages');
+    const row = document.createElement('div');
+    row.className = 'bubble-row' + (isMe ? ' me' : '');
+
+    const avatarColor = isMe ? 'var(--green-light)' : color;
+    const avatarInitial = isMe ? 'CA' : initial;
+
+    row.innerHTML = `
+      <div class="bubble-avatar" style="background:${avatarColor};">${avatarInitial}</div>
+      <div class="bubble ${isMe ? 'me' : 'them'}">
+        ${text}
+        <div class="bubble-time">${time}${isMe ? ' <span class="read-tick read">✓✓</span>' : ''}</div>
+      </div>`;
+    box.appendChild(row);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  /* ── Kirim pesan ── */
+  function kirimPesan() {
+    const input = document.getElementById('msgInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const now = new Date();
+    const time = now.getHours().toString().padStart(2,'0') + '.' + now.getMinutes().toString().padStart(2,'0');
+
+    renderBubble(text, time, true, '', '');
+    input.value = '';
+    input.style.height = 'auto';
+
+    // Simpan ke data
+    if (chatData[activeContact].messages) {
+      chatData[activeContact].messages.push({ me:true, text, time });
+    }
+
+    // Update preview kontak
+    const activeEl = document.querySelector('.contact-item.active .contact-preview');
+    if (activeEl) { activeEl.textContent = text; activeEl.classList.remove('unread'); }
+
+    // Simulasi balas otomatis
+    if (activeContact === 'olip') {
+      showTyping();
+      setTimeout(() => {
+        hideTyping();
+        const replies = [
+          'Oke kak siap! 😊',
+          'Noted kak, nanti aku konfirm lagi ya!',
+          'Makasih kak udah chat! 🙏',
+          'Baik kak, segera aku proses!',
+        ];
+        const reply = replies[Math.floor(Math.random() * replies.length)];
+        renderBubble(reply, time, false, 'OG', '#7aab22');
+      }, 2000);
+    }
+  }
+
+  /* ── Kirim gambar ── */
+  function kirimGambar(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const box = document.getElementById('chatMessages');
+    const now = new Date();
+    const time = now.getHours().toString().padStart(2,'0') + '.' + now.getMinutes().toString().padStart(2,'0');
+    const row = document.createElement('div');
+    row.className = 'bubble-row me';
+    row.innerHTML = `
+      <div class="bubble-avatar" style="background:var(--green-light);">CA</div>
+      <div class="bubble me" style="padding:6px;">
+        <img src="${url}" class="chat-img" alt="gambar">
+        <div class="bubble-time">${time} <span class="read-tick read">✓✓</span></div>
+      </div>`;
+    box.appendChild(row);
+    box.scrollTop = box.scrollHeight;
+    e.target.value = '';
+  }
+
+  /* ── Typing indicator ── */
+  function showTyping() {
+    const row = document.getElementById('typingRow');
+    row.style.display = 'flex';
+    document.getElementById('chatMessages').scrollTop = 9999;
+  }
+  function hideTyping() {
+    document.getElementById('typingRow').style.display = 'none';
+  }
+
+  /* ── Keyboard enter ── */
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); kirimPesan(); }
+  }
+
+  /* ── Auto resize textarea ── */
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+  }
+
+  /* ── Emoji ── */
+  function toggleEmoji() {
+    document.getElementById('emojiRow').classList.toggle('show');
+  }
+  function insertEmoji(e) {
+    const input = document.getElementById('msgInput');
+    input.value += e;
+    input.focus();
+  }
+
+  /* ── Filter kontak ── */
+  function filterContacts(q) {
+    document.querySelectorAll('.contact-item').forEach(el => {
+      const name = el.dataset.name.toLowerCase();
+      el.style.display = name.includes(q.toLowerCase()) ? 'flex' : 'none';
+    });
+  }
+
+  /* ── Mobile: kembali ke list kontak ── */
+  function kembaliKontak() {
+    document.getElementById('contacts').classList.add('show');
+    document.getElementById('btnBack').style.display = 'none';
+  }
+
+  /* scroll ke bawah saat load */
+  window.onload = () => {
+    const box = document.getElementById('chatMessages');
+    box.scrollTop = box.scrollHeight;
+  };
+</script>
+</body>
+</html>

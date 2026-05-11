@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tulis Ulasan — BazarUSU</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark:#5a7a1a; --green-mid:#7aab22; --green-light:#a8cc4f;
+    --yellow-pale:#f8f7dc; --cream:#fafaf0; --white:#ffffff;
+    --gray-100:#f0f0ec; --gray-200:#ddddd4; --gray-400:#a0a096;
+    --gray-600:#666660; --gray-800:#333330; --red:#e53e3e;
+    --radius-sm:8px; --radius-md:14px; --radius-lg:20px; --radius-xl:28px;
+    --shadow-sm:0 2px 8px rgba(90,122,26,0.10); --shadow-md:0 4px 20px rgba(90,122,26,0.14);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Nunito Sans',sans-serif; background:var(--cream); color:var(--gray-800); display:flex; min-height:100vh; }
+
+  /* SIDEBAR */
+  .sidebar { width:64px; background:linear-gradient(180deg,#e8f5b8,#f5f0b0); border-right:1px solid var(--gray-200); display:flex; flex-direction:column; align-items:center; padding:1.2rem 0; gap:6px; position:fixed; top:0; left:0; bottom:0; z-index:100; }
+  .sidebar .logo { width:38px; height:38px; background:var(--green-mid); border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
+  .sidebar .logo span { font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; color:#fff; }
+  .nav-item { width:44px; height:44px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:background .18s,transform .15s; text-decoration:none; }
+  .nav-item:hover { background:rgba(122,171,34,.18); transform:scale(1.07); }
+  .nav-item.active { background:var(--green-mid); }
+  .nav-item svg { width:22px; height:22px; stroke:var(--green-dark); fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .nav-item.active svg { stroke:#fff; }
+  .nav-item .dot { position:absolute; top:6px; right:6px; width:8px; height:8px; border-radius:50%; background:var(--red); border:1.5px solid var(--yellow-pale); }
+  .sidebar .spacer { flex:1; }
+  .nav-item.add-btn { background:var(--green-light); border:2px dashed var(--green-dark); }
+  .nav-item.add-btn:hover { background:var(--green-mid); border-style:solid; }
+  .nav-item.add-btn:hover svg { stroke:#fff; }
+  .nav-item::after { content:attr(data-label); position:absolute; left:54px; background:var(--gray-800); color:#fff; font-size:11px; font-family:'Nunito',sans-serif; font-weight:600; padding:4px 8px; border-radius:6px; white-space:nowrap; pointer-events:none; opacity:0; transform:translateX(-4px); transition:opacity .15s,transform .15s; z-index:999; }
+  .nav-item:hover::after { opacity:1; transform:translateX(0); }
+
+  /* MAIN */
+  .main { margin-left:64px; flex:1; padding:1.4rem 2rem 3rem; width:calc(100vw - 64px); max-width:680px; }
+
+  /* TOPBAR */
+  .topbar { display:flex; align-items:center; gap:12px; margin-bottom:1.6rem; }
+  .back-btn { width:40px; height:40px; border-radius:50%; background:var(--white); border:1px solid var(--gray-200); display:flex; align-items:center; justify-content:center; text-decoration:none; transition:background .15s; flex-shrink:0; }
+  .back-btn:hover { background:var(--gray-100); }
+  .back-btn svg { width:18px; height:18px; stroke:var(--gray-600); fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+  .page-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:20px; flex:1; }
+
+  /* PRODUK CARD (info produk yang diulas) */
+  .product-card { background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius-lg); padding:16px; margin-bottom:16px; display:flex; gap:14px; align-items:center; }
+  .prod-img { width:80px; height:80px; border-radius:var(--radius-md); background:var(--gray-100); display:flex; align-items:center; justify-content:center; font-size:38px; flex-shrink:0; border:1px solid var(--gray-200); }
+  .prod-body { flex:1; min-width:0; }
+  .prod-label { font-size:11px; color:var(--gray-400); margin-bottom:3px; }
+  .prod-name { font-family:'Nunito',sans-serif; font-weight:800; font-size:17px; color:var(--gray-800); margin-bottom:2px; }
+  .prod-meta { font-size:12px; color:var(--gray-400); }
+  .prod-price { font-family:'Nunito',sans-serif; font-weight:800; font-size:15px; color:var(--green-dark); margin-top:4px; }
+  .order-id { font-size:11px; color:var(--gray-400); margin-top:2px; }
+
+  /* SECTION */
+  .review-section { background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius-lg); padding:20px; margin-bottom:14px; }
+  .sec-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:14px; color:var(--gray-800); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+
+  /* LIKE TOGGLE */
+  .like-section { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .like-btn {
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    padding:16px 28px; border-radius:var(--radius-lg);
+    border:2px solid var(--gray-200); background:var(--white);
+    cursor:pointer; transition:all .2s; flex:1; min-width:120px;
+  }
+  .like-btn:hover { border-color:var(--green-light); }
+  .like-btn.suka.on  { border-color:var(--red); background:#fff0f0; }
+  .like-btn.kurang.on { border-color:var(--gray-400); background:var(--gray-100); }
+  .like-btn .btn-emoji { font-size:32px; transition:transform .2s; }
+  .like-btn.on .btn-emoji { transform:scale(1.15); }
+  .like-btn .btn-label { font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; color:var(--gray-600); }
+  .like-btn.suka.on  .btn-label { color:var(--red); }
+  .like-btn.kurang.on .btn-label { color:var(--gray-800); }
+  .like-desc { font-size:12px; color:var(--gray-400); text-align:center; margin-top:8px; width:100%; }
+
+  /* TEKS ULASAN */
+  .review-textarea { width:100%; min-height:120px; border:1.5px solid var(--gray-200); border-radius:var(--radius-md); padding:12px 14px; font-family:'Nunito Sans',sans-serif; font-size:14px; color:var(--gray-800); outline:none; resize:vertical; transition:border-color .18s,box-shadow .18s; line-height:1.6; }
+  .review-textarea:focus { border-color:var(--green-light); box-shadow:0 0 0 3px rgba(122,171,34,.10); }
+  .review-textarea::placeholder { color:var(--gray-400); }
+  .char-count { font-size:11px; color:var(--gray-400); text-align:right; margin-top:4px; }
+
+  /* QUICK PHRASES */
+  .quick-title { font-size:12px; color:var(--gray-600); font-weight:600; margin-bottom:8px; }
+  .quick-chips { display:flex; gap:6px; flex-wrap:wrap; }
+  .quick-chip { font-size:12px; padding:5px 12px; border-radius:99px; border:1px solid var(--gray-200); background:var(--white); color:var(--gray-600); cursor:pointer; font-family:'Nunito',sans-serif; font-weight:600; transition:all .15s; }
+  .quick-chip:hover { border-color:var(--green-light); color:var(--green-dark); background:#f5fbea; }
+
+  /* UPLOAD FOTO/VIDEO */
+  .upload-area { border:2px dashed var(--gray-200); border-radius:var(--radius-md); padding:20px; text-align:center; cursor:pointer; position:relative; transition:border-color .18s,background .18s; }
+  .upload-area:hover { border-color:var(--green-light); background:#f5fbea; }
+  .upload-area input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+  .upload-area svg { width:32px; height:32px; stroke:var(--gray-400); fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; margin-bottom:8px; }
+  .upload-area p { font-size:13px; color:var(--gray-600); font-weight:600; }
+  .upload-area small { font-size:11px; color:var(--gray-400); }
+  .media-preview { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+  .media-item { width:80px; height:80px; border-radius:var(--radius-md); background:var(--gray-100); position:relative; overflow:hidden; border:1px solid var(--gray-200); display:flex; align-items:center; justify-content:center; }
+  .media-item img, .media-item video { width:100%; height:100%; object-fit:cover; }
+  .media-item .rm { position:absolute; top:3px; right:3px; width:20px; height:20px; border-radius:50%; background:rgba(0,0,0,.6); color:#fff; font-size:12px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; }
+  .media-item .vid-badge { position:absolute; bottom:3px; left:3px; background:rgba(0,0,0,.6); color:#fff; font-size:10px; padding:1px 5px; border-radius:4px; font-family:'Nunito',sans-serif; font-weight:700; }
+
+  /* BELI LAGI */
+  .beli-lagi-card { background:linear-gradient(135deg,#eaf3de,#f5faee); border:1px solid #d5eab5; border-radius:var(--radius-lg); padding:16px 18px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .beli-lagi-info .title { font-family:'Nunito',sans-serif; font-weight:700; font-size:14px; color:var(--green-dark); margin-bottom:2px; }
+  .beli-lagi-info .sub { font-size:12px; color:var(--gray-600); }
+  .btn-beli-lagi { padding:9px 20px; background:var(--green-mid); border:none; border-radius:var(--radius-xl); font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; color:#fff; cursor:pointer; box-shadow:var(--shadow-sm); transition:opacity .18s; white-space:nowrap; text-decoration:none; }
+  .btn-beli-lagi:hover { opacity:.88; }
+
+  /* SUBMIT */
+  .btn-submit { width:100%; height:50px; background:linear-gradient(135deg,var(--red),#c53030); border:none; border-radius:var(--radius-lg); font-family:'Nunito',sans-serif; font-weight:800; font-size:15px; color:#fff; cursor:pointer; box-shadow:var(--shadow-md); transition:opacity .18s,transform .15s; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .btn-submit:hover { opacity:.9; transform:translateY(-1px); }
+  .btn-submit svg { width:18px; height:18px; stroke:#fff; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* MODAL SUKSES */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter:blur(4px); z-index:500; display:none; align-items:center; justify-content:center; }
+  .modal-overlay.show { display:flex; }
+  .modal-box { background:var(--white); border-radius:var(--radius-lg); padding:32px 28px; width:380px; max-width:92vw; box-shadow:0 10px 50px rgba(0,0,0,.2); animation:fadeUp .3s ease; text-align:center; }
+  .modal-emoji { font-size:56px; margin-bottom:12px; }
+  .modal-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:20px; color:var(--gray-800); margin-bottom:6px; }
+  .modal-sub { font-size:13px; color:var(--gray-600); line-height:1.7; margin-bottom:20px; }
+  .modal-btns { display:flex; gap:8px; }
+  .btn-mok { flex:1; height:44px; background:var(--green-mid); border:none; border-radius:var(--radius-md); font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; color:#fff; cursor:pointer; text-decoration:none; display:flex; align-items:center; justify-content:center; transition:opacity .18s; }
+  .btn-mok:hover { opacity:.88; }
+  .btn-mcancel { flex:1; height:44px; background:var(--gray-100); border:none; border-radius:var(--radius-md); font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; color:var(--gray-600); cursor:pointer; text-decoration:none; display:flex; align-items:center; justify-content:center; transition:background .15s; }
+  .btn-mcancel:hover { background:var(--gray-200); }
+
+  /* TOAST */
+  #toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(30px); background:var(--gray-800); color:#fff; padding:10px 22px; border-radius:var(--radius-xl); font-family:'Nunito',sans-serif; font-weight:600; font-size:13px; opacity:0; transition:all .3s; z-index:9999; pointer-events:none; white-space:nowrap; }
+  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);} }
+  @media(max-width:600px) { .sidebar{width:54px;} .main{margin-left:54px;width:calc(100vw - 54px);padding:1rem 1rem 3rem;} .like-btn{padding:12px 18px;} }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="logo"><span>BU</span></div>
+  <a class="nav-item" data-label="Beranda" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></a>
+  <a class="nav-item" data-label="Keranjang" href="cart.html"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></a>
+  <a class="nav-item active" data-label="Pesanan" href="orders.html"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg></a>
+  <a class="nav-item" data-label="Pesan" href="messages.html"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span class="dot"></span></a>
+  <div class="spacer"></div>
+  <a class="nav-item add-btn" data-label="Jual Produk" href="add-product.html"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></a>
+  <a class="nav-item" data-label="Pengaturan" href="settings.html" style="margin-top:6px;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></a>
+</nav>
+
+<main class="main">
+
+  <div class="topbar">
+    <a class="back-btn" href="orders.html"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></a>
+    <span class="page-title">✍️ Tulis Ulasan</span>
+  </div>
+
+  <!-- Info produk yang diulas -->
+  <div class="product-card">
+    <div class="prod-img">🍩</div>
+    <div class="prod-body">
+      <div class="prod-label">Produk yang kamu terima</div>
+      <div class="prod-name">Donat Coklat</div>
+      <div class="prod-meta">Sari Dewi · × 3 porsi</div>
+      <div class="prod-price">Rp 9.000</div>
+      <div class="order-id">#BZR-20240507-009 · 7 Mei 2026</div>
+    </div>
+  </div>
+
+  <!-- Beli lagi banner -->
+  <div class="beli-lagi-card">
+    <div class="beli-lagi-info">
+      <div class="title">Suka produk ini? 🛍️</div>
+      <div class="sub">Pesan lagi dengan mudah!</div>
+    </div>
+    <a class="btn-beli-lagi" href="product.html">Beli Lagi</a>
+  </div>
+
+  <!-- LIKE / KURANG -->
+  <div class="review-section">
+    <div class="sec-title">❤️ Gimana produk ini?</div>
+    <div class="like-section">
+      <button class="like-btn suka" id="btnSuka" onclick="pilihLike('suka')">
+        <span class="btn-emoji">❤️</span>
+        <span class="btn-label">Suka!</span>
+      </button>
+      <button class="like-btn kurang" id="btnKurang" onclick="pilihLike('kurang')">
+        <span class="btn-emoji">🤍</span>
+        <span class="btn-label">Kurang</span>
+      </button>
+    </div>
+    <div class="like-desc" id="likeDesc">Pilih dulu ya, suka atau kurang suka?</div>
+  </div>
+
+  <!-- TEKS ULASAN -->
+  <div class="review-section">
+    <div class="sec-title">✍️ Ceritakan pengalamanmu</div>
+
+    <!-- Quick phrases -->
+    <div class="quick-title">Frasa cepat:</div>
+    <div class="quick-chips" style="margin-bottom:12px;">
+      <span class="quick-chip" onclick="tambahFrasa('Enak banget!')">Enak banget!</span>
+      <span class="quick-chip" onclick="tambahFrasa('Worth it harganya')">Worth it</span>
+      <span class="quick-chip" onclick="tambahFrasa('Porsinya besar')">Porsi besar</span>
+      <span class="quick-chip" onclick="tambahFrasa('Penjualnya ramah')">Penjual ramah</span>
+      <span class="quick-chip" onclick="tambahFrasa('Pengiriman cepat')">Cepat</span>
+      <span class="quick-chip" onclick="tambahFrasa('Akan repeat order!')">Repeat order!</span>
+      <span class="quick-chip" onclick="tambahFrasa('Recommended!')">Recommended!</span>
+      <span class="quick-chip" onclick="tambahFrasa('Kurang memuaskan')">Kurang memuaskan</span>
+    </div>
+
+    <textarea class="review-textarea" id="reviewText"
+      placeholder="Ceritakan jujur pengalamanmu! Apa yang kamu suka? Ada yang perlu diperbaiki? Ulasanmu sangat membantu penjual dan pembeli lain 🙏"
+      oninput="hitungChar(this)" maxlength="500"></textarea>
+    <div class="char-count"><span id="charNum">0</span>/500 karakter</div>
+  </div>
+
+  <!-- FOTO & VIDEO -->
+  <div class="review-section">
+    <div class="sec-title">📸 Tambah Foto / Video <span style="font-size:12px;font-weight:400;color:var(--gray-400);">(opsional)</span></div>
+    <div class="upload-area" id="uploadArea">
+      <input type="file" accept="image/*,video/*" multiple onchange="handleMedia(event)" id="mediaInput">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <p>Klik atau seret foto / video di sini</p>
+      <small>JPG, PNG, MP4 · Maks 10MB per file · Maks 5 file</small>
+    </div>
+    <div class="media-preview" id="mediaPreview"></div>
+  </div>
+
+  <!-- TOMBOL KIRIM -->
+  <button class="btn-submit" onclick="kirimUlasan()">
+    <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    Kirimkan Ulasan
+  </button>
+
+</main>
+
+<!-- Modal sukses -->
+<div class="modal-overlay" id="modalSukses">
+  <div class="modal-box">
+    <div class="modal-emoji">🎉</div>
+    <div class="modal-title">Ulasan Terkirim!</div>
+    <div class="modal-sub">Makasih sudah meluangkan waktu untuk mengulas ya! Ulasanmu membantu banyak mahasiswa USU lainnya. 🙏</div>
+    <div class="modal-btns">
+      <a class="btn-mcancel" href="orders.html">Kembali ke Pesanan</a>
+      <a class="btn-mok" href="product.html">Lihat Ulasan di Produk</a>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  let pilihanLike = '';
+  let mediaFiles = [];
+
+  function pilihLike(pilihan) {
+    pilihanLike = pilihan;
+    const btnSuka   = document.getElementById('btnSuka');
+    const btnKurang = document.getElementById('btnKurang');
+    const desc      = document.getElementById('likeDesc');
+
+    btnSuka.classList.remove('on');
+    btnKurang.classList.remove('on');
+
+    if (pilihan === 'suka') {
+      btnSuka.classList.add('on');
+      desc.textContent = 'Yeay! Senang kamu suka produknya 😊';
+      desc.style.color = 'var(--red)';
+    } else {
+      btnKurang.classList.add('on');
+      desc.textContent = 'Sayang sekali, semoga penjual bisa memperbaikinya ya!';
+      desc.style.color = 'var(--gray-600)';
+    }
+  }
+
+  function tambahFrasa(frasa) {
+    const ta = document.getElementById('reviewText');
+    const spasi = ta.value.length > 0 && !ta.value.endsWith(' ') ? ' ' : '';
+    ta.value += spasi + frasa;
+    hitungChar(ta);
+    ta.focus();
+  }
+
+  function hitungChar(el) {
+    document.getElementById('charNum').textContent = el.value.length;
+  }
+
+  function handleMedia(e) {
+    const files = Array.from(e.target.files);
+    const preview = document.getElementById('mediaPreview');
+
+    files.forEach(file => {
+      if (mediaFiles.length >= 5) { toast('⚠️ Maksimal 5 file ya!'); return; }
+      if (file.size > 10*1024*1024) { toast('⚠️ Ukuran file maks 10MB'); return; }
+
+      mediaFiles.push(file);
+      const item = document.createElement('div');
+      item.className = 'media-item';
+
+      if (file.type.startsWith('image/')) {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        item.appendChild(img);
+      } else if (file.type.startsWith('video/')) {
+        const vid = document.createElement('video');
+        vid.src = URL.createObjectURL(file);
+        vid.muted = true;
+        item.appendChild(vid);
+        const badge = document.createElement('div');
+        badge.className = 'vid-badge'; badge.textContent = '▶ Video';
+        item.appendChild(badge);
+      }
+
+      const rm = document.createElement('div');
+      rm.className = 'rm'; rm.textContent = '×';
+      rm.onclick = () => {
+        const idx = Array.from(preview.children).indexOf(item);
+        mediaFiles.splice(idx, 1);
+        item.remove();
+      };
+      item.appendChild(rm);
+      preview.appendChild(item);
+    });
+
+    // reset input biar bisa upload file yang sama lagi
+    e.target.value = '';
+  }
+
+  function kirimUlasan() {
+    if (!pilihanLike) { toast('⚠️ Pilih dulu suka atau kurang suka ya!'); return; }
+    const teks = document.getElementById('reviewText').value.trim();
+    if (!teks) { toast('⚠️ Tulis ulasanmu dulu ya, minimal beberapa kata!'); return; }
+    // Tampilkan modal sukses
+    document.getElementById('modalSukses').classList.add('show');
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pesanan — BazarUSU</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark:#5a7a1a; --green-mid:#7aab22; --green-light:#a8cc4f;
+    --yellow-pale:#f8f7dc; --cream:#fafaf0; --white:#ffffff;
+    --gray-100:#f0f0ec; --gray-200:#ddddd4; --gray-400:#a0a096;
+    --gray-600:#666660; --gray-800:#333330; --red:#e53e3e;
+    --radius-sm:8px; --radius-md:14px; --radius-lg:20px; --radius-xl:28px;
+    --shadow-sm:0 2px 8px rgba(90,122,26,0.10); --shadow-md:0 4px 20px rgba(90,122,26,0.14);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Nunito Sans',sans-serif; background:var(--cream); color:var(--gray-800); display:flex; min-height:100vh; }
+
+  /* SIDEBAR */
+  .sidebar { width:64px; background:linear-gradient(180deg,#e8f5b8,#f5f0b0); border-right:1px solid var(--gray-200); display:flex; flex-direction:column; align-items:center; padding:1.2rem 0; gap:6px; position:fixed; top:0; left:0; bottom:0; z-index:100; }
+  .sidebar .logo { width:38px; height:38px; background:var(--green-mid); border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
+  .sidebar .logo span { font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; color:#fff; }
+  .nav-item { width:44px; height:44px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:background .18s,transform .15s; text-decoration:none; }
+  .nav-item:hover { background:rgba(122,171,34,.18); transform:scale(1.07); }
+  .nav-item.active { background:var(--green-mid); }
+  .nav-item svg { width:22px; height:22px; stroke:var(--green-dark); fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .nav-item.active svg { stroke:#fff; }
+  .nav-item .dot { position:absolute; top:6px; right:6px; width:8px; height:8px; border-radius:50%; background:var(--red); border:1.5px solid var(--yellow-pale); }
+  .sidebar .spacer { flex:1; }
+  .nav-item.add-btn { background:var(--green-light); border:2px dashed var(--green-dark); }
+  .nav-item.add-btn:hover { background:var(--green-mid); border-style:solid; }
+  .nav-item.add-btn:hover svg { stroke:#fff; }
+  .nav-item::after { content:attr(data-label); position:absolute; left:54px; background:var(--gray-800); color:#fff; font-size:11px; font-family:'Nunito',sans-serif; font-weight:600; padding:4px 8px; border-radius:6px; white-space:nowrap; pointer-events:none; opacity:0; transform:translateX(-4px); transition:opacity .15s,transform .15s; z-index:999; }
+  .nav-item:hover::after { opacity:1; transform:translateX(0); }
+
+  /* MAIN */
+  .main { margin-left:64px; flex:1; padding:1.4rem 2rem 2rem; width:calc(100vw - 64px); }
+
+  /* TOPBAR */
+  .topbar { display:flex; align-items:center; gap:12px; margin-bottom:1.4rem; }
+  .back-btn { width:40px; height:40px; border-radius:50%; background:var(--white); border:1px solid var(--gray-200); display:flex; align-items:center; justify-content:center; cursor:pointer; text-decoration:none; transition:background .15s; flex-shrink:0; }
+  .back-btn:hover { background:var(--gray-100); }
+  .back-btn svg { width:18px; height:18px; stroke:var(--gray-600); fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+  .page-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:20px; flex:1; }
+  .avatar-btn { width:46px; height:46px; border-radius:50%; overflow:hidden; border:2.5px solid var(--green-light); text-decoration:none; transition:transform .15s; flex-shrink:0; }
+  .avatar-btn:hover { transform:scale(1.06); }
+  .avatar-ph { width:100%; height:100%; background:linear-gradient(135deg,var(--green-light),var(--green-mid)); display:flex; align-items:center; justify-content:center; font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; color:#fff; }
+
+  /* STATS ROW */
+  .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:1.6rem; }
+  .stat-card { background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius-md); padding:12px 14px; cursor:pointer; transition:box-shadow .15s,border-color .15s; }
+  .stat-card:hover { box-shadow:var(--shadow-sm); }
+  .stat-card.active { border-color:var(--green-mid); background:#f5fbea; }
+  .stat-num { font-family:'Nunito',sans-serif; font-weight:800; font-size:22px; color:var(--gray-800); }
+  .stat-lbl { font-size:11px; color:var(--gray-400); margin-top:2px; }
+  .stat-card.active .stat-num { color:var(--green-dark); }
+
+  /* TABS */
+  .tabs { display:flex; gap:0; border-bottom:1px solid var(--gray-200); margin-bottom:1.4rem; }
+  .tab { padding:10px 18px; font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; color:var(--gray-400); cursor:pointer; border:none; background:none; border-bottom:2.5px solid transparent; margin-bottom:-1px; transition:color .18s,border-color .18s; display:flex; align-items:center; gap:7px; white-space:nowrap; }
+  .tab.active { color:var(--green-dark); border-bottom-color:var(--green-mid); }
+  .tab:hover:not(.active) { color:var(--gray-600); }
+  .tab-badge { font-size:10px; padding:1px 6px; border-radius:99px; background:var(--gray-100); color:var(--gray-400); font-family:'Nunito',sans-serif; font-weight:700; }
+  .tab.active .tab-badge { background:#d4e87a; color:var(--green-dark); }
+
+  /* TAB CONTENT */
+  .tab-pane { display:none; }
+  .tab-pane.active { display:block; }
+
+  /* SECTION LABEL */
+  .section-lbl { font-family:'Nunito',sans-serif; font-weight:700; font-size:14px; color:var(--green-dark); margin-bottom:10px; margin-top:1.4rem; }
+  .section-lbl:first-child { margin-top:0; }
+
+  /* ORDER CARD */
+  .order-card { background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius-lg); padding:16px; margin-bottom:12px; transition:box-shadow .18s; }
+  .order-card:hover { box-shadow:var(--shadow-sm); }
+
+  .order-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .order-id { font-size:11px; color:var(--gray-400); font-family:'Nunito',sans-serif; font-weight:600; }
+  .order-date { font-size:11px; color:var(--gray-400); }
+
+  /* status badges */
+  .badge { font-size:11px; font-family:'Nunito',sans-serif; font-weight:700; padding:4px 12px; border-radius:99px; }
+  .badge-belum  { background:#fef3cd; color:#856404; }
+  .badge-sudah  { background:#d1f5e0; color:#155724; }
+  .badge-terima { background:#cce5ff; color:#004085; }
+  .badge-selesai{ background:var(--gray-100); color:var(--gray-600); }
+  .badge-batal  { background:#fde8e8; color:#7b2020; }
+
+  /* progress bar */
+  .progress-wrap { margin-bottom:14px; }
+  .progress-steps { display:flex; align-items:center; gap:0; margin-bottom:6px; }
+  .ps { display:flex; align-items:center; gap:0; flex:1; }
+  .ps-dot { width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; flex-shrink:0; }
+  .ps-dot.done  { background:var(--green-mid); color:#fff; }
+  .ps-dot.active{ background:var(--green-dark); color:#fff; border:2px solid var(--green-light); }
+  .ps-dot.idle  { background:var(--gray-200); color:var(--gray-400); }
+  .ps-line { flex:1; height:2px; background:var(--gray-200); }
+  .ps-line.done { background:var(--green-mid); }
+  .ps-labels { display:flex; justify-content:space-between; }
+  .ps-label { font-size:10px; color:var(--gray-400); text-align:center; flex:1; }
+  .ps-label.active { color:var(--green-dark); font-weight:700; }
+
+  /* item dalam order */
+  .order-items { display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
+  .oi { display:flex; align-items:center; gap:10px; }
+  .oi-img { width:52px; height:52px; border-radius:var(--radius-sm); background:var(--gray-100); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; border:1px solid var(--gray-200); }
+  .oi-info { flex:1; min-width:0; }
+  .oi-name { font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; color:var(--gray-800); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .oi-meta { font-size:11px; color:var(--gray-400); }
+  .oi-price { font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; color:var(--green-dark); flex-shrink:0; }
+
+  /* more items */
+  .more-items { font-size:11px; color:var(--gray-400); padding:4px 0; font-style:italic; }
+
+  /* order footer */
+  .order-footer { display:flex; align-items:center; justify-content:space-between; padding-top:12px; border-top:1px solid var(--gray-100); flex-wrap:wrap; gap:10px; }
+  .order-total-wrap {}
+  .order-total-lbl { font-size:11px; color:var(--gray-400); }
+  .order-total-val { font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; color:var(--green-dark); }
+  .order-pay-method { font-size:11px; color:var(--gray-400); margin-top:2px; }
+
+  .order-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+  .btn-action { padding:7px 16px; border-radius:var(--radius-xl); font-family:'Nunito',sans-serif; font-weight:700; font-size:12px; cursor:pointer; border:none; transition:opacity .18s,transform .15s; white-space:nowrap; text-decoration:none; display:inline-flex; align-items:center; gap:6px; }
+  .btn-action:hover { opacity:.85; transform:translateY(-1px); }
+  .btn-action svg { width:14px; height:14px; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+
+  .btn-primary { background:var(--green-mid); color:#fff; }
+  .btn-primary svg { stroke:#fff; }
+  .btn-outline { background:var(--white); border:1.5px solid var(--gray-200); color:var(--gray-600); }
+  .btn-outline svg { stroke:var(--gray-600); }
+  .btn-outline:hover { border-color:var(--green-light); color:var(--green-dark); }
+  .btn-red { background:#fee2e2; color:var(--red); border:1.5px solid #fecaca; }
+  .btn-red svg { stroke:var(--red); }
+  .btn-ulasan { background:var(--red); color:#fff; }
+  .btn-ulasan svg { stroke:#fff; }
+
+  /* upload bukti modal */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.4); backdrop-filter:blur(4px); z-index:500; display:none; align-items:center; justify-content:center; }
+  .modal-overlay.show { display:flex; }
+  .modal-box { background:var(--white); border-radius:var(--radius-lg); padding:28px 24px; width:380px; max-width:92vw; box-shadow:0 10px 50px rgba(0,0,0,.2); animation:fadeUp .25s ease; }
+  .modal-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; color:var(--gray-800); margin-bottom:6px; }
+  .modal-sub { font-size:13px; color:var(--gray-600); margin-bottom:18px; line-height:1.6; }
+  .upload-area { border:2px dashed var(--gray-200); border-radius:var(--radius-md); padding:24px; text-align:center; cursor:pointer; transition:border-color .18s,background .18s; position:relative; margin-bottom:16px; }
+  .upload-area:hover { border-color:var(--green-light); background:#f5fbea; }
+  .upload-area input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+  .upload-area svg { width:32px; height:32px; stroke:var(--gray-400); fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; margin-bottom:8px; }
+  .upload-area p { font-size:13px; color:var(--gray-400); }
+  .upload-area small { font-size:11px; color:var(--gray-400); }
+  .upload-preview { width:100%; height:120px; border-radius:var(--radius-md); object-fit:cover; display:none; margin-bottom:16px; border:1px solid var(--gray-200); }
+  .modal-btns { display:flex; gap:8px; }
+  .btn-modal-cancel { flex:1; height:42px; background:var(--gray-100); border:none; border-radius:var(--radius-md); font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; color:var(--gray-600); cursor:pointer; transition:background .15s; }
+  .btn-modal-cancel:hover { background:var(--gray-200); }
+  .btn-modal-ok { flex:2; height:42px; background:var(--green-mid); border:none; border-radius:var(--radius-md); font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; color:#fff; cursor:pointer; transition:opacity .18s; }
+  .btn-modal-ok:hover { opacity:.88; }
+
+  /* konfirmasi terima */
+  .modal-confirm .modal-emoji { font-size:48px; text-align:center; margin-bottom:10px; }
+
+  /* empty state */
+  .empty { text-align:center; padding:4rem 1rem; }
+  .empty .e-emoji { font-size:52px; margin-bottom:12px; }
+  .empty p { font-family:'Nunito',sans-serif; font-weight:700; font-size:15px; color:var(--gray-600); margin-bottom:4px; }
+  .empty small { font-size:13px; color:var(--gray-400); }
+  .btn-shop { display:inline-flex; align-items:center; gap:7px; margin-top:18px; padding:10px 22px; background:var(--green-mid); border:none; border-radius:var(--radius-xl); font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; color:#fff; cursor:pointer; text-decoration:none; box-shadow:var(--shadow-sm); }
+  .btn-shop:hover { opacity:.88; }
+
+  /* TOAST */
+  #toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(30px); background:var(--gray-800); color:#fff; padding:10px 22px; border-radius:var(--radius-xl); font-family:'Nunito',sans-serif; font-weight:600; font-size:13px; opacity:0; transition:all .3s; z-index:9999; pointer-events:none; white-space:nowrap; }
+  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);} }
+
+  @media(max-width:768px){ .stats-row{grid-template-columns:repeat(2,1fr);} }
+  @media(max-width:600px){ .sidebar{width:54px;} .main{margin-left:54px;width:calc(100vw - 54px);padding:1rem;} .tabs{overflow-x:auto;} .order-footer{flex-direction:column;align-items:flex-start;} }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="logo"><span>BU</span></div>
+  <a class="nav-item" data-label="Beranda" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></a>
+  <a class="nav-item" data-label="Keranjang" href="cart.html"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></a>
+  <a class="nav-item active" data-label="Pesanan" href="orders.html"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg></a>
+  <a class="nav-item" data-label="Pesan" href="messages.html"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span class="dot"></span></a>
+  <div class="spacer"></div>
+  <a class="nav-item add-btn" data-label="Jual Produk" href="add-product.html"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></a>
+  <a class="nav-item" data-label="Pengaturan" href="settings.html" style="margin-top:6px;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></a>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="topbar">
+    <a class="back-btn" href="index.html"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></a>
+    <span class="page-title">📋 Pesanan Kamu</span>
+    <a class="avatar-btn" href="profile.html"><div class="avatar-ph">CA</div></a>
+  </div>
+
+  <!-- Stat cards -->
+  <div class="stats-row">
+    <div class="stat-card" onclick="switchTab('semua')" id="sc-semua">
+      <div class="stat-num">5</div>
+      <div class="stat-lbl">Total pesanan</div>
+    </div>
+    <div class="stat-card" onclick="switchTab('belum')" id="sc-belum">
+      <div class="stat-num" style="color:#856404;">1</div>
+      <div class="stat-lbl">Belum dibayar</div>
+    </div>
+    <div class="stat-card" onclick="switchTab('proses')" id="sc-proses">
+      <div class="stat-num" style="color:#004085;">2</div>
+      <div class="stat-lbl">Diproses</div>
+    </div>
+    <div class="stat-card" onclick="switchTab('ulas')" id="sc-ulas">
+      <div class="stat-num" style="color:var(--red);">1</div>
+      <div class="stat-lbl">Perlu diulas</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" id="tab-semua" onclick="switchTab('semua')">Semua <span class="tab-badge">5</span></button>
+    <button class="tab" id="tab-belum" onclick="switchTab('belum')">⏳ Belum Dibayar <span class="tab-badge">1</span></button>
+    <button class="tab" id="tab-proses" onclick="switchTab('proses')">🚚 Diproses <span class="tab-badge">2</span></button>
+    <button class="tab" id="tab-terima" onclick="switchTab('terima')">✅ Sudah Diterima <span class="tab-badge">1</span></button>
+    <button class="tab" id="tab-ulas" onclick="switchTab('ulas')">✍️ Perlu Diulas <span class="tab-badge">1</span></button>
+    <button class="tab" id="tab-selesai" onclick="switchTab('selesai')">🏁 Selesai <span class="tab-badge">1</span></button>
+  </div>
+
+  <!-- ═══ TAB SEMUA ═══ -->
+  <div class="tab-pane active" id="pane-semua">
+
+    <div class="section-lbl">⏳ Belum Dibayar</div>
+
+    <!-- PESANAN 1: belum dibayar -->
+    <div class="order-card" id="order-1">
+      <div class="order-top">
+        <div>
+          <div class="order-id">#BZR-20240510-001</div>
+          <div class="order-date">10 Mei 2026 · 09.34</div>
+        </div>
+        <span class="badge badge-belum">⏳ Belum Dibayar</span>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-wrap">
+        <div class="progress-steps">
+          <div class="ps-dot done">✓</div>
+          <div class="ps-line done"></div>
+          <div class="ps-dot active">2</div>
+          <div class="ps-line"></div>
+          <div class="ps-dot idle">3</div>
+          <div class="ps-line"></div>
+          <div class="ps-dot idle">4</div>
+        </div>
+        <div class="ps-labels">
+          <span class="ps-label">Pesan</span>
+          <span class="ps-label active">Bayar</span>
+          <span class="ps-label">Proses</span>
+          <span class="ps-label">Terima</span>
+        </div>
+      </div>
+
+      <div class="order-items">
+        <div class="oi">
+          <div class="oi-img">🍢</div>
+          <div class="oi-info">
+            <div class="oi-name">Cireng Isi</div>
+            <div class="oi-meta">Olivia Gabriella · × 2</div>
+          </div>
+          <span class="oi-price">Rp 10.000</span>
+        </div>
+      </div>
+
+      <div class="order-footer">
+        <div class="order-total-wrap">
+          <div class="order-total-lbl">Total pembayaran</div>
+          <div class="order-total-val">Rp 12.000</div>
+          <div class="order-pay-method">Transfer BRI · ongkir Rp 2.000</div>
+        </div>
+        <div class="order-actions">
+          <button class="btn-action btn-red" onclick="batalPesanan('order-1')">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            Batalkan
+          </button>
+          <button class="btn-action btn-primary" onclick="bukaModalBukti('order-1')">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload Bukti Bayar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-lbl">🚚 Sedang Diproses</div>
+
+    <!-- PESANAN 2: sudah dibayar / diproses -->
+    <div class="order-card" id="order-2">
+      <div class="order-top">
+        <div>
+          <div class="order-id">#BZR-20240509-004</div>
+          <div class="order-date">9 Mei 2026 · 14.12</div>
+        </div>
+        <span class="badge badge-sudah">✅ Sudah Dibayar</span>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-steps">
+          <div class="ps-dot done">✓</div>
+          <div class="ps-line done"></div>
+          <div class="ps-dot done">✓</div>
+          <div class="ps-line done"></div>
+          <div class="ps-dot active">3</div>
+          <div class="ps-line"></div>
+          <div class="ps-dot idle">4</div>
+        </div>
+        <div class="ps-labels">
+          <span class="ps-label">Pesan</span>
+          <span class="ps-label">Bayar</span>
+          <span class="ps-label active">Proses</span>
+          <span class="ps-label">Terima</span>
+        </div>
+      </div>
+
+      <div class="order-items">
+        <div class="oi">
+          <div class="oi-img">🎂</div>
+          <div class="oi-info">
+            <div class="oi-name">Kue Kukus</div>
+            <div class="oi-meta">Alfiyana · × 1</div>
+          </div>
+          <span class="oi-price">Rp 12.000</span>
+        </div>
+        <div class="oi">
+          <div class="oi-img">🥭</div>
+          <div class="oi-info">
+            <div class="oi-name">Jus Mangga</div>
+            <div class="oi-meta">Alfiyana · × 1</div>
+          </div>
+          <span class="oi-price">Rp 10.000</span>
+        </div>
+      </div>
+
+      <div class="order-footer">
+        <div class="order-total-wrap">
+          <div class="order-total-lbl">Total pembayaran</div>
+          <div class="order-total-val">Rp 24.000</div>
+          <div class="order-pay-method">COD · ongkir Rp 2.000</div>
+        </div>
+        <div class="order-actions">
+          <a class="btn-action btn-outline" href="messages.html">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Chat Penjual
+          </a>
+          <button class="btn-action btn-primary" onclick="bukaModalTerima('order-2')">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Sudah Diterima
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PESANAN 3: diproses juga -->
+    <div class="order-card" id="order-3">
+      <div class="order-top">
+        <div>
+          <div class="order-id">#BZR-20240509-002</div>
+          <div class="order-date">9 Mei 2026 · 10.05</div>
+        </div>
+        <span class="badge badge-sudah">✅ Sudah Dibayar</span>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-steps">
+          <div class="ps-dot done">✓</div>
+          <div class="ps-line done"></div>
+          <div class="ps-dot done">✓</div>
+          <div class="ps-line done"></div>
+          <div class="ps-dot active">3</div>
+          <div class="ps-line"></div>
+          <div class="ps-dot idle">4</div>
+        </div>
+        <div class="ps-labels">
+          <span class="ps-label">Pesan</span>
+          <span class="ps-label">Bayar</span>
+          <span class="ps-label active">Proses</span>
+          <span class="ps-label">Terima</span>
+        </div>
+      </div>
+
+      <div class="order-items">
+        <div class="oi">
+          <div class="oi-img">🍗</div>
+          <div class="oi-info">
+            <div class="oi-name">Ayam Penyet</div>
+            <div class="oi-meta">Olivia Gabriella · × 1</div>
+          </div>
+          <span class="oi-price">Rp 13.000</span>
+        </div>
+      </div>
+
+      <div class="order-footer">
+        <div class="order-total-wrap">
+          <div class="order-total-lbl">Total pembayaran</div>
+          <div class="order-total-val">Rp 15.000</div>
+          <div class="order-pay-method">Transfer BCA · ongkir Rp 2.000</div>
+        </div>
+        <div class="order-actions">
+          <a class="btn-action btn-outline" href="messages.html">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Chat Penjual
+          </a>
+          <button class="btn-action btn-primary" onclick="bukaModalTerima('order-3')">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Sudah Diterima
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-lbl">✍️ Perlu Diulas</div>
+
+    <!-- PESANAN 4: sudah diterima, belum diulas -->
+    <div class="order-card" id="order-4">
+      <div class="order-top">
+        <div>
+          <div class="order-id">#BZR-20240507-009</div>
+          <div class="order-date">7 Mei 2026 · 11.20</div>
+        </div>
+        <span class="badge badge-terima">📦 Sudah Diterima</span>
+      </div>
+
+      <div class="order-items">
+        <div class="oi">
+          <div class="oi-img">🍩</div>
+          <div class="oi-info">
+            <div class="oi-name">Donat Coklat</div>
+            <div class="oi-meta">Sari Dewi · × 3</div>
+          </div>
+          <span class="oi-price">Rp 9.000</span>
+        </div>
+      </div>
+
+      <div class="order-footer">
+        <div class="order-total-wrap">
+          <div class="order-total-lbl">Total pembayaran</div>
+          <div class="order-total-val">Rp 11.000</div>
+          <div class="order-pay-method">COD · ongkir Rp 2.000</div>
+        </div>
+        <div class="order-actions">
+          <button class="btn-action btn-outline" onclick="beliLagi()">
+            <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            Beli Lagi
+          </button>
+          <a class="btn-action btn-ulasan" href="review.html">
+            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Tulis Ulasan
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-lbl">🏁 Selesai</div>
+
+    <!-- PESANAN 5: selesai + sudah diulas -->
+    <div class="order-card" id="order-5" style="opacity:.75;">
+      <div class="order-top">
+        <div>
+          <div class="order-id">#BZR-20240501-003</div>
+          <div class="order-date">1 Mei 2026 · 08.45</div>
+        </div>
+        <span class="badge badge-selesai">🏁 Selesai</span>
+      </div>
+
+      <div class="order-items">
+        <div class="oi">
+          <div class="oi-img">🥤</div>
+          <div class="oi-info">
+            <div class="oi-name">Es Teh Tarik</div>
+            <div class="oi-meta">Rara Fitri · × 2</div>
+          </div>
+          <span class="oi-price">Rp 12.000</span>
+        </div>
+      </div>
+
+      <div class="order-footer">
+        <div class="order-total-wrap">
+          <div class="order-total-lbl">Total pembayaran</div>
+          <div class="order-total-val">Rp 14.000</div>
+          <div class="order-pay-method">COD · sudah diulas ✓</div>
+        </div>
+        <div class="order-actions">
+          <button class="btn-action btn-outline" onclick="beliLagi()">
+            <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            Beli Lagi
+          </button>
+          <a class="btn-action btn-outline" href="product.html">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Lihat Produk
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end pane-semua -->
+
+  <!-- ═══ TAB BELUM DIBAYAR ═══ -->
+  <div class="tab-pane" id="pane-belum">
+    <div class="section-lbl">⏳ Menunggu Pembayaran</div>
+    <div class="order-card">
+      <div class="order-top">
+        <div><div class="order-id">#BZR-20240510-001</div><div class="order-date">10 Mei 2026 · 09.34</div></div>
+        <span class="badge badge-belum">⏳ Belum Dibayar</span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-steps">
+          <div class="ps-dot done">✓</div><div class="ps-line done"></div>
+          <div class="ps-dot active">2</div><div class="ps-line"></div>
+          <div class="ps-dot idle">3</div><div class="ps-line"></div>
+          <div class="ps-dot idle">4</div>
+        </div>
+        <div class="ps-labels"><span class="ps-label">Pesan</span><span class="ps-label active">Bayar</span><span class="ps-label">Proses</span><span class="ps-label">Terima</span></div>
+      </div>
+      <div class="order-items">
+        <div class="oi"><div class="oi-img">🍢</div><div class="oi-info"><div class="oi-name">Cireng Isi</div><div class="oi-meta">Olivia Gabriella · × 2</div></div><span class="oi-price">Rp 10.000</span></div>
+      </div>
+      <div class="order-footer">
+        <div class="order-total-wrap"><div class="order-total-lbl">Total</div><div class="order-total-val">Rp 12.000</div><div class="order-pay-method">Transfer BRI</div></div>
+        <div class="order-actions">
+          <button class="btn-action btn-red" onclick="toast('🗑️ Pesanan dibatalkan')">Batalkan</button>
+          <button class="btn-action btn-primary" onclick="bukaModalBukti('x')">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload Bukti Bayar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB DIPROSES ═══ -->
+  <div class="tab-pane" id="pane-proses">
+    <div class="section-lbl">🚚 Sedang Diproses Penjual</div>
+    <div style="background:linear-gradient(135deg,#d4e87a,#eaf5a0);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:14px;font-size:13px;color:var(--green-dark);">
+      💡 Pesananmu sedang disiapkan. Chat penjual kalau butuh update!
+    </div>
+    <!-- card singkat order 2 & 3 -->
+    <div class="order-card">
+      <div class="order-top"><div><div class="order-id">#BZR-20240509-004</div><div class="order-date">9 Mei 2026</div></div><span class="badge badge-sudah">✅ Sudah Dibayar</span></div>
+      <div class="order-items">
+        <div class="oi"><div class="oi-img">🎂</div><div class="oi-info"><div class="oi-name">Kue Kukus + Jus Mangga</div><div class="oi-meta">Alfiyana · 2 item</div></div><span class="oi-price">Rp 22.000</span></div>
+      </div>
+      <div class="order-footer">
+        <div class="order-total-wrap"><div class="order-total-val">Rp 24.000</div><div class="order-pay-method">COD</div></div>
+        <div class="order-actions"><a class="btn-action btn-outline" href="messages.html">Chat</a><button class="btn-action btn-primary" onclick="bukaModalTerima('x')">Sudah Diterima</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB SUDAH DITERIMA ═══ -->
+  <div class="tab-pane" id="pane-terima">
+    <div class="section-lbl">📦 Sudah Sampai</div>
+    <div class="order-card">
+      <div class="order-top"><div><div class="order-id">#BZR-20240507-009</div><div class="order-date">7 Mei 2026</div></div><span class="badge badge-terima">📦 Sudah Diterima</span></div>
+      <div class="order-items">
+        <div class="oi"><div class="oi-img">🍩</div><div class="oi-info"><div class="oi-name">Donat Coklat</div><div class="oi-meta">Sari Dewi · × 3</div></div><span class="oi-price">Rp 9.000</span></div>
+      </div>
+      <div class="order-footer">
+        <div class="order-total-wrap"><div class="order-total-val">Rp 11.000</div></div>
+        <div class="order-actions"><button class="btn-action btn-outline" onclick="beliLagi()">Beli Lagi</button><a class="btn-action btn-ulasan" href="review.html">Tulis Ulasan</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB PERLU DIULAS ═══ -->
+  <div class="tab-pane" id="pane-ulas">
+    <div class="section-lbl" style="color:var(--red);">✍️ Yuk kasih ulasan!</div>
+    <div style="background:#fff0f0;border:1px solid #fecaca;border-radius:var(--radius-md);padding:12px 16px;margin-bottom:14px;font-size:13px;color:var(--red);">
+      Ulasanmu sangat membantu penjual dan pembeli lain. Yuk luangkan 1 menit! 🙏
+    </div>
+    <div class="order-card">
+      <div class="order-top"><div><div class="order-id">#BZR-20240507-009</div><div class="order-date">7 Mei 2026</div></div><span class="badge badge-terima">📦 Sudah Diterima</span></div>
+      <div class="order-items">
+        <div class="oi"><div class="oi-img">🍩</div><div class="oi-info"><div class="oi-name">Donat Coklat</div><div class="oi-meta">Sari Dewi · × 3</div></div><span class="oi-price">Rp 9.000</span></div>
+      </div>
+      <div class="order-footer">
+        <div class="order-total-wrap"><div class="order-total-val">Rp 11.000</div></div>
+        <div class="order-actions">
+          <button class="btn-action btn-outline" onclick="beliLagi()">Beli Lagi</button>
+          <a class="btn-action btn-ulasan" href="review.html">
+            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Tulis Ulasan
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB SELESAI ═══ -->
+  <div class="tab-pane" id="pane-selesai">
+    <div class="section-lbl">🏁 Riwayat Pesanan</div>
+    <div class="order-card" style="opacity:.75;">
+      <div class="order-top"><div><div class="order-id">#BZR-20240501-003</div><div class="order-date">1 Mei 2026</div></div><span class="badge badge-selesai">🏁 Selesai</span></div>
+      <div class="order-items">
+        <div class="oi"><div class="oi-img">🥤</div><div class="oi-info"><div class="oi-name">Es Teh Tarik</div><div class="oi-meta">Rara Fitri · × 2</div></div><span class="oi-price">Rp 12.000</span></div>
+      </div>
+      <div class="order-footer">
+        <div class="order-total-wrap"><div class="order-total-val">Rp 14.000</div><div class="order-pay-method">COD · sudah diulas ✓</div></div>
+        <div class="order-actions"><button class="btn-action btn-outline" onclick="beliLagi()">Beli Lagi</button><a class="btn-action btn-outline" href="product.html">Lihat Produk</a></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Modal upload bukti bayar -->
+<div class="modal-overlay" id="modalBukti" onclick="tutupModal(event,'modalBukti')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">📤 Upload Bukti Pembayaran</div>
+    <div class="modal-sub">Upload screenshot atau foto bukti transfer kamu ya. Penjual akan verifikasi dalam 1×24 jam.</div>
+    <div class="upload-area" id="uploadArea">
+      <input type="file" accept="image/*" onchange="previewBukti(event)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <p>Klik atau seret foto bukti transfer</p>
+      <small>JPG, PNG · maks 5MB</small>
+    </div>
+    <img id="previewImg" class="upload-preview" alt="Preview bukti bayar">
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="tutupModal(null,'modalBukti')">Batal</button>
+      <button class="btn-modal-ok" onclick="kirimBukti()">Kirim Bukti</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal konfirmasi sudah terima -->
+<div class="modal-overlay" id="modalTerima" onclick="tutupModal(event,'modalTerima')">
+  <div class="modal-box modal-confirm" onclick="event.stopPropagation()">
+    <div class="modal-emoji">📦</div>
+    <div class="modal-title" style="text-align:center;">Konfirmasi Penerimaan</div>
+    <div class="modal-sub" style="text-align:center;">Pastikan kamu sudah benar-benar menerima barangnya ya! Setelah ini kamu bisa kasih ulasan.</div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="tutupModal(null,'modalTerima')">Belum</button>
+      <button class="btn-modal-ok" onclick="konfirmasiTerima()">✅ Sudah Terima!</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  let targetOrder = null;
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.stat-card').forEach(s => s.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('pane-' + tab).classList.add('active');
+    if (document.getElementById('sc-' + tab)) document.getElementById('sc-' + tab).classList.add('active');
+  }
+
+  function bukaModalBukti(id) {
+    targetOrder = id;
+    document.getElementById('previewImg').style.display = 'none';
+    document.getElementById('uploadArea').style.display = 'block';
+    document.getElementById('modalBukti').classList.add('show');
+  }
+
+  function bukaModalTerima(id) {
+    targetOrder = id;
+    document.getElementById('modalTerima').classList.add('show');
+  }
+
+  function tutupModal(e, id) {
+    if (!e || e.target.id === id) document.getElementById(id).classList.remove('show');
+  }
+
+  function previewBukti(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const img = document.getElementById('previewImg');
+    img.src = URL.createObjectURL(file);
+    img.style.display = 'block';
+    document.getElementById('uploadArea').style.display = 'none';
+  }
+
+  function kirimBukti() {
+    document.getElementById('modalBukti').classList.remove('show');
+    toast('✅ Bukti bayar terkirim! Penjual akan verifikasi segera.');
+    if (targetOrder && document.getElementById(targetOrder)) {
+      const badge = document.querySelector('#' + targetOrder + ' .badge');
+      if (badge) { badge.className = 'badge badge-sudah'; badge.textContent = '✅ Menunggu Verifikasi'; }
+    }
+  }
+
+  function konfirmasiTerima() {
+    document.getElementById('modalTerima').classList.remove('show');
+    toast('🎉 Pesanan dikonfirmasi! Yuk kasih ulasan untuk penjual.');
+    if (targetOrder && document.getElementById(targetOrder)) {
+      const badge = document.querySelector('#' + targetOrder + ' .badge');
+      if (badge) { badge.className = 'badge badge-terima'; badge.textContent = '📦 Sudah Diterima'; }
+      const actions = document.querySelector('#' + targetOrder + ' .order-actions');
+      if (actions) {
+        actions.innerHTML = `
+          <button class="btn-action btn-outline" onclick="beliLagi()">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--gray-600)" stroke-width="2.2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            Beli Lagi
+          </button>
+          <a class="btn-action btn-ulasan" href="review.html">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Tulis Ulasan
+          </a>`;
+      }
+    }
+  }
+
+  function batalPesanan(id) {
+    if (!confirm('Yakin mau batalkan pesanan ini?')) return;
+    const el = document.getElementById(id);
+    if (el) { el.style.opacity = '.4'; el.style.pointerEvents = 'none'; }
+    toast('🗑️ Pesanan berhasil dibatalkan');
+  }
+
+  function beliLagi() {
+    toast('🛒 Produk ditambahkan ke keranjang!');
+    setTimeout(() => window.location.href = 'cart.html', 1500);
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+</script>
+</body>
+</html>
