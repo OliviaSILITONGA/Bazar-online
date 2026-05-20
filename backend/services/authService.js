@@ -18,6 +18,37 @@ const register = async (userData) => {
     throw new Error("Email atau username sudah digunakan");
   }
 
+  // ambil nama pertama → lowercase
+  const firstName = name
+    .trim()
+    .split(" ")[0]
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+
+  // cari username yang sudah ada
+  const { data: usernames } = await supabase
+    .from("users")
+    .select("username")
+    .ilike("username", `${firstName}%`);
+
+  // default mulai dari 1
+  let usernameNumber = 1;
+
+  if (usernames && usernames.length > 0) {
+    const usedNumbers = usernames
+      .map((u) => {
+        const match = u.username.match(new RegExp(`^${firstName}(\\d+)$`));
+        return match ? parseInt(match[1]) : null;
+      })
+      .filter(Boolean);
+
+    while (usedNumbers.includes(usernameNumber)) {
+      usernameNumber++;
+    }
+  }
+
+  const username = `${firstName}${usernameNumber}`;
+
   // Encapsulation: password di-handle oleh class Auth
   // password asli tidak pernah diakses langsung dari luar class
   const auth = new Auth(email, password);
@@ -28,6 +59,7 @@ const register = async (userData) => {
     .insert([
       {
         name,
+        username,
         email,
         password: hashedPassword,
         is_seller: false,
