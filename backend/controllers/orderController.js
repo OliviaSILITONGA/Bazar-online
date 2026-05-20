@@ -84,12 +84,12 @@ const uploadPaymentProof = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user?.id;
-    const { payment_proof_url } = req.body;
+    const file = req.file;
 
     const result = await orderService.uploadPaymentProof({
       orderId: id,
       userId,
-      payment_proof_url,
+      file,
     });
 
     return res.status(200).json({

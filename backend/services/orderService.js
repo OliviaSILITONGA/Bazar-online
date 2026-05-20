@@ -151,11 +151,41 @@ const createOrder = async ({ userId, payload }) => {
 // =====================================================
 // UPLOAD PAYMENT PROOF
 // =====================================================
-const uploadPaymentProof = async ({ orderId, userId, payment_proof_url }) => {
+exports.uploadPaymentProof = async ({ orderId, userId, file }) => {
+  if (!file) {
+    throw new Error("Payment proof file is required");
+  }
+
+  const fileExt = file.originalname.split(".").pop();
+
+  const filePath = `${orderId}/${Date.now()}-${Math.random()
+    .toString(36)
+    .substring(2)}.${fileExt}`;
+
+  // upload ke Supabase Storage
+  const { data: uploadData, error: uploadError } = await supabase.storage
+    .from("payment_proofs")
+    .upload(filePath, file.buffer, {
+      contentType: file.mimetype,
+      upsert: false,
+    });
+
+  if (uploadError) {
+    throw new Error(uploadError.message);
+  }
+
+  // ambil public URL
+  const { data: publicUrlData } = supabase.storage
+    .from("payment_proofs")
+    .getPublicUrl(uploadData.path);
+
+  const paymentProofUrl = publicUrlData.publicUrl;
+
+  // update order
   const { data, error } = await supabase
     .from("orders")
     .update({
-      payment_proof_url,
+      payment_proof_url: paymentProofUrl,
       status: "menunggu_verifikasi",
     })
     .eq("id", orderId)
@@ -163,7 +193,9 @@ const uploadPaymentProof = async ({ orderId, userId, payment_proof_url }) => {
     .select()
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    throw new Error(error.message);
+  }
 
   return data;
 };

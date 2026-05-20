@@ -6,6 +6,7 @@ const router = express.Router();
 const orderController = require("../controllers/orderController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const sellerMiddleware = require("../middlewares/sellerMiddleware");
+const upload = require("../middlewares/uploadMiddleware");
 
 router.use(authMiddleware);
 
@@ -23,7 +24,11 @@ router.get("/:id", orderController.getOrderById);
 router.post("/", orderController.createOrder);
 
 // UPLOAD bukti pembayaran
-router.put("/:id/pay", orderController.uploadPaymentProof);
+router.put(
+  "/:id/pay",
+  upload.single("payment_proof"),
+  orderController.uploadPaymentProof,
+);
 
 // CONFIRM order diterima oleh buyer
 router.put("/:id/received", orderController.confirmReceived);
