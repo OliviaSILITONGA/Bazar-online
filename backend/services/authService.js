@@ -1,5 +1,5 @@
-const { supabase } = require("../config/supabase");
-const bcrypt = require("bcrypt");
+const supabase = require("../config/supabase");
+const Auth = require("../classes/Auth"); // ← Encapsulation
 
 /* =========================
    REGISTER USER (DB users)
@@ -7,7 +7,7 @@ const bcrypt = require("bcrypt");
 const register = async (userData) => {
   const { name, email, password } = userData;
 
-  // cek email/username sudah dipakai
+  // cek email sudah dipakai
   const { data: existing } = await supabase
     .from("users")
     .select("id")
@@ -18,8 +18,10 @@ const register = async (userData) => {
     throw new Error("Email atau username sudah digunakan");
   }
 
-  // hash password sebelum simpan
-  const hashedPassword = await bcrypt.hash(password, 10);
+  // Encapsulation: password di-handle oleh class Auth
+  // password asli tidak pernah diakses langsung dari luar class
+  const auth = new Auth(email, password);
+  const hashedPassword = await auth.hashPassword();
 
   const { data, error } = await supabase
     .from("users")
@@ -52,7 +54,10 @@ const login = async (email, password) => {
     throw new Error("Email tidak ditemukan");
   }
 
-  const isMatch = await bcrypt.compare(password, data.password);
+  // Encapsulation: verifikasi password lewat method class Auth
+  // logic bcrypt tersembunyi di dalam class, tidak terekspos keluar
+  const auth = new Auth(email, password);
+  const isMatch = await auth.verifyPassword(data.password);
   if (!isMatch) {
     throw new Error("Password salah");
   }

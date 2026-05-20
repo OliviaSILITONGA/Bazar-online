@@ -1,8 +1,9 @@
-const { supabase } = require("../config/supabase");
+const supabase = require("../config/supabase");
 const path = require("path");
+const { createPayment } = require("../classes/Payment"); // ← Polymorphism
 
 // =====================================================
-// GET ORDERS (BUYER / SELLER) - FIXED VERSION
+// GET ORDERS (BUYER / SELLER)
 // =====================================================
 const getOrders = async ({ userId, role, status, page }) => {
   const limit = 10;
@@ -77,6 +78,9 @@ const getOrderById = async ({ id, userId }) => {
 
 // =====================================================
 // CREATE ORDER (CHECKOUT)
+// Polymorphism: createPayment() mengembalikan objek berbeda
+// (TransferPayment / CODPayment / WalletPayment) tapi semua
+// punya method .process() yang dipanggil dengan cara sama
 // =====================================================
 const createOrder = async ({ userId, payload }) => {
   const {
@@ -88,6 +92,10 @@ const createOrder = async ({ userId, payload }) => {
     items,
   } = payload;
 
+  // Polymorphism: satu perintah .process() → hasil berbeda tiap metode bayar
+  const payment = createPayment(payment_method, null, 0);
+  const paymentResult = payment.process();
+
   const { data: order, error: orderError } = await supabase
     .from("orders")
     .insert({
@@ -97,7 +105,7 @@ const createOrder = async ({ userId, payload }) => {
       delivery_detail,
       phone,
       payment_method,
-      status: "belum_dibayar",
+      status: paymentResult.status, // ← status otomatis dari class Payment
     })
     .select()
     .single();
@@ -121,7 +129,15 @@ const createOrder = async ({ userId, payload }) => {
 
   if (itemsError) throw new Error(itemsError.message);
 
-  return order;
+  // Kembalikan order + info pembayaran dari class Payment
+  return {
+    ...order,
+    paymentInfo: {
+      method: paymentResult.method,
+      message: paymentResult.message,
+      description: payment.getDescription(),
+    },
+  };
 };
 
 // =====================================================

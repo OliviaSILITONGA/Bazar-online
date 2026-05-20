@@ -1,3 +1,4 @@
+const supabase = require("../config/supabase"); // ← tambahkan ini
 const authService = require("../services/authService");
 const { generateAccessToken, generateRefreshToken } = require("../utils/token");
 const jwt = require("jsonwebtoken");

@@ -1,4 +1,5 @@
 const userService = require("../services/userService");
+const { Buyer, Seller } = require("../classes/User"); // ← Inheritance
 
 /*
 ========================================
@@ -11,10 +12,21 @@ const getMyProfile = async (req, res) => {
     const userId = req.user.id;
     const profile = await userService.getMyProfile(userId);
 
+    // Inheritance: pilih class berdasarkan role user
+    // Buyer dan Seller keduanya extends class User (mewarisi method getInfo, canBuy, dll)
+    const userObj = profile.is_seller
+      ? new Seller(profile) // ← Seller extends User
+      : new Buyer(profile); // ← Buyer extends User
+
     return res.status(200).json({
       success: true,
       message: "Profil berhasil diambil",
-      data: profile,
+      data: {
+        ...profile,
+        role_info: userObj.getInfo(), // method diwarisi dari base class User
+        can_sell: userObj.canSell(), // Seller → true, Buyer → false
+        can_buy: userObj.canBuy(), // keduanya → true
+      },
     });
   } catch (error) {
     return res.status(error.statusCode || 500).json({
@@ -45,10 +57,20 @@ const updateMyProfile = async (req, res) => {
 
     const updatedUser = await userService.updateMyProfile(userId, updateData);
 
+    // Inheritance: wrap hasil update dengan class yang sesuai
+    const userObj = updatedUser.is_seller
+      ? new Seller(updatedUser)
+      : new Buyer(updatedUser);
+
     return res.status(200).json({
       success: true,
       message: "Profil berhasil diperbarui",
-      data: updatedUser,
+      data: {
+        ...updatedUser,
+        role_info: userObj.getInfo(),
+        can_sell: userObj.canSell(),
+        can_buy: userObj.canBuy(),
+      },
     });
   } catch (error) {
     return res.status(error.statusCode || 500).json({
@@ -94,10 +116,17 @@ const getUserById = async (req, res) => {
     const userId = req.params.id;
     const user = await userService.getUserById(userId);
 
+    // Inheritance: tampilkan info role dari class
+    const userObj = user.is_seller ? new Seller(user) : new Buyer(user);
+
     return res.status(200).json({
       success: true,
       message: "Profil user berhasil diambil",
-      data: user,
+      data: {
+        ...user,
+        role_info: userObj.getInfo(),
+        can_sell: userObj.canSell(),
+      },
     });
   } catch (error) {
     return res.status(error.statusCode || 500).json({
