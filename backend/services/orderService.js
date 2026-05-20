@@ -1,4 +1,5 @@
 const { supabase } = require("../config/supabase");
+const path = require("path");
 
 // =====================================================
 // GET ORDERS (BUYER / SELLER) - FIXED VERSION
@@ -156,11 +157,16 @@ exports.uploadPaymentProof = async ({ orderId, userId, file }) => {
     throw new Error("Payment proof file is required");
   }
 
-  const fileExt = file.originalname.split(".").pop();
+  // ambil ekstensi file
+  const extension = path.extname(file.originalname);
 
-  const filePath = `${orderId}/${Date.now()}-${Math.random()
+  // nama file unik
+  const fileName = `${Date.now()}-${Math.random()
     .toString(36)
-    .substring(2)}.${fileExt}`;
+    .substring(2)}${extension}`;
+
+  // struktur folder dalam bucket
+  const filePath = `${orderId}/${fileName}`;
 
   // upload ke Supabase Storage
   const { data: uploadData, error: uploadError } = await supabase.storage
@@ -179,13 +185,11 @@ exports.uploadPaymentProof = async ({ orderId, userId, file }) => {
     .from("payment_proofs")
     .getPublicUrl(uploadData.path);
 
-  const paymentProofUrl = publicUrlData.publicUrl;
-
-  // update order
+  // update database
   const { data, error } = await supabase
     .from("orders")
     .update({
-      payment_proof_url: paymentProofUrl,
+      payment_proof_url: publicUrlData.publicUrl,
       status: "menunggu_verifikasi",
     })
     .eq("id", orderId)
