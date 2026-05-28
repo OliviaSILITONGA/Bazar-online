@@ -6,32 +6,20 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const sellerMiddleware = require("../middlewares/sellerMiddleware");
 const upload = require("../middlewares/uploadMiddleware");
 
-/*
-========================================
-PUBLIC ROUTES
-========================================
-*/
-
-// GET /products
+// GET /products (public)
 // Query:
 // q, category, seller_id,
 // min_price, max_price,
 // sort, page, per_page
 router.get("/", productController.getProducts);
 
-// GET /products/:id
-router.get("/:id", productController.getProductById);
-
-/*
-========================================
-AUTH USER ROUTES
-========================================
-*/
-
-// GET /products/liked
+// GET /products/liked (auth)
 router.get("/liked", authMiddleware, productController.getLikedProducts);
 
-// POST /products/:id/like
+// GET /products/:id (public)
+router.get("/:id", productController.getProductById);
+
+// POST /products/:id/like (auth)
 router.post("/:id/like", authMiddleware, productController.toggleLikeProduct);
 
 /*
