@@ -1,5 +1,6 @@
 const supabase = require("../config/supabase");
 const path = require("path");
+const { reviewNotification } = require("../utils/notificationGenerator");
 
 // =====================================================
 // GET REVIEWS BY PRODUCT
@@ -41,7 +42,86 @@ const createReview = async ({
   body,
   files,
 }) => {
+  // =====================================================
+  // 1. Ambil order item + order
+  // =====================================================
+  const { data: orderItem, error: orderItemErr } = await supabase
+    .from("order_items")
+    .select(
+      `
+        id,
+        order_id,
+        product_id,
+        seller_id,
+        orders:order_id (
+          id,
+          buyer_id,
+          status
+        )
+      `,
+    )
+    .eq("id", order_item_id)
+    .single();
+
+  if (orderItemErr || !orderItem) {
+    throw new Error("Order item tidak ditemukan");
+  }
+
+  const order = orderItem.orders;
+
+  // =====================================================
+  // 2. Validasi ownership
+  // =====================================================
+  if (order.buyer_id !== reviewer_id) {
+    throw new Error("Anda tidak memiliki akses ke order ini");
+  }
+
+  // =====================================================
+  // 3. Validasi status order
+  // =====================================================
+  if (order.status !== "selesai") {
+    throw new Error("Review hanya bisa dibuat setelah order selesai");
+  }
+
+  // =====================================================
+  // 4. Cek review duplikat
+  // =====================================================
+  const { data: existingReview } = await supabase
+    .from("reviews")
+    .select("id")
+    .eq("order_item_id", order_item_id)
+    .maybeSingle();
+
+  if (existingReview) {
+    throw new Error("Order item ini sudah direview");
+  }
+
+  // =====================================================
+  // 5. Insert review
+  // =====================================================
+  const { data: review, error: reviewErr } = await supabase
+    .from("reviews")
+    .insert([
+      {
+        order_item_id,
+        reviewer_id,
+        product_id,
+        rating,
+        body: body || null,
+      },
+    ])
+    .select()
+    .single();
+
+  if (reviewErr) {
+    throw new Error(reviewErr.message);
+  }
+
+  // =====================================================
+  // 6. Upload media ke Supabase Storage + insert DB
+  // =====================================================
   if (files && files.length > 0) {
+    const path = require("path");
     const mediaPayload = [];
 
     for (const file of files) {
@@ -70,16 +150,43 @@ const createReview = async ({
       });
     }
 
-    if (mediaPayload.length > 0) {
-      const { error: mediaError } = await supabase
-        .from("review_media")
-        .insert(mediaPayload);
+    const { error: mediaError } = await supabase
+      .from("review_media")
+      .insert(mediaPayload);
 
-      if (mediaError) {
-        throw new Error(mediaError.message);
-      }
+    if (mediaError) {
+      throw new Error(mediaError.message);
     }
   }
+
+  // =====================================================
+  // 7. Ambil data untuk notifikasi
+  // =====================================================
+  const { data: userData } = await supabase
+    .from("users")
+    .select("name")
+    .eq("id", reviewer_id)
+    .single();
+
+  const { data: productData } = await supabase
+    .from("products")
+    .select("seller_id, name")
+    .eq("id", product_id)
+    .single();
+
+  // =====================================================
+  // 8. Kirim notifikasi ke penjual
+  // =====================================================
+  await reviewNotification({
+    user_id: productData.seller_id,
+    review_id: review.id,
+    buyer_name: userData?.name || "Seorang pembeli",
+  });
+
+  // =====================================================
+  // 9. Return hasil
+  // =====================================================
+  return review;
 };
 
 // =====================================================

@@ -1,4 +1,5 @@
 const supabase = require("../config/supabase");
+const { promoNotification } = require("../utils/notificationGenerator");
 
 /**
  * Validasi & hitung promo
@@ -84,4 +85,75 @@ const validatePromo = async (code, order_total = 0) => {
   };
 };
 
-module.exports = { validatePromo };
+const addPromo = async (promoData) => {
+  const {
+    code,
+    discount_amount = 0,
+    discount_pct = 0,
+    max_uses = 0,
+    expired_at = null,
+    is_active = true,
+  } = promoData;
+
+  if (!code) {
+    const err = new Error("Kode promo wajib diisi");
+    err.statusCode = 400;
+    throw err;
+  }
+
+  if (discount_amount <= 0 && discount_pct <= 0) {
+    const err = new Error("Diskon harus berupa nominal atau persentase");
+    err.statusCode = 400;
+    throw err;
+  }
+
+  // cek apakah code sudah ada
+  const { data: existing } = await supabase
+    .from("promo_codes")
+    .select("id")
+    .eq("code", code)
+    .maybeSingle();
+
+  if (existing) {
+    const err = new Error("Kode promo sudah ada");
+    err.statusCode = 400;
+    throw err;
+  }
+
+  // insert promo baru
+  const { data: promo, error } = await supabase
+    .from("promo_codes")
+    .insert([
+      {
+        code,
+        discount_amount,
+        discount_pct,
+        max_uses,
+        expired_at,
+        is_active,
+      },
+    ])
+    .select()
+    .single();
+
+  if (error) {
+    const err = new Error("Gagal membuat promo");
+    err.statusCode = 500;
+    throw err;
+  }
+
+  // ambil semua user untuk bulk notification
+  const { data: users } = await supabase.from("users").select("id");
+
+  const user_ids = users.map((u) => u.id);
+
+  // kirim notifikasi promo (bulk)
+  await promoNotification({
+    user_ids,
+    promo_code: code,
+  });
+
+  return promo;
+};
+
+module.exports = { validatePromo, addPromo };

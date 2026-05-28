@@ -1,5 +1,6 @@
 const supabase = require("../config/supabase");
 const path = require("path");
+const { messageNotification } = require("../utils/notificationGenerator"); // <- Abstraction
 
 // =====================================================
 // GET ALL CONVERSATIONS
@@ -107,7 +108,7 @@ const sendMessage = async (conversationId, senderId, messageData) => {
   // -------------------------------
   // INSERT MESSAGE
   // -------------------------------
-  const { data, error } = await supabase
+  const { data: message, error } = await supabase
     .from("messages")
     .insert([
       {
@@ -121,6 +122,37 @@ const sendMessage = async (conversationId, senderId, messageData) => {
     .single();
 
   if (error) throw new Error(error.message);
+
+  // =====================================================
+  // GET CONVERSATION (UNTUK MENENTUKAN PENERIMA)
+  // =====================================================
+  const { data: conversation } = await supabase
+    .from("conversations")
+    .select("user_a_id, user_b_id")
+    .eq("id", conversationId)
+    .single();
+
+  const receiverId =
+    conversation.user_a_id === senderId
+      ? conversation.user_b_id
+      : conversation.user_a_id;
+
+  const { data: sender, error } = await supabase
+    .from("users")
+    .select("name")
+    .eq("id", senderId)
+    .single();
+
+  if (error) throw new Error(error.message);
+
+  // =====================================================
+  // CREATE NOTIFICATION
+  // =====================================================
+  await messageNotification({
+    user_id: receiverId,
+    conversation_id: conversationId,
+    sender_name: sender.name || "User",
+  });
 
   return data;
 };

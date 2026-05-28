@@ -33,4 +33,26 @@ const validatePromo = async (req, res) => {
   }
 };
 
-module.exports = { validatePromo };
+/**
+ * POST /promo/add
+ * Tambah kode promo baru
+ */
+const addPromo = async (req, res) => {
+  try {
+    const promoData = req.body;
+    const result = await promoService.addPromo(promoData);
+
+    return res.status(201).json({
+      success: true,
+      message: "Promo berhasil ditambahkan",
+      data: result,
+    });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Terjadi kesalahan pada server",
+    });
+  }
+};
+
+module.exports = { validatePromo, addPromo };

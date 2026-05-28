@@ -1,6 +1,7 @@
 const supabase = require("../config/supabase");
 const path = require("path");
 const { createPayment } = require("../classes/Payment"); // ← Polymorphism
+const { orderNotification } = require("../utils/notificationGenerator"); // <- Abstraction
 
 // =====================================================
 // GET ORDERS (BUYER / SELLER)
@@ -176,6 +177,8 @@ const uploadPaymentProof = async ({ orderId, userId, file }) => {
     .select()
     .single();
 
+  await orderNotification(userId, orderId, "menunggu_verifikasi");
+
   if (error) throw new Error(error.message);
 
   return data;
@@ -194,6 +197,9 @@ const confirmReceived = async ({ orderId, userId }) => {
     .single();
 
   if (error) throw new Error(error.message);
+
+  await orderNotification(userId, orderId, "selesai");
+
   return data;
 };
 
@@ -210,6 +216,9 @@ const cancelOrder = async ({ orderId, userId }) => {
     .single();
 
   if (error) throw new Error(error.message);
+
+  await orderNotification(userId, orderId, "dibatalkan");
+
   return data;
 };
 
@@ -236,6 +245,9 @@ const markAsProcessed = async ({ orderId, sellerId }) => {
     .single();
 
   if (error) throw new Error(error.message);
+
+  await orderNotification(userId, orderId, "diproses");
+
   return data;
 };
 
@@ -262,6 +274,9 @@ const markAsShipped = async ({ orderId, sellerId }) => {
     .single();
 
   if (error) throw new Error(error.message);
+
+  await orderNotification(userId, orderId, "dikirim");
+
   return data;
 };
 
