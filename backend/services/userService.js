@@ -52,6 +52,7 @@ const updateMyProfile = async (userId, updateData) => {
     "bio",
     "location",
     "phone",
+    "is_seller",
   ];
 
   for (const field of fields) {

@@ -53,6 +53,7 @@ const updateMyProfile = async (req, res) => {
       bio: req.body.bio,
       location: req.body.location,
       phone: req.body.phone,
+      is_seller: req.body.is_seller,
     };
 
     const updatedUser = await userService.updateMyProfile(userId, updateData);
