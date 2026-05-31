@@ -108,7 +108,7 @@ const sendMessage = async (conversationId, senderId, messageData) => {
   // -------------------------------
   // INSERT MESSAGE
   // -------------------------------
-  const { data: message, error } = await supabase
+  const { data: message, error: messageError } = await supabase
     .from("messages")
     .insert([
       {
@@ -121,29 +121,31 @@ const sendMessage = async (conversationId, senderId, messageData) => {
     .select()
     .single();
 
-  if (error) throw new Error(error.message);
+  if (messageError) throw new Error(error.message);
 
   // =====================================================
   // GET CONVERSATION (UNTUK MENENTUKAN PENERIMA)
   // =====================================================
-  const { data: conversation } = await supabase
+  const { data: conversation, error: conversationError } = await supabase
     .from("conversations")
     .select("user_a_id, user_b_id")
     .eq("id", conversationId)
     .single();
+
+  if (conversationError) throw new Error(conversationError.message);
 
   const receiverId =
     conversation.user_a_id === senderId
       ? conversation.user_b_id
       : conversation.user_a_id;
 
-  const { data: sender, error } = await supabase
+  const { data: sender, error: senderError } = await supabase
     .from("users")
     .select("name")
     .eq("id", senderId)
     .single();
 
-  if (error) throw new Error(error.message);
+  if (senderError) throw new Error(error.message);
 
   // =====================================================
   // CREATE NOTIFICATION
@@ -154,7 +156,7 @@ const sendMessage = async (conversationId, senderId, messageData) => {
     sender_name: sender.name || "User",
   });
 
-  return data;
+  return message;
 };
 
 // =====================================================
