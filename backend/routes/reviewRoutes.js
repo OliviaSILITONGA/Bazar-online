@@ -10,14 +10,14 @@ const upload = require("../middlewares/uploadMiddleware");
 // PUBLIC ROUTE
 // =========================
 // Lihat ulasan produk tertentu (tidak wajib login)
-router.get("/products/:id/reviews", reviewController.getProductReviews);
+router.get("/product/:id", reviewController.getProductReviews);
 
 // =========================
 // PROTECTED ROUTES
 // =========================
 // Menulis ulasan (harus sudah login + biasanya setelah order selesai)
 router.post(
-  "/reviews",
+  "/",
   authMiddleware,
   upload.array("media", 5),
   reviewMiddleware.validateReviewInput,
@@ -27,7 +27,7 @@ router.post(
 
 // Melihat item order yang belum diulas (khusus user login)
 router.get(
-  "/reviews/pending",
+  "/pending",
   authMiddleware,
   reviewController.getPendingReviews,
 );

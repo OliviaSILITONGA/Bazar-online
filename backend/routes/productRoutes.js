@@ -16,11 +16,14 @@ router.get("/", productController.getProducts);
 // GET /products/liked (auth)
 router.get("/liked", authMiddleware, productController.getLikedProducts);
 
-// GET /products/:id (public)
-router.get("/:id", productController.getProductById);
+// GET /products/:id/similar
+router.get("/:id/similar", productController.getSimilarProducts);
 
 // POST /products/:id/like (auth)
 router.post("/:id/like", authMiddleware, productController.toggleLikeProduct);
+
+// GET /products/:id (public)
+router.get("/:id", productController.getProductById);
 
 /*
 ========================================
@@ -65,7 +68,7 @@ router.post(
   "/:id/images",
   authMiddleware,
   sellerMiddleware,
-  upload.array("images", 10),
+  upload.array("images", 4),
   productController.uploadProductImages,
 );
 

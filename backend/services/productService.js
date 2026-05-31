@@ -27,6 +27,12 @@ const getProducts = async (filters) => {
   let query = supabase.from("products").select(
     `
       *,
+      seller:users!fk_product_seller(
+        id,
+        name,
+        username,
+        location
+      ),
       product_images(
         id,
         image_url,
@@ -108,6 +114,12 @@ const getProductById = async (productId) => {
     .select(
       `
         *,
+        seller:users!fk_product_seller(
+          id,
+          name,
+          username,
+          location
+        ),
         product_images(*),
         product_payment_methods(
           method
@@ -191,15 +203,15 @@ const updateProduct = async (productId, sellerId, payload) => {
   const { payment_methods, ...updateData } = payload;
 
   if (
-    productData.category &&
-    !PRODUCT_CATEGORIES.includes(productData.category)
+    updateData.category &&
+    !PRODUCT_CATEGORIES.includes(updateData.category)
   ) {
     throw new Error("Invalid category");
   }
 
   if (
-    productData.availability &&
-    !PRODUCT_AVAILABILITY.includes(productData.availability)
+    updateData.availability &&
+    !PRODUCT_AVAILABILITY.includes(updateData.availability)
   ) {
     throw new Error("Invalid availability");
   }
@@ -279,15 +291,12 @@ const uploadImages = async (productId, sellerId, files) => {
   const results = [];
 
   for (const file of files) {
-    const fileName = `
-        products/
-        ${productId}/
-        ${Date.now()}
-        ${path.extname(file.originalname)}
-        `.replace(/\s/g, "");
+    const fileName = `products/${productId}/${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2)}${path.extname(file.originalname)}`;
 
     const { error } = await supabase.storage
-      .from("product-images")
+      .from("images")
       .upload(fileName, file.buffer, {
         contentType: file.mimetype,
       });
@@ -295,18 +304,19 @@ const uploadImages = async (productId, sellerId, files) => {
     if (error) throw error;
 
     const { data: urlData } = supabase.storage
-      .from("product-images")
+      .from("images")
       .getPublicUrl(fileName);
 
-    const { data: image } = await supabase
+    const { data: image, error: imageError } = await supabase
       .from("product_images")
       .insert({
         product_id: productId,
-
         image_url: urlData.publicUrl,
       })
       .select()
       .single();
+
+    if (imageError) throw imageError;
 
     results.push(image);
   }
@@ -396,6 +406,33 @@ const getLikedProducts = async (userId) => {
 
   if (error) throw error;
 
+  return data.map((item) => item.products);
+};
+
+const getSimilarProducts = async (productId) => {
+  const product = await getProductById(productId);
+
+  if (!product) {
+    throw new Error("Produk tidak ditemukan");
+  }
+
+  const { data, error } = await supabase
+    .from("products")
+    .select(
+      `
+        *,
+        product_images(
+          id,
+          image_url
+        )
+      `,
+    )
+    .eq("category", product.category)
+    .neq("id", productId)
+    .eq("is_active", true)
+    .limit(5);
+
+  if (error) throw error;
   return data;
 };
 
@@ -409,4 +446,5 @@ module.exports = {
   deleteImage,
   toggleLike,
   getLikedProducts,
+  getSimilarProducts,
 };

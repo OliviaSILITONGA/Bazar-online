@@ -302,11 +302,11 @@
         <div class="field">
           <label>Metode Pembayaran yang Diterima</label>
           <div class="cat-chips" style="flex-wrap:wrap;">
-            <div class="cat-chip on" onclick="this.classList.toggle('on')">🤝 COD</div>
-            <div class="cat-chip" onclick="this.classList.toggle('on')">🏦 BRI</div>
-            <div class="cat-chip" onclick="this.classList.toggle('on')">🏦 BCA</div>
-            <div class="cat-chip" onclick="this.classList.toggle('on')">💙 DANA</div>
-            <div class="cat-chip" onclick="this.classList.toggle('on')">💚 GoPay</div>
+            <div class="cat-chip payment-chip on" onclick="this.classList.toggle('on')" data-method="COD">🤝 COD</div>
+            <div class="cat-chip payment-chip" onclick="this.classList.toggle('on')" data-method="BRI">🏦 BRI</div>
+            <div class="cat-chip payment-chip" onclick="this.classList.toggle('on')" data-method="BCA">🏦 BCA</div>
+            <div class="cat-chip payment-chip" onclick="this.classList.toggle('on')" data-method="DANA">💙 DANA</div>
+            <div class="cat-chip payment-chip" onclick="this.classList.toggle('on')" data-method="GoPay">💚 GoPay</div>
           </div>
         </div>
       </div>
@@ -364,116 +364,7 @@
 
 <div id="toast"></div>
 
-<script>
-  let katerpilih = '';
-
-  function pilihKat(el, kat) {
-    document.querySelectorAll('.cat-chip').forEach(c => {
-      if (['makanan','minuman','jajanan','kue','lainnya'].includes(c.getAttribute('onclick')?.match(/'(\w+)'/)?.[1])) c.classList.remove('on');
-    });
-    el.classList.add('on');
-    katerpilih = kat;
-  }
-
-  function pilihAvail(el, val) {
-    document.querySelectorAll('.avail-opt').forEach(a => a.classList.remove('on'));
-    el.classList.add('on');
-    el.querySelector('input').checked = true;
-  }
-
-  function uploadFoto(e, idx) {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (file.size > 5*1024*1024) { toast('⚠️ Foto maks 5MB ya!'); return; }
-    const url = URL.createObjectURL(file);
-    const slot = document.getElementById('slot-'+idx);
-    slot.classList.add('has-img');
-    // hapus konten lama kecuali input
-    Array.from(slot.children).forEach(c => { if (c.tagName !== 'INPUT') c.remove(); });
-    const img = document.createElement('img');
-    img.src = url; img.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;inset:0;';
-    slot.appendChild(img);
-    if (idx === 0) {
-      const lbl = document.createElement('span');
-      lbl.className = 'photo-main-label'; lbl.textContent = 'Utama';
-      slot.appendChild(lbl);
-      // update preview
-      const pr = document.getElementById('prevImgReal');
-      pr.src = url; pr.style.display = 'block';
-      document.getElementById('prevImg').style.fontSize = '0';
-    }
-    const rm = document.createElement('div');
-    rm.className = 'remove'; rm.textContent = '×';
-    rm.onclick = (ev) => { ev.stopPropagation(); hapusFoto(idx); };
-    slot.appendChild(rm);
-  }
-
-  function hapusFoto(idx) {
-    const slot = document.getElementById('slot-'+idx);
-    slot.classList.remove('has-img');
-    Array.from(slot.children).forEach(c => { if (c.tagName !== 'INPUT') c.remove(); });
-    const icons = [
-      '<svg viewBox="0 0 24 24" width="24" height="24" stroke="var(--gray-400)" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
-      '<svg viewBox="0 0 24 24" width="24" height="24" stroke="var(--gray-400)" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
-    ];
-    slot.insertAdjacentHTML('beforeend', idx === 0 ? icons[0] : icons[1]);
-    const lbl = document.createElement('span');
-    lbl.className = 'slot-num'; lbl.textContent = idx === 0 ? 'Foto Utama' : 'Foto '+(idx+1);
-    slot.appendChild(lbl);
-    if (idx === 0) { document.getElementById('prevImgReal').style.display='none'; document.getElementById('prevImg').style.fontSize='56px'; }
-  }
-
-  function updatePreview() {
-    const nama  = document.getElementById('prodNama').value;
-    const harga = document.getElementById('prodHarga').value;
-    document.getElementById('prevNama').textContent  = nama  || 'Nama produk...';
-    document.getElementById('prevHarga').textContent = harga ? 'Rp ' + Number(harga).toLocaleString('id') : 'Rp —';
-    document.getElementById('namaCount').textContent = nama.length;
-  }
-
-  function hitungDesc(el) {
-    if (el.value.length > 300) el.value = el.value.slice(0,300);
-    document.getElementById('descCount').textContent = el.value.length;
-  }
-
-  function showErr(id, show) {
-    document.getElementById(id).classList.toggle('show', show);
-  }
-
-  function submitProduk() {
-    const nama   = document.getElementById('prodNama').value.trim();
-    const harga  = document.getElementById('prodHarga').value;
-    const lokasi = document.getElementById('prodLokasi').value.trim();
-    let ok = true;
-    if (!nama)   { showErr('errNama',true);   ok=false; } else showErr('errNama',false);
-    if (!katerpilih) { showErr('errKat',true); ok=false; } else showErr('errKat',false);
-    if (!harga)  { showErr('errHarga',true);  ok=false; } else showErr('errHarga',false);
-    if (!lokasi) { showErr('errLokasi',true); ok=false; } else showErr('errLokasi',false);
-    if (!ok) { toast('⚠️ Lengkapi dulu field yang wajib ya!'); return; }
-    document.getElementById('modalSukses').classList.add('show');
-  }
-
-  function simpanDraft() {
-    toast('📋 Produk disimpan sebagai draft!');
-  }
-
-  function tambahLagi() {
-    document.getElementById('modalSukses').classList.remove('show');
-    document.getElementById('prodNama').value = '';
-    document.getElementById('prodHarga').value = '';
-    document.getElementById('prodDesc').value = '';
-    document.getElementById('prodLokasi').value = '';
-    updatePreview();
-    document.getElementById('prevImgReal').style.display = 'none';
-    document.getElementById('prevImg').style.fontSize = '56px';
-    toast('✅ Form direset, siap tambah produk baru!');
-  }
-
-  function toast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2800);
-  }
-</script>
+<script src="js/auth.js"></script>
+<script src="js/add-product.js"></script>
 </body>
 </html>
