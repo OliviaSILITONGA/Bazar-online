@@ -191,7 +191,7 @@
     border: 1px solid var(--gray-200);
     border-radius: var(--radius-lg);
     padding: 10px;
-    min-width: 140px; flex-shrink: 0;
+    width: 140px; flex-shrink: 0;
     cursor: pointer;
     transition: transform 0.18s, box-shadow 0.18s;
     position: relative;
@@ -207,7 +207,11 @@
     overflow: hidden; position: relative;
     display: flex; align-items: center; justify-content: center;
   }
-  .product-img img { width: 100%; height: 100%; object-fit: cover; }
+  .product-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
   .product-img .img-placeholder {
     font-size: 32px;
   }
@@ -283,6 +287,7 @@
 
   .seller-img {
     width: 72px; height: 68px;
+    aspect-ratio: 1/1;
     background: var(--gray-100);
     border-radius: var(--radius-sm);
     flex-shrink: 0;
@@ -290,7 +295,11 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 24px;
   }
-  .seller-img img { width: 100%; height: 100%; object-fit: cover; }
+  .seller-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
   .seller-info { flex: 1; min-width: 0; }
   .seller-header {
@@ -474,17 +483,18 @@
     </div>
   </div>
 
-  <!-- Kategori -->
-  <div class="categories" id="categoryFilter">
-    <button class="cat-btn active" onclick="setCategory(this,'semua')">semua</button>
-    <button class="cat-btn" onclick="setCategory(this,'makanan')">makanan</button>
-    <button class="cat-btn" onclick="setCategory(this,'minuman')">minuman</button>
-    <button class="cat-btn" onclick="setCategory(this,'jajanan')">jajanan</button>
-  </div>
-
   <!-- Seller / Produk List -->
   <div>
     <p class="section-title" id="sellerSectionTitle">Semua Produk</p>
+    <!-- Kategori -->
+    <div class="categories" id="categoryFilter">
+      <button class="cat-btn active" onclick="setCategory(this,'semua')">semua</button>
+      <button class="cat-btn" onclick="setCategory(this,'makanan')">makanan</button>
+      <button class="cat-btn" onclick="setCategory(this,'minuman')">minuman</button>
+      <button class="cat-btn" onclick="setCategory(this,'jajanan')">jajanan</button>
+      <button class="cat-btn" onclick="setCategory(this,'kue')">kue</button>
+      <button class="cat-btn" onclick="setCategory(this,'lainnya')">lainnya</button>
+    </div>
     <div class="sellers-grid" id="sellersGrid"></div>
   </div>
 
