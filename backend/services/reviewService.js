@@ -97,7 +97,24 @@ const createReview = async ({
   }
 
   // =====================================================
-  // 5. Insert review
+  // 5. Cek data produk juga untuk mencegah self-review
+  // =====================================================
+  const { data: productData, error: productErr } = await supabase
+    .from("products")
+    .select("seller_id, name")
+    .eq("id", product_id)
+    .single();
+
+  if (productErr || !productData) {
+    throw new Error("Produk tidak ditemukan");
+  }
+
+  if (productData.seller_id === reviewer_id) {
+    throw new Error("Tidak bisa mereview produk sendiri");
+  }
+
+  // =====================================================
+  // 6. Insert review
   // =====================================================
   const { data: review, error: reviewErr } = await supabase
     .from("reviews")
@@ -118,7 +135,7 @@ const createReview = async ({
   }
 
   // =====================================================
-  // 6. Upload media ke Supabase Storage + insert DB
+  // 7. Upload media ke Supabase Storage + insert DB
   // =====================================================
   if (files && files.length > 0) {
     const path = require("path");
@@ -204,11 +221,14 @@ const getPendingReviews = async (userId) => {
         id,
         product_id,
         product_name,
+        product_price,
+        seller_id,
         orders:order_id (
           id,
           status,
           buyer_id,
-          order_code
+          order_code,
+          created_at
         ),
         reviews (id)
       `,
@@ -221,7 +241,8 @@ const getPendingReviews = async (userId) => {
   const filtered = data.filter(
     (item) =>
       item.orders?.status === "selesai" &&
-      (!item.reviews || item.reviews.length === 0),
+      (!item.reviews || item.reviews.length === 0) &&
+      item.seller_id !== userId,
   );
 
   return filtered;

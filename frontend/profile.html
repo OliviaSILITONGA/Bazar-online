@@ -751,6 +751,40 @@
     showToast('✅ Profil berhasil diperbarui!');
   }
 
+  // Simpan perubahan ke localStorage agar persist
+  const _origSaveModal = saveModal;
+  function saveModal() {
+    if (currentModal === 'name') {
+      const name = document.getElementById('modalNameInput').value.trim();
+      const username = document.getElementById('modalUsernameInput').value.trim();
+      if (name) document.getElementById('displayName').textContent = name;
+      if (username) document.querySelector('.profile-username').textContent = '@' + username;
+      // update localStorage user
+      try {
+        const s = localStorage.getItem('user');
+        if (s) {
+          const u = JSON.parse(s);
+          if (name) u.name = name;
+          if (username) u.username = username;
+          localStorage.setItem('user', JSON.stringify(u));
+        }
+      } catch (e) {}
+    } else {
+      const bio = document.getElementById('modalBioInput').value.trim();
+      if (bio) document.getElementById('displayBio').textContent = bio;
+      try {
+        const s = localStorage.getItem('user');
+        if (s) {
+          const u = JSON.parse(s);
+          u.bio = bio;
+          localStorage.setItem('user', JSON.stringify(u));
+        }
+      } catch (e) {}
+    }
+    document.getElementById('modalOverlay').classList.remove('show');
+    showToast('✅ Profil berhasil diperbarui!');
+  }
+
   /* ── Share ── */
   function shareProfile() {
     if (navigator.share) {
@@ -771,6 +805,31 @@
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 2600);
   }
+
+  // Render user data from localStorage
+  (function () {
+    try {
+      const s = localStorage.getItem('user');
+      if (!s) return;
+      const u = JSON.parse(s);
+      if (u.name) document.getElementById('displayName').textContent = u.name;
+      if (u.username) document.querySelector('.profile-username').textContent = '@' + u.username;
+      if (u.bio) document.getElementById('displayBio').textContent = u.bio;
+      // avatar initials
+      const avatar = document.querySelector('.avatar-circle');
+      if (avatar && !avatar.querySelector('img')) {
+        const initials = (u.name || '')
+          .split(' ')
+          .map((n) => n[0])
+          .slice(0, 2)
+          .join('')
+          .toUpperCase();
+        avatar.textContent = initials || 'U';
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  })();
 </script>
 
 </body>

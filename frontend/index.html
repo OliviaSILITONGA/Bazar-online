@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="refresh" content="0; url=landing.html" />
+    <!-- removed automatic redirect so we can check auth client-side -->
     <title>BazarUSU — Jajan di Kampus, Gampang!</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Nunito+Sans:wght@400;500;600&display=swap"
@@ -1046,6 +1046,33 @@
       });
 
       row.style.cursor = "grab";
+    </script>
+    <script>
+      // Redirect to landing if not logged in; otherwise render user info
+      (function () {
+        try {
+          const userStr = localStorage.getItem("user");
+          if (!userStr) {
+            window.location = "landing.html";
+            return;
+          }
+          const user = JSON.parse(userStr);
+          const h2 = document.querySelector(".greeting-text h2");
+          if (h2) h2.textContent = `Halo, ${user.name.split(" ")[0]}! 👋`;
+          const avatar = document.querySelector(".avatar-placeholder");
+          if (avatar) {
+            const initials = (user.name || "")
+              .split(" ")
+              .map((n) => n[0])
+              .slice(0, 2)
+              .join("")
+              .toUpperCase();
+            avatar.textContent = initials || "U";
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      })();
     </script>
   </body>
 </html>

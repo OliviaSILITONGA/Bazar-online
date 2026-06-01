@@ -947,16 +947,12 @@
 
           if (!res.ok) throw new Error(data.message || "Login gagal");
 
-          // Simpan accessToken
+          // Simpan accessToken dan data user
           localStorage.setItem("accessToken", data.accessToken);
+          localStorage.setItem("user", JSON.stringify(data.user));
 
-          // Tampilkan sukses
-          document.getElementById("formArea").style.display = "none";
-          document.getElementById("successBox").style.display = "block";
-          document.getElementById("successTitle").textContent =
-            "Berhasil Masuk! 🎉";
-          document.getElementById("successSub").textContent =
-            `Halo kembali! Yuk jelajahi produk seru di BazarUSU.`;
+          // Redirect ke beranda yang akan menampilkan data user
+          window.location = "index.html";
         } catch (err) {
           toast("❌ " + err.message);
         } finally {
