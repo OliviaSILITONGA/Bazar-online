@@ -102,8 +102,8 @@ async function doLogin() {
     // Kirim ke backend /auth/login
     const res = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password: pw }),
     });
 
@@ -190,6 +190,7 @@ async function doRegister() {
     // Kirim ke backend /auth/register
     const res = await fetch(`${API_URL}/auth/register`, {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: nama, email, password: pw }),
     });
