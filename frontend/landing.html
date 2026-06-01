@@ -22,10 +22,8 @@
         --gray-400: #a0a096;
         --gray-600: #666660;
         --gray-800: #333330;
-        --radius-sm: 8px;
         --radius-md: 14px;
         --radius-lg: 20px;
-        --radius-xl: 28px;
         --shadow-sm: 0 2px 8px rgba(90, 122, 26, 0.1);
         --shadow-md: 0 4px 20px rgba(90, 122, 26, 0.14);
       }
@@ -43,7 +41,6 @@
         line-height: 1.6;
       }
 
-      /* ══ NAVBAR ══ */
       .navbar {
         display: flex;
         align-items: center;
@@ -137,7 +134,6 @@
         box-shadow: var(--shadow-md);
       }
 
-      /* ══ HERO SECTION ══ */
       .hero {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -223,7 +219,6 @@
         }
       }
 
-      /* ══ FEATURES SECTION ══ */
       .features {
         background: linear-gradient(135deg, #e8f5b8 0%, #f5f0b0 100%);
         padding: 4rem 2rem;
@@ -245,11 +240,6 @@
         font-weight: 800;
         color: var(--green-dark);
         margin-bottom: 0.5rem;
-      }
-
-      .features-header p {
-        font-size: 1.1rem;
-        color: var(--gray-600);
       }
 
       .features-grid {
@@ -290,7 +280,6 @@
         font-size: 0.95rem;
       }
 
-      /* ══ HOW IT WORKS ══ */
       .how-it-works {
         padding: 4rem 2rem;
         background: var(--white);
@@ -319,31 +308,9 @@
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 2rem;
       }
-<<<<<<< Updated upstream
-=======
-    }
-  </style>
-</head>
-<body>
-  <!-- ═════ NAVBAR ═════ -->
-  <nav class="navbar">
-    <a href="index.html" class="navbar-brand">
-      <div class="navbar-logo">BU</div>
-      <span>BazarUSU</span>
-    </a>
-    <div class="navbar-links">
-      <a href="#features">Fitur</a>
-      <a href="#howitworks">Cara Kerja</a>
-      <a href="#about">Tentang</a>
-      <a href="login.html" class="btn-login">Masuk</a>
-      <a href="login.html" class="btn-signup">Daftar</a>
-    </div>
-  </nav>
->>>>>>> Stashed changes
 
       .step-card {
         text-align: center;
-        position: relative;
       }
 
       .step-number {
@@ -373,19 +340,6 @@
         font-size: 0.95rem;
       }
 
-      .step-arrow {
-        position: absolute;
-        right: -30px;
-        top: 25px;
-        color: var(--green-light);
-        font-size: 24px;
-      }
-
-      .step-card:last-child .step-arrow {
-        display: none;
-      }
-
-      /* ══ CTA SECTION ══ */
       .cta-section {
         background: linear-gradient(
           135deg,
@@ -436,7 +390,6 @@
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
       }
 
-      /* ══ FOOTER ══ */
       .footer {
         background: var(--gray-800);
         color: var(--gray-200);
@@ -485,44 +438,32 @@
         font-size: 0.9rem;
       }
 
-      /* ══ RESPONSIVE ══ */
       @media (max-width: 768px) {
         .navbar {
           padding: 0.8rem 1rem;
         }
-
         .navbar-links {
           gap: 1rem;
         }
-
         .hero {
           grid-template-columns: 1fr;
           padding: 2rem 1rem;
           gap: 2rem;
         }
-
         .hero-content h1 {
           font-size: 2rem;
         }
-
         .hero-illustration {
           font-size: 5rem;
         }
-
         .hero-buttons {
           flex-direction: column;
         }
-
         .features-header h2,
         .how-header h2,
         .cta-section h2 {
           font-size: 1.8rem;
         }
-
-        .step-arrow {
-          display: none;
-        }
-
         .footer-content {
           grid-template-columns: 1fr;
           text-align: center;
@@ -533,24 +474,19 @@
         .navbar-brand {
           font-size: 16px;
         }
-
         .navbar-links {
           gap: 0.5rem;
           font-size: 12px;
         }
-
         .hero-content h1 {
           font-size: 1.5rem;
         }
-
         .hero-content p {
           font-size: 0.95rem;
         }
-
         .features-grid {
           grid-template-columns: 1fr;
         }
-
         .steps-grid {
           grid-template-columns: 1fr;
         }
@@ -558,7 +494,6 @@
     </style>
   </head>
   <body>
-    <!-- ═════ NAVBAR ═════ -->
     <nav class="navbar">
       <a href="landing.html" class="navbar-brand">
         <div class="navbar-logo">BU</div>
@@ -567,24 +502,21 @@
       <div class="navbar-links">
         <a href="#features">Fitur</a>
         <a href="#howitworks">Cara Kerja</a>
-        <a href="#about">Tentang</a>
         <a href="login.html" class="btn-login">Masuk</a>
         <a href="login.html" class="btn-signup">Daftar</a>
       </div>
     </nav>
 
-    <!-- ═════ HERO SECTION ═════ -->
     <section class="hero">
       <div class="hero-content">
         <h1>Jajan di Kampus, Gampang!</h1>
         <p>
-          BazarUSU adalah aplikasi marketplace pertama yang memudahkan mahasiswa
-          USU untuk membeli dan menjual snack, minuman, dan makanan ringan
-          langsung di kampus. Tanpa perlu keluar, semua ada di ujung jari kamu!
-          🎉
+          BazarUSU adalah marketplace yang memudahkan mahasiswa USU untuk
+          membeli dan menjual snack, minuman, dan makanan ringan langsung di
+          kampus. Tanpa perlu keluar, semua ada di ujung jari kamu! 🎉
         </p>
         <div class="hero-buttons">
-          <a href="login.html" class="btn-hero btn-hero-primary"
+          <a href="index.html" class="btn-hero btn-hero-primary"
             >Mulai Berbelanja</a
           >
           <a href="#features" class="btn-hero btn-hero-secondary"
@@ -595,7 +527,6 @@
       <div class="hero-illustration">🛒</div>
     </section>
 
-    <!-- ═════ FEATURES SECTION ═════ -->
     <section class="features" id="features">
       <div class="features-container">
         <div class="features-header">
@@ -611,8 +542,7 @@
             <div class="feature-icon">⚡</div>
             <h3>Cepat & Mudah</h3>
             <p>
-              Pesan dalam hitungan detik dan barang tiba langsung ke lokasimu di
-              kampus.
+              Pesan dalam hitungan detik dan barang tiba langsung ke lokasimu.
             </p>
           </div>
 
@@ -638,8 +568,7 @@
             <div class="feature-icon">💳</div>
             <h3>Pembayaran Aman</h3>
             <p>
-              Berbagai metode pembayaran untuk kemudahan transaksi yang aman dan
-              terpercaya.
+              Berbagai metode pembayaran untuk kemudahan transaksi yang aman.
             </p>
           </div>
 
@@ -654,7 +583,7 @@
 
           <div class="feature-card">
             <div class="feature-icon">📱</div>
-            <h3>Interface User-Friendly</h3>
+            <h3>User-Friendly</h3>
             <p>
               Desain yang intuitif dan mudah digunakan bahkan untuk pengguna
               pertama kali.
@@ -664,7 +593,6 @@
       </div>
     </section>
 
-    <!-- ═════ HOW IT WORKS ═════ -->
     <section class="how-it-works" id="howitworks">
       <div class="how-container">
         <div class="how-header">
@@ -679,21 +607,18 @@
             <p>
               Buat akun dengan email kampusmu dan langsung login ke aplikasi.
             </p>
-            <div class="step-arrow">→</div>
           </div>
 
           <div class="step-card">
             <div class="step-number">2</div>
             <h3>Jelajahi Produk</h3>
             <p>Lihat ribuan produk dari berbagai penjual di kampus USU.</p>
-            <div class="step-arrow">→</div>
           </div>
 
           <div class="step-card">
             <div class="step-number">3</div>
             <h3>Checkout</h3>
             <p>Pilih produk favorit dan lakukan pembayaran dengan aman.</p>
-            <div class="step-arrow">→</div>
           </div>
 
           <div class="step-card">
@@ -707,20 +632,17 @@
       </div>
     </section>
 
-    <!-- ═════ CTA SECTION ═════ -->
     <section class="cta-section">
       <div class="cta-content">
         <h2>Siap Untuk Mulai Berbelanja?</h2>
         <p>
           Bergabunglah dengan ribuan mahasiswa USU yang sudah menikmati
-          kemudahan BazarUSU. Dapatkan akses ke ribuan produk menarik sekarang
-          juga!
+          kemudahan BazarUSU.
         </p>
         <a href="login.html" class="btn-cta">Daftar Sekarang, Gratis! 🎉</a>
       </div>
     </section>
 
-    <!-- ═════ FOOTER ═════ -->
     <footer class="footer">
       <div class="footer-content">
         <div class="footer-section">
@@ -762,7 +684,6 @@
         </div>
       </div>
 
-<<<<<<< Updated upstream
       <div class="footer-bottom">
         <p>
           &copy; 2026 BazarUSU. Semua hak dilindungi. Made with ❤️ untuk
@@ -770,57 +691,16 @@
         </p>
       </div>
     </footer>
+
     <script>
       // Jika sudah login, langsung ke beranda
-      try {
-        const user = localStorage.getItem("user");
-        if (user) window.location = "index.html";
-      } catch (e) {}
+      window.addEventListener("DOMContentLoaded", () => {
+        try {
+          if (localStorage.getItem("accessToken")) {
+            window.location = "index.html";
+          }
+        } catch (e) {}
+      });
     </script>
   </body>
-=======
-      <div class="footer-section">
-        <h4>Menu Utama</h4>
-        <ul>
-          <li><a href="index.html">Beranda</a></li>
-          <li><a href="#features">Fitur</a></li>
-          <li><a href="#howitworks">Cara Kerja</a></li>
-          <li><a href="login.html">Login</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-section">
-        <h4>Dukungan</h4>
-        <ul>
-          <li><a href="#">Pusat Bantuan</a></li>
-          <li><a href="#">Hubungi Kami</a></li>
-          <li><a href="#">Syarat & Ketentuan</a></li>
-          <li><a href="#">Kebijakan Privasi</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-section">
-        <h4>Ikuti Kami</h4>
-        <ul>
-          <li><a href="#">Facebook</a></li>
-          <li><a href="#">Instagram</a></li>
-          <li><a href="#">Twitter</a></li>
-          <li><a href="#">TikTok</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>&copy; 2026 BazarUSU. Semua hak dilindungi. Made with ❤️ untuk mahasiswa USU.</p>
-    </div>
-  </footer>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      if (localStorage.getItem('accessToken')) {
-        window.location.href = 'index.html';
-      }
-    });
-  </script>
-</body>
->>>>>>> Stashed changes
 </html>
