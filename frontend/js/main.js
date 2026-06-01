@@ -1,5 +1,6 @@
 let currentCategory = "semua";
 let currentSearch = "";
+let currentUser = null;
 let searchTimeout;
 
 /* -- Tampilkan user yang sedang login -- */
@@ -11,17 +12,27 @@ async function loadCurrentUser() {
     const result = await response.json();
     const user = result.data;
 
-    const avatar = document.querySelector(".avatar-placeholder");
+    currentUser = user;
+
+    const avatar = document.querySelector(".avatar-btn");
     if (avatar) {
       avatar.innerHTML = user.avatar_url
-        ? `<img src="${user.avatar_url}" style="width:100%;height:100%;object-fit:cover;">`
-        : user.name
+        ? `<img src="${user.avatar_url}">`
+        : `<div class="avatar-placeholder">
+          ${user.name
             .split(" ")
             .map((x) => x[0])
             .slice(0, 2)
             .join("")
-            .toUpperCase();
+            .toUpperCase()}
+          </div>`;
     }
+
+    const greetingText = document.querySelector(".greeting-text");
+    greetingText.innerHTML = `
+      <h2>Halo, ${user.name.split(" ")[0]}! 👋</h2>
+      <p>Memuat produk terbaru...</p>
+    `;
   } catch (err) {
     console.error(err);
   }
@@ -81,15 +92,13 @@ function renderRecommendationProducts(products) {
   container.innerHTML = "";
 
   products.forEach((product) => {
-    const image = product.product_images?.[0]?.image_url || "";
+    const image =
+      product.product_images?.[0]?.image_url ||
+      "https://placehold.co/400x400?text=No+Image\\nAvailable";
     container.innerHTML += `
       <div class="product-card" onclick="openProduct(${product.id})">
         <div class="product-img">
-          ${
-            image
-              ? `<img src="${image}" alt="${product.name}" style="width:100%;height:100%;object-fit:cover;position:absolute;">`
-              : `<span class="img-placeholder">🍔</span>`
-          }
+          <img src="${image}" alt="${product.name}">
         </div>
         <div class="product-likes">❤️ ${product.like_count || 0}</div>
         <div class="product-name">
@@ -108,11 +117,13 @@ function renderProducts(products) {
   grid.innerHTML = "";
 
   products.forEach((product) => {
-    const image = product.product_images?.[0]?.image_url || "";
+    const image =
+      product.product_images?.[0]?.image_url ||
+      "https://placehold.co/400x400?text=No+Image\\nAvailable";
     grid.innerHTML += `
       <div class="seller-card" onclick="openProduct(${product.id})">
         <div class="seller-img">
-          ${image ? `<img src="${image}" alt="${product.name}">` : "🍔"}
+          <img src="${image}" alt="${product.name}">
         </div>
         <div class="seller-info">
           <div class="seller-header">
@@ -128,6 +139,48 @@ function renderProducts(products) {
   });
 }
 
+/* -- Ambil produk yang direkomendasikan */
+async function loadRecommendedProducts() {
+  try {
+    const response = await fetch(`${API_URL}/products`);
+    const result = await response.json();
+
+    if (!response.ok) throw new Error(result.message);
+
+    const products = result.data.items;
+
+    /* =========================
+       Greeting jumlah produk teman
+    ========================= */
+    if (currentUser) {
+      const friendProducts = products.filter(
+        (product) => product.seller_id !== currentUser.id,
+      );
+
+      const greetingText = document.querySelector(".greeting-text");
+      greetingText.innerHTML = `
+        <h2>Halo, ${currentUser.name.split(" ")[0]}! 👋</h2>
+        <p>
+          ${
+            friendProducts.length
+              ? `Ada ${friendProducts.length} produk baru dari temanmu hari ini`
+              : "Belum ada produk baru dari temanmu hari ini"
+          }
+        </p>
+      `;
+    }
+
+    const recommended = products
+      .filter((product) => product.seller_id !== currentUser?.id)
+      .sort((a, b) => b.like_count - a.like_count)
+      .slice(0, 10);
+
+    renderRecommendationProducts(recommended);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 /* -- Ambil produk dari backend -- */
 async function loadProducts() {
   try {
@@ -137,19 +190,14 @@ async function loadProducts() {
       params.append("category", currentCategory);
 
     params.append("sort", "newest");
+
     const response = await fetch(`${API_URL}/products?${params}`);
     const result = await response.json();
 
     if (!response.ok) throw new Error(result.message);
+
     const products = result.data.items;
-
     renderProducts(products);
-
-    const recommended = [...products]
-      .sort((a, b) => b.like_count - a.like_count)
-      .slice(0, 10);
-
-    renderRecommendationProducts(recommended);
   } catch (err) {
     console.error(err);
   }
@@ -192,5 +240,6 @@ row.style.cursor = "grab";
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadCurrentUser();
+  await loadRecommendedProducts();
   await loadProducts();
 });

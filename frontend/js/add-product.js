@@ -12,7 +12,6 @@ async function loadCurrentUser() {
 
     const result = await response.json();
     const user = result.data;
-    console.log(user);
 
     const previewName = document.querySelector(".preview-pname");
     previewName.innerHTML = `<span class="preview-cat-dot"></span>${user.name}`;
