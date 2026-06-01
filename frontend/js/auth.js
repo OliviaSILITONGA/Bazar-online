@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000";
+const API_URL = "http://127.0.0.1:3000";
 
 async function refreshAccessToken() {
   const response = await fetch(`${API_URL}/auth/refresh`, {
