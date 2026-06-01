@@ -46,7 +46,7 @@
 
   /* USER CARD */
   .user-card { background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius-lg); padding:18px 20px; margin-bottom:1.4rem; display:flex; align-items:center; gap:14px; }
-  .user-avatar { width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,var(--green-light),var(--green-mid)); display:flex; align-items:center; justify-content:center; font-family:'Nunito',sans-serif; font-weight:800; font-size:20px; color:#fff; flex-shrink:0; overflow:hidden; cursor:pointer; }
+  .user-avatar { width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,var(--green-light),var(--green-mid)); display:flex; align-items:center; justify-content:center; font-family:'Nunito',sans-serif; font-weight:800; font-size:20px; color:#fff; flex-shrink:0; overflow:hidden; }
   .user-info { flex:1; }
   .user-name { font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; color:var(--gray-800); }
   .user-email { font-size:13px; color:var(--gray-400); margin-top:2px; }
@@ -142,39 +142,18 @@
 
   <!-- User card -->
   <div class="user-card">
-    <div class="user-avatar" onclick="document.getElementById('avatarInput').click()">
-      A
-    </div>
-    <input
-      type="file"
-      id="avatarInput"
-      accept="image/*"
-      style="display:none"
-      onchange="simpanAvatar(this)"
-    >
+    <div class="user-avatar">A</div>
     <div class="user-info">
       <div class="user-name">Pengguna Anonim</div>
       <div class="user-email">unknown@students.usu.ac.id</div>
       <div class="user-badge">🌿 Mahasiswa USU</div>
     </div>
-    <a class="btn-edit-profile" href="profile.html">Edit Profil</a>
+    <a class="btn-edit-profile" href="profile.html">Buka Profil</a>
   </div>
 
   <!-- AKUN -->
   <div class="settings-section">
     <div class="section-header"><div class="section-title">Akun</div></div>
-
-    <div class="setting-row" onclick="bukaModal('nama')">
-      <div class="setting-icon" style="background:#eaf3de;"><svg viewBox="0 0 24 24" style="stroke:var(--green-mid)"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-      <div class="setting-body"><div class="setting-label">Nama Tampilan</div><div class="setting-desc">Nama yang terlihat di profil dan produkmu</div></div>
-      <div class="setting-right"><span class="setting-value" id="settingName">Pengguna Anonim</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
-    </div>
-
-    <div class="setting-row" onclick="bukaModal('username')">
-      <div class="setting-icon" style="background:#e6f1fb;"><svg viewBox="0 0 24 24" style="stroke:#0c447c"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-      <div class="setting-body"><div class="setting-label">Username</div><div class="setting-desc">ID unikmu di BazarUSU</div></div>
-      <div class="setting-right"><span class="setting-value" id="settingUsername">@unknown</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
-    </div>
 
     <div class="setting-row" onclick="bukaModal('email')">
       <div class="setting-icon" style="background:#faeeda;"><svg viewBox="0 0 24 24" style="stroke:#d97706"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>

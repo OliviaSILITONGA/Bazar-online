@@ -398,6 +398,7 @@ const getLikedProducts = async (userId) => {
       `
         products(
           *,
+          seller:users!fk_product_seller(name),
           product_images(*)
         )
       `,

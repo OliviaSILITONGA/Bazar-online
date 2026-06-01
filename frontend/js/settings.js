@@ -25,16 +25,11 @@ async function loadCurrentUser() {
     userName.textContent = user.name;
     userEmail.textContent = user.email;
 
-    document.getElementById("settingName").textContent = user.name;
-    document.getElementById("settingUsername").textContent =
-      `@${user.username}`;
     document.getElementById("settingEmail").textContent = user.email;
     document.getElementById("settingPhone").textContent = user.phone
       ? user.phone
       : "Belum diisi";
 
-    document.getElementById("inputNama").value = user.name;
-    document.getElementById("inputUsername").value = user.username;
     document.getElementById("inputEmail").value = user.email;
     document.getElementById("inputNoHP").value = user.phone ? user.phone : "";
   } catch (err) {
@@ -51,16 +46,8 @@ function tutupModal(e, id) {
 }
 async function simpan(id, msg) {
   try {
-    let payload = {};
+    const payload = {};
     switch (id) {
-      case "nama":
-        payload.name = document.getElementById("inputNama").value.trim();
-        break;
-      case "username":
-        payload.username = document
-          .getElementById("inputUsername")
-          .value.trim();
-        break;
       case "email":
         payload.email = document.getElementById("inputEmail").value.trim();
         payload.currentPassword = document.getElementById(
@@ -89,8 +76,6 @@ async function simpan(id, msg) {
         throw new Error("Field tidak dikenali");
     }
 
-    await refreshAccessToken();
-
     const response = await authenticatedFetch(`${API_URL}/users/me`, {
       method: "PUT",
       headers: {
@@ -109,34 +94,6 @@ async function simpan(id, msg) {
     console.error(err);
     toast(err.message || "Gagal menyimpan perubahan");
   }
-}
-async function simpanAvatar(input) {
-  const file = input.files[0];
-  if (!file) return;
-  try {
-    await refreshAccessToken();
-
-    const formData = new FormData();
-    formData.append("avatar", file);
-
-    const response = await authenticatedFetch(`${API_URL}/users/me/avatar`, {
-      method: "PUT",
-      body: formData,
-    });
-    const result = await response.json();
-
-    if (!response.ok) throw new Error(result.message);
-    const avatarUrl = result.data.avatar_url;
-
-    document.querySelector(".user-avatar").innerHTML =
-      `<img src="${avatarUrl}" alt="Avatar">`;
-    toast("✅ Foto profil berhasil diperbarui");
-    await loadCurrentUser();
-  } catch (err) {
-    toast("❌ " + err.message);
-  }
-
-  input.value = "";
 }
 function toggleSwitch(el) {
   el.classList.toggle("on");

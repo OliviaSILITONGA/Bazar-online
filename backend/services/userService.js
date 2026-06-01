@@ -145,7 +145,6 @@ const uploadAvatar = async (userId, avatarFile) => {
   const { data: publicData } = supabase.storage
     .from("avatars")
     .getPublicUrl(filename);
-  console.log(publicData.publicUrl);
   const avatarUrl = `${publicData.publicUrl}?t=${Date.now()}`;
   const { data, error } = await supabase
     .from("users")
@@ -249,7 +248,8 @@ const getUserProducts = async (userId) => {
         category,
         like_count,
         location,
-        created_at
+        created_at,
+        product_images(id, image_url)
       `,
     )
     .eq("seller_id", userId)
@@ -275,13 +275,16 @@ const getUserReviews = async (userId) => {
     .from("reviews")
     .select(
       `
-              id,
-              rating,
-              body,
-              created_at,
-              products(id, name),
-              users(id, username, avatar_url)
-          `,
+        id,
+        rating,
+        body,
+        created_at,
+        products(
+          id,
+          name,
+          seller:users!fk_product_seller(name)
+        )
+      `,
     )
     .eq("reviewer_id", userId);
 
