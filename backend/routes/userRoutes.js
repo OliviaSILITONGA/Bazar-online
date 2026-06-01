@@ -28,6 +28,10 @@ router.put(
   userController.uploadAvatar,
 );
 
+// DELETE /users/me
+// Hapus akun
+router.delete("/me", authMiddleware, userController.deleteMyProfile);
+
 /*
 ========================================
 PUBLIC ROUTES

@@ -46,7 +46,7 @@
 
   /* USER CARD */
   .user-card { background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius-lg); padding:18px 20px; margin-bottom:1.4rem; display:flex; align-items:center; gap:14px; }
-  .user-avatar { width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,var(--green-light),var(--green-mid)); display:flex; align-items:center; justify-content:center; font-family:'Nunito',sans-serif; font-weight:800; font-size:20px; color:#fff; flex-shrink:0; }
+  .user-avatar { width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,var(--green-light),var(--green-mid)); display:flex; align-items:center; justify-content:center; font-family:'Nunito',sans-serif; font-weight:800; font-size:20px; color:#fff; flex-shrink:0; overflow:hidden; cursor:pointer; }
   .user-info { flex:1; }
   .user-name { font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; color:var(--gray-800); }
   .user-email { font-size:13px; color:var(--gray-400); margin-top:2px; }
@@ -142,10 +142,19 @@
 
   <!-- User card -->
   <div class="user-card">
-    <div class="user-avatar">CA</div>
+    <div class="user-avatar" onclick="document.getElementById('avatarInput').click()">
+      A
+    </div>
+    <input
+      type="file"
+      id="avatarInput"
+      accept="image/*"
+      style="display:none"
+      onchange="simpanAvatar(this)"
+    >
     <div class="user-info">
-      <div class="user-name">Cindy Aulia</div>
-      <div class="user-email">cindy@students.usu.ac.id</div>
+      <div class="user-name">Pengguna Anonim</div>
+      <div class="user-email">unknown@students.usu.ac.id</div>
       <div class="user-badge">🌿 Mahasiswa USU</div>
     </div>
     <a class="btn-edit-profile" href="profile.html">Edit Profil</a>
@@ -158,19 +167,19 @@
     <div class="setting-row" onclick="bukaModal('nama')">
       <div class="setting-icon" style="background:#eaf3de;"><svg viewBox="0 0 24 24" style="stroke:var(--green-mid)"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
       <div class="setting-body"><div class="setting-label">Nama Tampilan</div><div class="setting-desc">Nama yang terlihat di profil dan produkmu</div></div>
-      <div class="setting-right"><span class="setting-value">Cindy Aulia</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+      <div class="setting-right"><span class="setting-value" id="settingName">Pengguna Anonim</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
     </div>
 
     <div class="setting-row" onclick="bukaModal('username')">
       <div class="setting-icon" style="background:#e6f1fb;"><svg viewBox="0 0 24 24" style="stroke:#0c447c"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
       <div class="setting-body"><div class="setting-label">Username</div><div class="setting-desc">ID unikmu di BazarUSU</div></div>
-      <div class="setting-right"><span class="setting-value">@ciau</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+      <div class="setting-right"><span class="setting-value" id="settingUsername">@unknown</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
     </div>
 
     <div class="setting-row" onclick="bukaModal('email')">
       <div class="setting-icon" style="background:#faeeda;"><svg viewBox="0 0 24 24" style="stroke:#d97706"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
       <div class="setting-body"><div class="setting-label">Email</div><div class="setting-desc">Digunakan untuk login dan notifikasi</div></div>
-      <div class="setting-right"><span class="setting-value">cindy@usu.ac.id</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+      <div class="setting-right"><span class="setting-value" id="settingEmail">unknown@students.usu.ac.id</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
     </div>
 
     <div class="setting-row" onclick="bukaModal('password')">
@@ -182,7 +191,7 @@
     <div class="setting-row" onclick="bukaModal('nohp')">
       <div class="setting-icon" style="background:#eaf3de;"><svg viewBox="0 0 24 24" style="stroke:var(--green-mid)"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.34a16 16 0 006.29 6.29l1.41-1.41a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
       <div class="setting-body"><div class="setting-label">Nomor HP</div><div class="setting-desc">Untuk dihubungi penjual/pembeli</div></div>
-      <div class="setting-right"><span class="setting-value">Belum diisi</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+      <div class="setting-right"><span class="setting-value" id="settingPhone">Belum diisi</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
     </div>
   </div>
 
@@ -276,10 +285,10 @@
   <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-title">✏️ Ganti Nama Tampilan</div>
     <div class="modal-sub">Nama ini akan terlihat di profil dan produkmu.</div>
-    <div class="modal-field"><label class="modal-label">Nama Baru</label><input type="text" class="modal-input" placeholder="Nama kamu" value="Cindy Aulia"></div>
+    <div class="modal-field"><label class="modal-label">Nama Baru</label><input type="text" class="modal-input" id="inputNama" placeholder="Nama kamu" value="Pengguna Anonim"></div>
     <div class="modal-btns">
       <button class="btn-modal-cancel" onclick="tutupModal(null,'modal-nama')">Batal</button>
-      <button class="btn-modal-ok" onclick="simpan('modal-nama','✅ Nama berhasil diperbarui!')">Simpan</button>
+      <button class="btn-modal-ok" onclick="simpan('nama','✅ Nama berhasil diperbarui!')">Simpan</button>
     </div>
   </div>
 </div>
@@ -289,10 +298,10 @@
   <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-title">✏️ Ganti Username</div>
     <div class="modal-sub">Username unik yang dipakai di BazarUSU. Tidak bisa sama dengan pengguna lain.</div>
-    <div class="modal-field"><label class="modal-label">Username Baru</label><input type="text" class="modal-input" placeholder="contoh: ciau_usu" value="ciau"></div>
+    <div class="modal-field"><label class="modal-label">Username Baru</label><input type="text" class="modal-input" id="inputUsername" placeholder="contoh: ciau_usu" value="unknown"></div>
     <div class="modal-btns">
       <button class="btn-modal-cancel" onclick="tutupModal(null,'modal-username')">Batal</button>
-      <button class="btn-modal-ok" onclick="simpan('modal-username','✅ Username berhasil diperbarui!')">Simpan</button>
+      <button class="btn-modal-ok" onclick="simpan('username','✅ Username berhasil diperbarui!')">Simpan</button>
     </div>
   </div>
 </div>
@@ -302,11 +311,11 @@
   <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-title">✉️ Ganti Email</div>
     <div class="modal-sub">Kamu akan menerima email konfirmasi ke alamat baru.</div>
-    <div class="modal-field"><label class="modal-label">Email Baru</label><input type="email" class="modal-input" placeholder="email@students.usu.ac.id"></div>
-    <div class="modal-field"><label class="modal-label">Password (untuk konfirmasi)</label><input type="password" class="modal-input" placeholder="Password kamu"></div>
+    <div class="modal-field"><label class="modal-label">Email Baru</label><input type="email" class="modal-input" id="inputEmail" placeholder="email@students.usu.ac.id"></div>
+    <div class="modal-field"><label class="modal-label">Password (untuk konfirmasi)</label><input type="password" class="modal-input" id="inputPasswordKonfirmasi" placeholder="Password kamu"></div>
     <div class="modal-btns">
       <button class="btn-modal-cancel" onclick="tutupModal(null,'modal-email')">Batal</button>
-      <button class="btn-modal-ok" onclick="simpan('modal-email','✅ Cek emailmu untuk konfirmasi!')">Kirim Konfirmasi</button>
+      <button class="btn-modal-ok" onclick="simpan('email','✅ Cek emailmu untuk konfirmasi!')">Kirim Konfirmasi</button>
     </div>
   </div>
 </div>
@@ -316,12 +325,12 @@
   <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-title">🔒 Ganti Password</div>
     <div class="modal-sub">Gunakan password yang kuat dan belum pernah dipakai sebelumnya.</div>
-    <div class="modal-field"><label class="modal-label">Password Lama</label><input type="password" class="modal-input" placeholder="Password sekarang"></div>
-    <div class="modal-field"><label class="modal-label">Password Baru</label><input type="password" class="modal-input" placeholder="Min. 8 karakter"></div>
-    <div class="modal-field"><label class="modal-label">Konfirmasi Password Baru</label><input type="password" class="modal-input" placeholder="Ulangi password baru"></div>
+    <div class="modal-field"><label class="modal-label">Password Lama</label><input type="password" class="modal-input" id="inputPassword1" placeholder="Password sekarang"></div>
+    <div class="modal-field"><label class="modal-label">Password Baru</label><input type="password" class="modal-input" id="inputPassword2" placeholder="Min. 8 karakter"></div>
+    <div class="modal-field"><label class="modal-label">Konfirmasi Password Baru</label><input type="password" class="modal-input" id="inputPassword2Konfirmasi" placeholder="Ulangi password baru"></div>
     <div class="modal-btns">
       <button class="btn-modal-cancel" onclick="tutupModal(null,'modal-password')">Batal</button>
-      <button class="btn-modal-ok" onclick="simpan('modal-password','✅ Password berhasil diperbarui!')">Simpan</button>
+      <button class="btn-modal-ok" onclick="simpan('password','✅ Password berhasil diperbarui!')">Simpan</button>
     </div>
   </div>
 </div>
@@ -331,10 +340,10 @@
   <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-title">📱 Tambah Nomor HP</div>
     <div class="modal-sub">Nomor HP memudahkan penjual/pembeli menghubungimu.</div>
-    <div class="modal-field"><label class="modal-label">Nomor HP</label><input type="tel" class="modal-input" placeholder="0812-xxxx-xxxx"></div>
+    <div class="modal-field"><label class="modal-label">Nomor HP</label><input type="tel" class="modal-input" id="inputNoHP" placeholder="0812-xxxx-xxxx"></div>
     <div class="modal-btns">
       <button class="btn-modal-cancel" onclick="tutupModal(null,'modal-nohp')">Batal</button>
-      <button class="btn-modal-ok" onclick="simpan('modal-nohp','✅ Nomor HP berhasil disimpan!')">Simpan</button>
+      <button class="btn-modal-ok" onclick="simpan('nohp','✅ Nomor HP berhasil disimpan!')">Simpan</button>
     </div>
   </div>
 </div>
@@ -368,38 +377,7 @@
 
 <div id="toast"></div>
 
-<script>
-  function bukaModal(id) {
-    document.getElementById('modal-'+id).classList.add('show');
-  }
-  function tutupModal(e, id) {
-    if (!e || e.target.id === id) document.getElementById(id).classList.remove('show');
-  }
-  function simpan(id, msg) {
-    document.getElementById(id).classList.remove('show');
-    toast(msg);
-  }
-  function toggleSwitch(el) {
-    el.classList.toggle('on');
-    toast(el.classList.contains('on') ? '🔔 Notifikasi diaktifkan' : '🔕 Notifikasi dinonaktifkan');
-  }
-  function doLogout() {
-    document.getElementById('modal-logout').classList.remove('show');
-    toast('👋 Sampai jumpa! Kamu berhasil keluar.');
-    setTimeout(() => window.location.href = 'login.html', 1800);
-  }
-  function doHapusAkun() {
-    const konfirm = document.getElementById('hapusConfirm').value.trim();
-    if (konfirm !== 'HAPUS AKUN') { toast('⚠️ Ketik HAPUS AKUN dengan benar untuk konfirmasi'); return; }
-    document.getElementById('modal-hapusAkun').classList.remove('show');
-    toast('🗑️ Akun berhasil dihapus. Sampai jumpa!');
-    setTimeout(() => window.location.href = 'login.html', 2000);
-  }
-  function toast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2800);
-  }
-</script>
+<script src="js/auth.js"></script>
+<script src="js/settings.js"></script>
 </body>
 </html>

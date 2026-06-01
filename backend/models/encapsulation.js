@@ -109,8 +109,8 @@ class User {
   }
 
   setPassword(password) {
-    if (typeof password !== "string" || password.length < 6) {
-      throw new Error("Password minimal 6 karakter.");
+    if (typeof password !== "string" || password.length < 8) {
+      throw new Error("Password minimal 8 karakter.");
     }
     // Simulasi hashing (di production pakai bcrypt)
     this.#password = `hashed_${password}`;
