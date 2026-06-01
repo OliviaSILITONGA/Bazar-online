@@ -9,10 +9,10 @@ router.use(authMiddleware);
 // Ambil semua notifikasi milik user
 router.get("/", authMiddleware, notificationController.getNotifications);
 
-// Tandai 1 notifikasi sebagai sudah dibaca
-router.put("/:id/read", authMiddleware, notificationController.markAsRead);
-
 // Tandai semua notifikasi sebagai sudah dibaca
 router.put("/read-all", authMiddleware, notificationController.markAllAsRead);
+
+// Tandai 1 notifikasi sebagai sudah dibaca
+router.put("/:id/read", authMiddleware, notificationController.markAsRead);
 
 module.exports = router;

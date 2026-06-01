@@ -6,6 +6,10 @@ const userRoutes = require("./routes/userRoutes");
 const productRoutes = require("./routes/productRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
+const conversationRoutes = require("./routes/conversationRoutes");
+const promoRoutes = require("./routes/promoRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 const app = express();
 
@@ -22,5 +26,9 @@ app.use("/users", userRoutes);
 app.use("/products", productRoutes);
 app.use("/cart", cartRoutes);
 app.use("/orders", orderRoutes);
+app.use("/reviews", reviewRoutes);
+app.use("/conversations", conversationRoutes);
+app.use("/promos", promoRoutes);
+app.use("/notifications", notificationRoutes);
 
 module.exports = app;

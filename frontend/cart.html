@@ -110,7 +110,7 @@
   .cart-item.selected { border-color:var(--green-light); box-shadow:0 0 0 3px rgba(122,171,34,.10); }
   .cart-item.removing { opacity:0; transform:translateX(30px); }
   .item-check { width:18px; height:18px; accent-color:var(--green-mid); cursor:pointer; flex-shrink:0; }
-  .item-img { width:80px; height:80px; border-radius:var(--radius-md); background:var(--gray-100); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:36px; border:1px solid var(--gray-200); text-decoration:none; transition:opacity .15s; }
+  .item-img { width:80px; height:80px; border-radius:var(--radius-md); background:var(--gray-100); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:36px; border:1px solid var(--gray-200); text-decoration:none; transition:opacity .15s; overflow:hidden; }
   .item-img:hover { opacity:.82; }
   .item-body { flex:1; min-width:0; }
   .item-name { font-family:'Nunito',sans-serif; font-weight:700; font-size:15px; color:var(--gray-800); margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -139,7 +139,7 @@
   .btn-jelajah:hover { opacity:.88; }
 
   /* BOTTOM BAR */
-  .bottom-bar { position:fixed; bottom:0; left:64px; right:0; background:var(--white); border-top:1px solid var(--gray-200); padding:14px 2rem; display:flex; align-items:center; justify-content:space-between; gap:16px; box-shadow:0 -4px 20px rgba(0,0,0,.07); z-index:200; }
+  .bottom-bar { position:fixed; bottom:0; left:64px; right:0; background:var(--white); border-top:1px solid var(--gray-200); padding:14px 2rem; display:none; align-items:center; justify-content:space-between; gap:16px; box-shadow:0 -4px 20px rgba(0,0,0,.07); z-index:200; }
   .total-wrap .lbl { font-size:12px; color:var(--gray-400); margin-bottom:2px; }
   .total-wrap .val { font-family:'Nunito',sans-serif; font-weight:800; font-size:20px; color:var(--green-dark); }
   .total-wrap .cnt { font-size:11px; color:var(--gray-400); }
@@ -174,104 +174,19 @@
   <div class="topbar">
     <a class="back-btn" href="index.html"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></a>
     <span class="page-title">🛒 Keranjang Kamu</span>
+<<<<<<< HEAD
     <a class="avatar-btn" href="profile.html"><div class="avatar-ph">--</div></a>
+=======
+    <a class="avatar-btn" href="profile.html"><div class="avatar-ph" id="userAvatar">CA</div></a>
+>>>>>>> 5db52e0a23aaa4407c6f469124cf120284be8c50
   </div>
 
-  <div class="list-header" id="listHeader">
-    <span class="section-label">Keranjang kamu</span>
-    <label class="select-all"><input type="checkbox" id="selectAll" onchange="toggleAll(this)"> Pilih semua</label>
-  </div>
-
-  <!-- Grup Olivia -->
-  <div class="seller-group" id="group-1">
-    <div class="group-header">
-      <div class="group-avatar">OG</div>
-      <div style="flex:1"><div class="group-name">Olivia Gabriella</div><div class="group-loc">📍 Jl. Pembangunan no 5</div></div>
-      <a class="btn-chat" href="messages.html">💬 Chat</a>
-    </div>
-    <div class="cart-list">
-      <div class="cart-item selected" id="item-1" data-price="5000">
-        <input class="item-check" type="checkbox" checked onchange="cekItem(this,'item-1')">
-        <a class="item-img" href="product.html">🍢</a>
-        <div class="item-body">
-          <div class="item-name">Cireng Isi</div>
-          <div class="item-desc">jajanan · bumbu rujak</div>
-          <div class="item-bottom">
-            <span class="item-price">Rp 5.000</span>
-            <span class="item-sub" id="sub-1">× 1 = Rp 5.000</span>
-          </div>
-        </div>
-        <div class="item-right">
-          <button class="btn-del" onclick="hapus('item-1')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
-          <div class="qty-wrap">
-            <button class="qty-btn" onclick="ubahQty('item-1',-1)">−</button>
-            <span class="qty-num" id="qty-1">1</span>
-            <button class="qty-btn" onclick="ubahQty('item-1',1)">+</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <input type="text" class="note-input" placeholder="📝 Catatan untuk Olivia (opsional, misal: ga pake pedas)">
-  </div>
-
-  <!-- Grup Alfiyana -->
-  <div class="seller-group" id="group-2">
-    <div class="group-header">
-      <div class="group-avatar" style="background:#e67e22;">AL</div>
-      <div style="flex:1"><div class="group-name">Alfiyana</div><div class="group-loc">📍 Setia Budi, Pasar 5</div></div>
-      <a class="btn-chat" href="messages.html">💬 Chat</a>
-    </div>
-    <div class="cart-list">
-      <div class="cart-item selected" id="item-2" data-price="12000">
-        <input class="item-check" type="checkbox" checked onchange="cekItem(this,'item-2')">
-        <a class="item-img" href="product.html">🎂</a>
-        <div class="item-body">
-          <div class="item-name">Kue Kukus</div>
-          <div class="item-desc">makanan · pandan & coklat</div>
-          <div class="item-bottom">
-            <span class="item-price">Rp 12.000</span>
-            <span class="item-sub" id="sub-2">× 1 = Rp 12.000</span>
-          </div>
-        </div>
-        <div class="item-right">
-          <button class="btn-del" onclick="hapus('item-2')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
-          <div class="qty-wrap">
-            <button class="qty-btn" onclick="ubahQty('item-2',-1)">−</button>
-            <span class="qty-num" id="qty-2">1</span>
-            <button class="qty-btn" onclick="ubahQty('item-2',1)">+</button>
-          </div>
-        </div>
-      </div>
-      <div class="cart-item selected" id="item-3" data-price="10000">
-        <input class="item-check" type="checkbox" checked onchange="cekItem(this,'item-3')">
-        <a class="item-img" href="product.html">🥭</a>
-        <div class="item-body">
-          <div class="item-name">Jus Mangga</div>
-          <div class="item-desc">minuman · segar & manis</div>
-          <div class="item-bottom">
-            <span class="item-price">Rp 10.000</span>
-            <span class="item-sub" id="sub-3">× 1 = Rp 10.000</span>
-          </div>
-        </div>
-        <div class="item-right">
-          <button class="btn-del" onclick="hapus('item-3')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
-          <div class="qty-wrap">
-            <button class="qty-btn" onclick="ubahQty('item-3',-1)">−</button>
-            <span class="qty-num" id="qty-3">1</span>
-            <button class="qty-btn" onclick="ubahQty('item-3',1)">+</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <input type="text" class="note-input" placeholder="📝 Catatan untuk Alfiyana (opsional)">
-  </div>
+  <!-- Konten cart diisi oleh cart.js -->
 
   <!-- Empty state -->
-  <div class="empty-state" id="emptyState">
-    <div class="e-emoji">🛒</div>
-    <p>Keranjangmu masih kosong</p>
-    <small>Yuk lihat-lihat dulu, banyak yang enak!</small><br>
-    <a class="btn-jelajah" href="index.html">Jelajahi Produk</a>
+  <div class="empty-state" id="emptyState" style="display:block;">
+    <div class="e-emoji">⏳</div>
+    <p>Memuat keranjang...</p>
   </div>
 </main>
 
@@ -279,15 +194,16 @@
 <div class="bottom-bar" id="bottomBar">
   <div class="total-wrap">
     <div class="lbl">Total dipilih</div>
-    <div class="val" id="totalVal">Rp 27.000</div>
-    <div class="cnt" id="cntVal">3 item dipilih</div>
+    <div class="val" id="totalVal">Rp 0</div>
+    <div class="cnt" id="cntVal">0 item dipilih</div>
   </div>
-  <button class="btn-checkout" id="btnCO" onclick="keCheckout()">Checkout →</button>
+  <button class="btn-checkout" id="btnCO" onclick="keCheckout()" disabled>Checkout →</button>
 </div>
 
 <div id="toast"></div>
 
 <script src="js/auth.js"></script>
+<<<<<<< HEAD
 <script>
   document.addEventListener("DOMContentLoaded", async () => {
     try {
@@ -1326,3 +1242,8 @@
     </script>
   </body>
 </html>
+=======
+<script src="js/cart.js"></script>
+</body>
+</html>
+>>>>>>> 5db52e0a23aaa4407c6f469124cf120284be8c50

@@ -11,7 +11,7 @@ const register = async (userData) => {
   const { data: existing } = await supabase
     .from("users")
     .select("id")
-    .or(`email.eq.${email}`)
+    .eq("email", email)
     .single();
 
   if (existing) {

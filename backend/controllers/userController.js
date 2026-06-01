@@ -50,9 +50,11 @@ const updateMyProfile = async (req, res) => {
       username: req.body.username,
       email: req.body.email,
       password: req.body.password,
+      currentPassword: req.body.currentPassword,
       bio: req.body.bio,
       location: req.body.location,
       phone: req.body.phone,
+      is_seller: req.body.is_seller,
     };
 
     const updatedUser = await userService.updateMyProfile(userId, updateData);
@@ -96,6 +98,26 @@ const uploadAvatar = async (req, res) => {
       success: true,
       message: "Avatar berhasil diperbarui",
       data: result,
+    });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Terjadi kesalahan server",
+    });
+  }
+};
+
+const deleteMyProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    await userService.deleteMyProfile(userId);
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      sameSite: "lax",
+    });
+    return res.status(200).json({
+      success: true,
+      message: "Akun berhasil dihapus",
     });
   } catch (error) {
     return res.status(error.statusCode || 500).json({
@@ -188,6 +210,7 @@ module.exports = {
   getMyProfile,
   updateMyProfile,
   uploadAvatar,
+  deleteMyProfile,
   getUserById,
   getUserProducts,
   getUserReviews,

@@ -26,15 +26,15 @@ router.post("/", cartController.addToCart);
 router.put("/:itemId", cartController.updateCartItem);
 
 /**
- * DELETE /cart/:itemId
- * Hapus satu item dari keranjang
- */
-router.delete("/:itemId", cartController.removeCartItem);
-
-/**
  * DELETE /cart
  * Kosongkan seluruh isi keranjang
  */
 router.delete("/", cartController.clearCart);
+
+/**
+ * DELETE /cart/:itemId
+ * Hapus satu item dari keranjang
+ */
+router.delete("/:itemId", cartController.removeCartItem);
 
 module.exports = router;

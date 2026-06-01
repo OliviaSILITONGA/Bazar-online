@@ -28,6 +28,10 @@ router.put(
   userController.uploadAvatar,
 );
 
+// DELETE /users/me
+// Hapus akun
+router.delete("/me", authMiddleware, userController.deleteMyProfile);
+
 /*
 ========================================
 PUBLIC ROUTES
@@ -43,7 +47,7 @@ router.get("/:id", userController.getUserById);
 router.get("/:id/products", userController.getUserProducts);
 
 // GET /users/:id/reviews
-// Review yang diterima user
+// Review yang dibuat user
 router.get("/:id/reviews", userController.getUserReviews);
 
 module.exports = router;

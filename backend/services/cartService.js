@@ -29,7 +29,15 @@ const getCart = async (userId) => {
           availability,
           schedule,
           like_count,
-          is_active
+          is_active,
+          seller:users!fk_product_seller (
+            id,
+            name,
+            avatar_url
+          ),
+          product_images (
+            image_url
+          )
         )
       `,
     )

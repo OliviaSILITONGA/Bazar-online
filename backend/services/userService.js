@@ -1,5 +1,6 @@
-const path = require("path");
+const sharp = require("sharp");
 const supabase = require("../config/supabase");
+const Auth = require("../classes/Auth");
 
 /*
 ========================================
@@ -49,14 +50,38 @@ const updateMyProfile = async (userId, updateData) => {
     "username",
     "email",
     "password",
+    "currentPassword",
     "bio",
     "location",
     "phone",
+    "is_seller",
   ];
 
   for (const field of fields) {
     if (updateData[field] !== undefined) payload[field] = updateData[field];
   }
+
+  const { data: currentPassword, error: passError } = await supabase
+    .from("users")
+    .select("password")
+    .eq("id", userId)
+    .single();
+
+  if (updateData.email) {
+    const auth = new Auth(updateData.email, updateData.currentPassword);
+    payload.currentPassword = await auth.hashPassword();
+    const isMatch = await auth.verifyPassword(currentPassword.password);
+    if (!isMatch) throw new Error("Password salah");
+  } else if (updateData.password) {
+    const auth = new Auth("", updateData.password);
+    const confirmAuth = new Auth("", updateData.currentPassword);
+    payload.password = await auth.hashPassword();
+    payload.currentPassword = await auth.hashPassword();
+    const isMatch = await confirmAuth.verifyPassword(currentPassword.password);
+    if (!isMatch) throw new Error("Password salah");
+  }
+
+  delete payload.currentPassword;
 
   const { data, error } = await supabase
     .from("users")
@@ -88,12 +113,25 @@ const uploadAvatar = async (userId, avatarFile) => {
     };
   }
 
-  const extension = path.extname(avatarFile.originalname);
-  const filename = `user-${userId}-${Date.now()}${extension}`;
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+  if (!allowedTypes.includes(avatarFile.mimetype)) {
+    throw {
+      statusCode: 400,
+      message: "Format gambar harus JPG, PNG, atau WebP",
+    };
+  }
+
+  const optimizedBuffer = await sharp(avatarFile.buffer)
+    .resize(300, 300, { fit: "cover" })
+    .webp({ quality: 80 })
+    .toBuffer();
+  const filename = `user-${userId}.webp`;
+
   const { error: uploadError } = await supabase.storage
     .from("avatars")
-    .upload(filename, avatarFile.buffer, {
-      contentType: avatarFile.mimetype,
+    .upload(filename, optimizedBuffer, {
+      contentType: "image/webp",
       upsert: true,
     });
 
@@ -107,7 +145,7 @@ const uploadAvatar = async (userId, avatarFile) => {
   const { data: publicData } = supabase.storage
     .from("avatars")
     .getPublicUrl(filename);
-  const avatarUrl = publicData.publicUrl;
+  const avatarUrl = `${publicData.publicUrl}?t=${Date.now()}`;
   const { data, error } = await supabase
     .from("users")
     .update({
@@ -125,6 +163,38 @@ const uploadAvatar = async (userId, avatarFile) => {
   }
 
   return data;
+};
+
+const deleteMyProfile = async (userId) => {
+  // Ambil data user terlebih dahulu
+  const { data: user, error: userError } = await supabase
+    .from("users")
+    .select("avatar_url")
+    .eq("id", userId)
+    .single();
+
+  if (userError) {
+    throw {
+      statusCode: 404,
+      message: "User tidak ditemukan",
+    };
+  }
+
+  // Hapus avatar dari Storage
+  const avatarPath = `user-${userId}.webp`;
+  await supabase.storage.from("avatars").remove([avatarPath]);
+
+  // Hapus user dari database
+  const { error } = await supabase.from("users").delete().eq("id", userId);
+
+  if (error) {
+    throw {
+      statusCode: 500,
+      message: error.message,
+    };
+  }
+
+  return true;
 };
 
 /*
@@ -178,7 +248,8 @@ const getUserProducts = async (userId) => {
         category,
         like_count,
         location,
-        created_at
+        created_at,
+        product_images(id, image_url)
       `,
     )
     .eq("seller_id", userId)
@@ -204,13 +275,16 @@ const getUserReviews = async (userId) => {
     .from("reviews")
     .select(
       `
-              id,
-              rating,
-              body,
-              created_at,
-              products(id, name),
-              users(id, username, avatar_url)
-          `,
+        id,
+        rating,
+        body,
+        created_at,
+        products(
+          id,
+          name,
+          seller:users!fk_product_seller(name)
+        )
+      `,
     )
     .eq("reviewer_id", userId);
 
@@ -228,6 +302,7 @@ module.exports = {
   getMyProfile,
   updateMyProfile,
   uploadAvatar,
+  deleteMyProfile,
   getUserById,
   getUserProducts,
   getUserReviews,

@@ -249,6 +249,8 @@
         border-color: var(--red);
       }
       .toggle-pw {
+        width: 29px;
+        height: 100%;
         position: absolute;
         right: 13px;
         top: 50%;
@@ -612,6 +614,7 @@
                   placeholder="Masukkan password"
                 />
                 <button
+                  type="button"
                   class="toggle-pw"
                   onclick="togglePw('loginPw', this)"
                   tabindex="-1"
@@ -623,7 +626,7 @@
                 </button>
               </div>
               <div class="field-error" id="loginPwErr">
-                Password minimal 6 karakter
+                Password minimal 8 karakter
               </div>
             </div>
 
@@ -714,6 +717,7 @@
                   oninput="checkStrength(this.value)"
                 />
                 <button
+                  type="button"
                   class="toggle-pw"
                   onclick="togglePw('regPw', this)"
                   tabindex="-1"
@@ -751,6 +755,7 @@
                   placeholder="Ulangi password"
                 />
                 <button
+                  type="button"
                   class="toggle-pw"
                   onclick="togglePw('regPw2', this)"
                   tabindex="-1"
@@ -828,6 +833,7 @@
 
     <div id="toast"></div>
 
+<<<<<<< HEAD
     <script>
       // ── Hapus token lama supaya user bisa login ulang dengan akun berbeda ──
       window.addEventListener("DOMContentLoaded", () => {
@@ -1085,5 +1091,9 @@
         setTimeout(() => t.classList.remove("show"), 2800);
       }
     </script>
+=======
+    <script src="js/auth.js"></script>
+    <script src="js/login.js"></script>
+>>>>>>> 5db52e0a23aaa4407c6f469124cf120284be8c50
   </body>
 </html>
