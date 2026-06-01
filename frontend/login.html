@@ -829,6 +829,12 @@
     <div id="toast"></div>
 
     <script>
+      // ── Hapus token lama supaya user bisa login ulang dengan akun berbeda ──
+      window.addEventListener("DOMContentLoaded", () => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("user");
+      });
+
       function showLogin() {
         document.getElementById("loginForm").style.display = "block";
         document.getElementById("registerForm").style.display = "none";
@@ -951,8 +957,28 @@
           localStorage.setItem("accessToken", data.accessToken);
           localStorage.setItem("user", JSON.stringify(data.user));
 
+<<<<<<< Updated upstream
           // Redirect ke beranda yang akan menampilkan data user
           window.location = "index.html";
+=======
+          // Simpan data user jika ada
+          if (data.user) {
+            localStorage.setItem("user", JSON.stringify(data.user));
+          }
+
+          // Tampilkan sukses
+          document.getElementById("formArea").style.display = "none";
+          document.getElementById("successBox").style.display = "block";
+          document.getElementById("successTitle").textContent =
+            "Berhasil Masuk! 🎉";
+          document.getElementById("successSub").textContent =
+            `Halo kembali! Yuk jelajahi produk seru di BazarUSU.`;
+
+          // Auto redirect ke halaman utama setelah 1.5 detik
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 1500);
+>>>>>>> Stashed changes
         } catch (err) {
           toast("❌ " + err.message);
         } finally {
@@ -1028,6 +1054,16 @@
             "Akun Berhasil Dibuat! 🌿";
           document.getElementById("successSub").textContent =
             `Halo ${nama}! Selamat bergabung di BazarUSU. Yuk mulai jelajahi!`;
+
+          // Ubah tombol ke "Lanjut ke Login"
+          const btnGo = document.querySelector(".btn-go");
+          btnGo.href = "login.html";
+          btnGo.textContent = "Lanjut ke Login →";
+
+          // Auto redirect ke login setelah 2 detik
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 2000);
         } catch (err) {
           toast("❌ " + err.message);
         } finally {

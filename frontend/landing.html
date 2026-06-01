@@ -319,6 +319,27 @@
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 2rem;
       }
+<<<<<<< Updated upstream
+=======
+    }
+  </style>
+</head>
+<body>
+  <!-- ═════ NAVBAR ═════ -->
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">
+      <div class="navbar-logo">BU</div>
+      <span>BazarUSU</span>
+    </a>
+    <div class="navbar-links">
+      <a href="#features">Fitur</a>
+      <a href="#howitworks">Cara Kerja</a>
+      <a href="#about">Tentang</a>
+      <a href="login.html" class="btn-login">Masuk</a>
+      <a href="login.html" class="btn-signup">Daftar</a>
+    </div>
+  </nav>
+>>>>>>> Stashed changes
 
       .step-card {
         text-align: center;
@@ -741,6 +762,7 @@
         </div>
       </div>
 
+<<<<<<< Updated upstream
       <div class="footer-bottom">
         <p>
           &copy; 2026 BazarUSU. Semua hak dilindungi. Made with ❤️ untuk
@@ -756,4 +778,49 @@
       } catch (e) {}
     </script>
   </body>
+=======
+      <div class="footer-section">
+        <h4>Menu Utama</h4>
+        <ul>
+          <li><a href="index.html">Beranda</a></li>
+          <li><a href="#features">Fitur</a></li>
+          <li><a href="#howitworks">Cara Kerja</a></li>
+          <li><a href="login.html">Login</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4>Dukungan</h4>
+        <ul>
+          <li><a href="#">Pusat Bantuan</a></li>
+          <li><a href="#">Hubungi Kami</a></li>
+          <li><a href="#">Syarat & Ketentuan</a></li>
+          <li><a href="#">Kebijakan Privasi</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4>Ikuti Kami</h4>
+        <ul>
+          <li><a href="#">Facebook</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Twitter</a></li>
+          <li><a href="#">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 BazarUSU. Semua hak dilindungi. Made with ❤️ untuk mahasiswa USU.</p>
+    </div>
+  </footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('accessToken')) {
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
+</body>
+>>>>>>> Stashed changes
 </html>

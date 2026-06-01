@@ -982,7 +982,11 @@
               </div>
               <div class="rek-row">
                 <span class="rek-lbl">Atas Nama</span
+<<<<<<< Updated upstream
                 ><span class="rek-val">Cindy Aulia</span>
+=======
+                ><span class="rek-val" id="rekAtasNama">Cindy Aulia</span>
+>>>>>>> Stashed changes
               </div>
             </div>
           </div>
@@ -1069,6 +1073,7 @@
 
     <div id="toast"></div>
 
+<<<<<<< Updated upstream
     <script>
       const ONGKIR = 2000;
       let subtotal = 27000;
@@ -1193,6 +1198,120 @@
           console.error(e);
         }
       })();
+=======
+    <script src="js/auth.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        try {
+          const user = await loadCurrentUserData();
+          const atasNamaEl = document.getElementById("rekAtasNama");
+          if (atasNamaEl) atasNamaEl.textContent = user.name;
+        } catch (e) {
+          console.error(e);
+        }
+      });
+
+      const ONGKIR = 2000;
+      let subtotal = 27000;
+      let diskon = 0;
+      let metodeBayar = "cod";
+
+      const rekInfo = {
+        bri: ["BRI", "1234-5678-9012"],
+        bca: ["BCA", "0987-6543-2100"],
+        dana: ["DANA", "0812-3456-7890"],
+      };
+      const payLabel = {
+        cod: "COD (Bayar di Tempat)",
+        bri: "Transfer BRI",
+        bca: "Transfer BCA",
+        dana: "DANA",
+      };
+
+      function hitungTotal() {
+        const total = subtotal + ONGKIR - diskon;
+        document.getElementById("sumSubtotal").textContent =
+          "Rp " + subtotal.toLocaleString("id");
+        document.getElementById("sumTotal").textContent =
+          "Rp " + Math.max(0, total).toLocaleString("id");
+      }
+
+      function pilihBayar(label, val) {
+        document
+          .querySelectorAll(".pay-opt")
+          .forEach((l) => l.classList.remove("on"));
+        label.classList.add("on");
+        metodeBayar = val;
+        const box = document.getElementById("rekBox");
+        if (val !== "cod") {
+          box.classList.add("show");
+          const [bank, no] = rekInfo[val];
+          document.getElementById("rekBank").textContent = bank;
+          document.getElementById("rekNo").textContent = no;
+        } else {
+          box.classList.remove("show");
+        }
+      }
+
+      function salinRek() {
+        const no = document.getElementById("rekNo").textContent;
+        navigator.clipboard
+          .writeText(no)
+          .then(() => toast("📋 Nomor rekening disalin!"));
+      }
+
+      function pakaiPromo() {
+        const kode = document
+          .getElementById("promoInput")
+          .value.trim()
+          .toUpperCase();
+        if (kode === "BAZARUSU" || kode === "MAHASISWA") {
+          diskon = 2000;
+          document.getElementById("diskonRow").style.display = "flex";
+          document.getElementById("promoOk").classList.add("show");
+          toast("🎉 Kode promo berhasil!");
+        } else if (!kode) {
+          toast("⚠️ Masukkan kode promo dulu");
+        } else {
+          toast("❌ Kode promo tidak valid");
+        }
+        hitungTotal();
+      }
+
+      function pesanSekarang() {
+        const gedung = document.getElementById("gedung").value.trim();
+        const detail = document.getElementById("detail").value.trim();
+        const nohp = document.getElementById("nohp").value.trim();
+        if (!gedung) {
+          toast("⚠️ Isi dulu lokasi pengirimannya ya!");
+          return;
+        }
+        if (!nohp) {
+          toast("⚠️ Isi dulu nomor HP-mu ya!");
+          return;
+        }
+        const lokasi = gedung + (detail ? ", " + detail : "");
+        document.getElementById("mo-pay").textContent = payLabel[metodeBayar];
+        document.getElementById("mo-loc").textContent = lokasi;
+        document.getElementById("mo-total").textContent =
+          document.getElementById("sumTotal").textContent;
+        document.getElementById("modal").classList.add("show");
+      }
+
+      function tutupModal(e) {
+        if (e.target.id === "modal")
+          document.getElementById("modal").classList.remove("show");
+      }
+
+      function toast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2600);
+      }
+
+      hitungTotal();
+>>>>>>> Stashed changes
     </script>
   </body>
 </html>

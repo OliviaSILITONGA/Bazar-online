@@ -679,11 +679,19 @@
 
       <!-- User card -->
       <div class="user-card">
+<<<<<<< Updated upstream
         <div class="user-avatar">CA</div>
         <div class="user-info">
           <div class="user-name">Cindy Aulia</div>
           <div class="user-email">cindy@students.usu.ac.id</div>
           <div class="user-badge">🌿 Mahasiswa USU</div>
+=======
+        <div class="user-avatar" id="userAvatar">NA</div>
+        <div class="user-info">
+          <div class="user-name" id="userName">Pengguna</div>
+          <div class="user-email" id="userEmail">Belum ada email</div>
+          <div class="user-badge" id="userBadge">🌿 Mahasiswa USU</div>
+>>>>>>> Stashed changes
         </div>
         <a class="btn-edit-profile" href="profile.html">Edit Profil</a>
       </div>
@@ -706,7 +714,11 @@
             </div>
           </div>
           <div class="setting-right">
+<<<<<<< Updated upstream
             <span class="setting-value">Cindy Aulia</span>
+=======
+            <span class="setting-value" id="settingName">Pengguna</span>
+>>>>>>> Stashed changes
             <div class="setting-arrow">
               <svg viewBox="0 0 24 24">
                 <polyline points="9 18 15 12 9 6" />
@@ -727,7 +739,11 @@
             <div class="setting-desc">ID unikmu di BazarUSU</div>
           </div>
           <div class="setting-right">
+<<<<<<< Updated upstream
             <span class="setting-value">@ciau</span>
+=======
+            <span class="setting-value" id="settingUsername">@-</span>
+>>>>>>> Stashed changes
             <div class="setting-arrow">
               <svg viewBox="0 0 24 24">
                 <polyline points="9 18 15 12 9 6" />
@@ -750,7 +766,11 @@
             <div class="setting-desc">Digunakan untuk login dan notifikasi</div>
           </div>
           <div class="setting-right">
+<<<<<<< Updated upstream
             <span class="setting-value">cindy@usu.ac.id</span>
+=======
+            <span class="setting-value" id="settingEmail">Belum diisi</span>
+>>>>>>> Stashed changes
             <div class="setting-arrow">
               <svg viewBox="0 0 24 24">
                 <polyline points="9 18 15 12 9 6" />
@@ -1043,7 +1063,11 @@
             type="text"
             class="modal-input"
             placeholder="Nama kamu"
+<<<<<<< Updated upstream
             value="Cindy Aulia"
+=======
+            value=""
+>>>>>>> Stashed changes
           />
         </div>
         <div class="modal-btns">
@@ -1081,7 +1105,11 @@
             type="text"
             class="modal-input"
             placeholder="contoh: ciau_usu"
+<<<<<<< Updated upstream
             value="ciau"
+=======
+            value=""
+>>>>>>> Stashed changes
           />
         </div>
         <div class="modal-btns">
@@ -1310,6 +1338,7 @@
 
     <div id="toast"></div>
 
+<<<<<<< Updated upstream
     <script>
       function bukaModal(id) {
         document.getElementById("modal-" + id).classList.add("show");
@@ -1389,6 +1418,113 @@
           console.error(e);
         }
       })();
+=======
+    <script src="js/auth.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        try {
+          const user = await loadCurrentUserData();
+          const initials = getUserInitials(user.name);
+
+          const avatarEl = document.getElementById("userAvatar");
+          if (avatarEl) avatarEl.textContent = initials || "NA";
+
+          const userNameEl = document.getElementById("userName");
+          if (userNameEl) userNameEl.textContent = user.name || "Pengguna";
+
+          const userEmailEl = document.getElementById("userEmail");
+          if (userEmailEl)
+            userEmailEl.textContent = user.email || "Tidak tersedia";
+
+          const badgeEl = document.getElementById("userBadge");
+          if (badgeEl) {
+            badgeEl.textContent = user.is_seller
+              ? "🌿 Penjual USU"
+              : "🌿 Mahasiswa USU";
+          }
+
+          const settingName = document.getElementById("settingName");
+          if (settingName) settingName.textContent = user.name || "Pengguna";
+
+          const settingUsername = document.getElementById("settingUsername");
+          if (settingUsername)
+            settingUsername.textContent = user.username
+              ? `@${user.username}`
+              : "@-";
+
+          const settingEmail = document.getElementById("settingEmail");
+          if (settingEmail)
+            settingEmail.textContent = user.email || "Belum diisi";
+
+          const modalNameInput = document.querySelector(
+            "#modal-nama .modal-input",
+          );
+          if (modalNameInput) modalNameInput.value = user.name || "";
+
+          const modalUsernameInput = document.querySelector(
+            "#modal-username .modal-input",
+          );
+          if (modalUsernameInput)
+            modalUsernameInput.value = user.username || "";
+
+          const modalEmailInput = document.querySelector(
+            "#modal-email .modal-input[type='email']",
+          );
+          if (modalEmailInput) modalEmailInput.value = user.email || "";
+
+          const modalNohpInput = document.querySelector(
+            "#modal-nohp .modal-input",
+          );
+          if (modalNohpInput)
+            modalNohpInput.value = user.phone || user.nohp || "";
+        } catch (e) {
+          console.error(e);
+        }
+      });
+
+      function bukaModal(id) {
+        document.getElementById("modal-" + id).classList.add("show");
+      }
+      function tutupModal(e, id) {
+        if (!e || e.target.id === id)
+          document.getElementById(id).classList.remove("show");
+      }
+      function simpan(id, msg) {
+        document.getElementById(id).classList.remove("show");
+        toast(msg);
+      }
+      function toggleSwitch(el) {
+        el.classList.toggle("on");
+        toast(
+          el.classList.contains("on")
+            ? "🔔 Notifikasi diaktifkan"
+            : "🔕 Notifikasi dinonaktifkan",
+        );
+      }
+      function doLogout() {
+        document.getElementById("modal-logout").classList.remove("show");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("user");
+        toast("👋 Sampai jumpa! Kamu berhasil keluar.");
+        setTimeout(() => (window.location.href = "login.html"), 1800);
+      }
+      function doHapusAkun() {
+        const konfirm = document.getElementById("hapusConfirm").value.trim();
+        if (konfirm !== "HAPUS AKUN") {
+          toast("⚠️ Ketik HAPUS AKUN dengan benar untuk konfirmasi");
+          return;
+        }
+        document.getElementById("modal-hapusAkun").classList.remove("show");
+        toast("🗑️ Akun berhasil dihapus. Sampai jumpa!");
+        setTimeout(() => (window.location.href = "login.html"), 2000);
+      }
+      function toast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2800);
+      }
+>>>>>>> Stashed changes
     </script>
   </body>
 </html>

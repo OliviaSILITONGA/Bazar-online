@@ -958,6 +958,7 @@
         </div>
       </div>
 
+<<<<<<< Updated upstream
       <!-- ══ CHAT AREA ══ -->
       <div class="chat-area">
         <!-- Header chat -->
@@ -969,6 +970,68 @@
             style="display: none"
           >
             <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6" /></svg>
+=======
+      <div class="bubble-row me">
+        <div class="bubble-avatar" style="background:var(--green-light);">--</div>
+        <div class="bubble me">
+          Masih ada kak! Mau pesan berapa? Satu porsi isi 5 biji ya 😄
+          <div class="bubble-time">09.22 <span class="read-tick read">✓✓</span></div>
+        </div>
+      </div>
+
+      <div class="bubble-row">
+        <div class="bubble-avatar" style="background:var(--green-mid);">OG</div>
+        <div class="bubble them">
+          Mau 2 porsi kak! Bisa COD di depan gedung B FEB jam 12 siang ga?
+          <div class="bubble-time">09.25</div>
+        </div>
+      </div>
+
+      <div class="bubble-row me">
+        <div class="bubble-avatar" style="background:var(--green-light);">--</div>
+        <div class="bubble me">
+          Bisa banget kak! Nanti aku hubungi lagi ya kalau udah berangkat 🙏
+          <div class="bubble-time">09.28 <span class="read-tick read">✓✓</span></div>
+        </div>
+      </div>
+
+      <div class="bubble-row">
+        <div class="bubble-avatar" style="background:var(--green-mid);">OG</div>
+        <div class="bubble them">
+          Oke kak, nanti aku anterin ya!
+          <div class="bubble-time">09.34</div>
+        </div>
+      </div>
+
+      <!-- Typing indicator (tersembunyi) -->
+      <div class="bubble-row" id="typingRow" style="display:none;">
+        <div class="bubble-avatar" style="background:var(--green-mid);">OG</div>
+        <div class="typing"><span></span><span></span><span></span></div>
+      </div>
+
+    </div>
+
+    <!-- Input area -->
+    <div class="chat-input-wrap">
+      <div class="emoji-row" id="emojiRow">
+        <span class="emoji-pick" onclick="insertEmoji('😊')">😊</span>
+        <span class="emoji-pick" onclick="insertEmoji('🙏')">🙏</span>
+        <span class="emoji-pick" onclick="insertEmoji('😄')">😄</span>
+        <span class="emoji-pick" onclick="insertEmoji('👍')">👍</span>
+        <span class="emoji-pick" onclick="insertEmoji('❤️')">❤️</span>
+        <span class="emoji-pick" onclick="insertEmoji('🎉')">🎉</span>
+        <span class="emoji-pick" onclick="insertEmoji('😅')">😅</span>
+        <span class="emoji-pick" onclick="insertEmoji('🥰')">🥰</span>
+        <span class="emoji-pick" onclick="insertEmoji('😋')">😋</span>
+        <span class="emoji-pick" onclick="insertEmoji('🔥')">🔥</span>
+        <span class="emoji-pick" onclick="insertEmoji('✨')">✨</span>
+        <span class="emoji-pick" onclick="insertEmoji('💪')">💪</span>
+      </div>
+      <div class="chat-input-row">
+        <div class="input-actions">
+          <button class="input-btn" onclick="toggleEmoji()" title="Emoji">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+>>>>>>> Stashed changes
           </button>
           <div
             class="chat-header-avatar"
@@ -1242,6 +1305,7 @@
 
       let activeContact = "olip";
 
+<<<<<<< Updated upstream
       /* ── Buka chat ── */
       function bukaChat(el, id) {
         document
@@ -1253,6 +1317,75 @@
         if (badge) badge.remove();
         const preview = el.querySelector(".contact-preview");
         if (preview) preview.classList.remove("unread");
+=======
+<script src="js/auth.js"></script>
+<script>
+  let currentUser = null;
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      currentUser = await loadCurrentUserData();
+      window._currentUserInitials = getUserInitials(currentUser.name);
+      document.querySelectorAll('.bubble-row.me .bubble-avatar').forEach((el) => {
+        el.textContent = window._currentUserInitials;
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  });
+
+  /* ── Data percakapan per kontak ── */
+  const chatData = {
+    olip: {
+      name: 'Olivia Gabriella',
+      initial: 'OG',
+      color: '#7aab22',
+      online: true,
+      messages: [] // sudah dirender di HTML
+    },
+    yana: {
+      name: 'Alfiyana',
+      initial: 'AL',
+      color: '#e67e22',
+      online: false,
+      messages: [
+        { me:false, text:'Halo kak, pesanan kue kukusnya sudah ready!', time:'Kemarin 14.10' },
+        { me:true,  text:'Wah makasih ya kak! Nanti aku jemput jam 2 siang 🙏', time:'Kemarin 14.12' },
+        { me:false, text:'Siap kak! Pesanannya udah ready 😊', time:'Kemarin 14.15' },
+      ]
+    },
+    qistan: {
+      name: 'Muhammad Qistan',
+      initial: 'MQ',
+      color: '#8e44ad',
+      online: true,
+      messages: [
+        { me:false, text:'Kak, jual jus mangga ga?', time:'Kemarin 10.00' },
+        { me:true,  text:'Ada kak! Mau pesan? Rp 10.000 per gelas 😄', time:'Kemarin 10.05' },
+        { me:false, text:'Jus mangganya masih ada kak?', time:'Kemarin 10.08' },
+      ]
+    },
+    sari: {
+      name: 'Sari Dewi',
+      initial: 'SD',
+      color: '#2980b9',
+      online: false,
+      messages: [
+        { me:false, text:'Halo kak! Donat coklat masih ada ga?', time:'Sen 09.00' },
+        { me:true,  text:'Masih ada kak, mau pesan berapa?', time:'Sen 09.05' },
+      ]
+    },
+    rara: {
+      name: 'Rara Fitri',
+      initial: 'RF',
+      color: '#c0392b',
+      online: false,
+      messages: [
+        { me:false, text:'Makasih pesanannya kak! Enak banget 😍', time:'Ming 15.00' },
+        { me:true,  text:'Makasih juga udah pesan ya kak! 🙏', time:'Ming 15.02' },
+      ]
+    },
+  };
+>>>>>>> Stashed changes
 
         activeContact = id;
         const d = chatData[id];
@@ -1295,7 +1428,20 @@
         const avatarColor = isMe ? "var(--green-light)" : color;
         const avatarInitial = isMe ? "CA" : initial;
 
+<<<<<<< Updated upstream
         row.innerHTML = `
+=======
+  /* ── Render bubble ── */
+  function renderBubble(text, time, isMe, initial, color) {
+    const box = document.getElementById('chatMessages');
+    const row = document.createElement('div');
+    row.className = 'bubble-row' + (isMe ? ' me' : '');
+
+    const avatarColor = isMe ? 'var(--green-light)' : color;
+    const avatarInitial = isMe ? (window._currentUserInitials || 'CA') : initial;
+
+    row.innerHTML = `
+>>>>>>> Stashed changes
       <div class="bubble-avatar" style="background:${avatarColor};">${avatarInitial}</div>
       <div class="bubble ${isMe ? "me" : "them"}">
         ${text}
@@ -1352,6 +1498,7 @@
         }
       }
 
+<<<<<<< Updated upstream
       /* ── Kirim gambar ── */
       function kirimGambar(e) {
         const file = e.target.files[0];
@@ -1367,6 +1514,21 @@
         row.className = "bubble-row me";
         row.innerHTML = `
       <div class="bubble-avatar" style="background:var(--green-light);">CA</div>
+=======
+  /* ── Kirim gambar ── */
+  function kirimGambar(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const box = document.getElementById('chatMessages');
+    const now = new Date();
+    const time = now.getHours().toString().padStart(2,'0') + '.' + now.getMinutes().toString().padStart(2,'0');
+    const avatar = window._currentUserInitials || 'CA';
+    const row = document.createElement('div');
+    row.className = 'bubble-row me';
+    row.innerHTML = `
+      <div class="bubble-avatar" style="background:var(--green-light);">${avatar}</div>
+>>>>>>> Stashed changes
       <div class="bubble me" style="padding:6px;">
         <img src="${url}" class="chat-img" alt="gambar">
         <div class="bubble-time">${time} <span class="read-tick read">✓✓</span></div>

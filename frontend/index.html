@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<<<<<<< Updated upstream
     <!-- removed automatic redirect so we can check auth client-side -->
+=======
+>>>>>>> Stashed changes
     <title>BazarUSU — Jajan di Kampus, Gampang!</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Nunito+Sans:wght@400;500;600&display=swap"
@@ -717,14 +720,14 @@
           />
         </div>
         <div class="avatar-btn" onclick="window.location = 'profile.html'">
-          <div class="avatar-placeholder">CA</div>
+          <div class="avatar-placeholder" id="userAvatar">NA</div>
         </div>
       </div>
 
       <!-- Greeting -->
       <div class="greeting">
         <div class="greeting-text">
-          <h2>Halo, Cindy! 👋</h2>
+          <h2 id="greetingName">Halo! 👋</h2>
           <p>Ada 12 produk baru dari temanmu hari ini</p>
         </div>
         <span class="greeting-emoji">🛒</span>
@@ -963,7 +966,27 @@
       </div>
     </main>
 
+    <script src="js/auth.js"></script>
     <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        try {
+          const user = await loadCurrentUserData();
+
+          const greeting = document.getElementById("greetingName");
+          if (greeting)
+            greeting.textContent = `Halo, ${user.name?.split(" ")[0] || "Teman"}! 👋`;
+
+          const avatar = document.getElementById("userAvatar");
+          if (avatar) {
+            avatar.innerHTML = user.avatar_url
+              ? `<img src="${user.avatar_url}" style="width:100%;height:100%;object-fit:cover;">`
+              : getUserInitials(user.name) || "NA";
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      });
+
       /* ── Kategori filter ── */
       function setCategory(btn, cat) {
         document
