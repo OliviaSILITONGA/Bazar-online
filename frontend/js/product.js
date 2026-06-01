@@ -75,7 +75,9 @@ function renderImages(images = []) {
   const thumbRow = document.querySelector(".thumb-row");
 
   if (!images || images.length === 0) {
-    mainImg.innerHTML = "📦";
+    mainImg.innerHTML = `
+      <img src="https://placehold.co/400x400?text=No+Image\\nAvailable">
+    `;
     thumbRow.innerHTML = "";
     return;
   }
@@ -220,13 +222,12 @@ function renderSimilarProducts(products = []) {
 
   products.forEach((product) => {
     const imageUrl =
-      product.product_images?.[0]?.image_url || "https://placehold.co/400x400";
+      product.product_images?.[0]?.image_url ||
+      "https://placehold.co/400x400?text=No+Image\\nAvailable";
     container.innerHTML += `
       <a class="sim-card" href="product.html?id=${product.id}">
         <div class="sim-img">
-          <img
-            src="${imageUrl}"
-            style="width:100%;height:100%;object-fit:cover;">
+          <img src="${imageUrl}" alt="${product.name}">
         </div>
         <div class="sim-name">${product.name}</div>
         <div class="sim-price">
