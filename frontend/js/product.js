@@ -259,7 +259,7 @@ async function addToCart() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        product_id: productId,
+        product_id: parseInt(productId),
         quantity: qty,
       }),
     });
