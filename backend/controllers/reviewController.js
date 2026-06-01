@@ -51,7 +51,21 @@ const createReview = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    return res.status(500).json({
+    const expectedErrors = [
+      "Order item tidak ditemukan",
+      "Anda tidak memiliki akses ke order ini",
+      "Review hanya bisa dibuat setelah order selesai",
+      "Order item ini sudah direview",
+      "Produk tidak ditemukan",
+      "Tidak bisa mereview produk sendiri",
+      "order_item_id, product_id, dan rating wajib diisi",
+      "rating harus berupa angka antara 1 sampai 5",
+    ];
+    const statusCode = expectedErrors.some((msg) => error.message.includes(msg))
+      ? 400
+      : 500;
+
+    return res.status(statusCode).json({
       success: false,
       message: error.message,
     });
