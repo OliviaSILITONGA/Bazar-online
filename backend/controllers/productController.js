@@ -295,6 +295,23 @@ const getLikedProducts = async (req, res) => {
   }
 };
 
+const getSimilarProducts = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const products = await productService.getSimilarProducts(id);
+    return res.status(200).json({
+      success: true,
+      data: products,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getProducts,
   getProductById,
@@ -305,4 +322,5 @@ module.exports = {
   deleteProductImage,
   toggleLikeProduct,
   getLikedProducts,
+  getSimilarProducts,
 };

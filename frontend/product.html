@@ -553,37 +553,33 @@
         <span class="badge badge-new">baru ditambah</span>
       </div>
 
-      <h1 class="product-title">Ayam Penyet</h1>
-      <p class="product-subtitle">ayam + estes · porsi penuh</p>
+      <h1 class="product-title" id="productTitle"></h1>
+      <p class="product-subtitle" id="productSubtitle"></p>
 
       <!-- Penjual -->
       <a class="seller-card-mini" href="profile-orang.html">
         <div class="seller-dot">OG</div>
         <div class="seller-mini-info">
-          <div class="seller-mini-name">Olivia Gabriella <span style="font-weight:400;color:var(--gray-400);font-size:11px;">· Olip</span></div>
-          <div class="seller-mini-loc">📍 Jalan pembangunan, no 5</div>
+          <div class="seller-mini-name"><span id="sellerName"></span> <span style="font-weight:400;color:var(--gray-400);font-size:11px;">· <span id="sellerUsername"></span></span></div>
+          <div class="seller-mini-loc" id="sellerLocation"></div>
         </div>
         <div class="seller-mini-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
       </a>
 
       <!-- Like count -->
       <div class="like-row">
-        <div class="like-count-badge">
-          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-          <span id="likeCountDisplay">24</span> suka
-        </div>
-        <span class="like-text">orang menyukai produk ini</span>
+        <span class="like-text"><span id="likeCountDisplay">0</span> orang menyukai produk ini</span>
       </div>
 
       <!-- Harga -->
       <div class="price-section">
         <div>
           <div class="price-label">Bayar dengan harga...</div>
-          <div class="price-value">Rp 13.000</div>
+          <div class="price-value" id="productPrice"></div>
         </div>
         <div class="ongkir-info">
           <div class="ongkir-label">Ongkir dalam kampus</div>
-          <div class="ongkir-value">Rp 2.000</div>
+          <div class="ongkir-value" id="deliveryFee"></div>
         </div>
       </div>
 
@@ -607,15 +603,8 @@
       <!-- Deskripsi -->
       <div class="desc-box">
         <div class="desc-title">Deskripsi Produk</div>
-        <div class="desc-text">
-          Ayam penyet sambel bawang, cocok buat makan siang! Porsi besar, nasi + ayam + tempe + tahu. Pedes bisa request sesuai selera. Tersedia setiap hari mulai jam 10 pagi.
-        </div>
-        <div class="desc-tags">
-          <span class="desc-tag">halal</span>
-          <span class="desc-tag">tanpa MSG</span>
-          <span class="desc-tag">pesan sehari sebelum</span>
-          <span class="desc-tag">COD / transfer</span>
-        </div>
+        <div class="desc-text" id="productDescription"></div>
+        <div class="desc-tags" id="productTags"></div>
       </div>
 
     </div>
@@ -627,28 +616,28 @@
   <div class="fadeup" style="animation-delay:0.1s">
     <p class="section-title">
       ❤️ Ulasan Pembeli
-      <span style="font-size:13px;font-weight:400;color:var(--gray-400);">(5 ulasan)</span>
+      <span style="font-size:13px;font-weight:400;color:var(--gray-400);">(<span id="reviewCount">0</span> ulasan)</span>
     </p>
 
     <!-- Ringkasan statistik ulasan -->
     <div class="review-summary">
       <div style="text-align:center;">
-        <div class="review-big-num">24</div>
+        <div class="review-big-num" id="reviewLikeCount">0</div>
         <div class="review-big-icon">❤️</div>
         <div style="font-size:11px;color:var(--gray-400);margin-top:2px;">total suka</div>
       </div>
       <div class="review-stats">
         <div class="review-bar-row">
           <span class="review-bar-label" style="font-size:13px;">❤️</span>
-          <div class="review-bar-track"><div class="review-bar-fill" style="width:80%;background:var(--red);"></div></div>
-          <span style="font-size:11px;color:var(--gray-400);">4</span>
+          <div class="review-bar-track"><div id="positiveReviewBar" class="review-bar-fill" style="width:0%;background:var(--red);"></div></div>
+          <span id="positiveReviewCount" style="font-size:11px;color:var(--gray-400);">0</span>
         </div>
         <div class="review-bar-row">
           <span class="review-bar-label" style="font-size:13px;">🤍</span>
-          <div class="review-bar-track"><div class="review-bar-fill" style="width:20%;background:var(--gray-400);"></div></div>
-          <span style="font-size:11px;color:var(--gray-400);">1</span>
+          <div class="review-bar-track"><div id="negativeReviewBar" class="review-bar-fill" style="width:0%;background:var(--gray-400);"></div></div>
+          <span id="negativeReviewCount" style="font-size:11px;color:var(--gray-400);">0</span>
         </div>
-        <div class="review-total">dari 5 pembeli yang mengulas</div>
+        <div class="review-total">dari <span id="reviewSummaryCount">0</span> pembeli yang mengulas</div>
       </div>
     </div>
 
@@ -674,49 +663,7 @@
     </div>
 
     <!-- List ulasan -->
-    <div class="review-list" id="reviewList">
-
-      <div class="review-card">
-        <div class="review-header">
-          <div class="reviewer-avatar" style="background:#e67e22;">RA</div>
-          <div>
-            <div class="reviewer-name">Rara Fitri</div>
-            <div class="reviewer-date">2 hari lalu</div>
-          </div>
-          <div class="review-liked"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Suka</div>
-        </div>
-        <p class="review-text">Enak banget! Ayamnya empuk, sambelnya nampol. Porsinya juga besar, worth it banget buat harga segitu. Recommended buat mahasiswa yang lagi hemat 👍</p>
-        <div class="review-img-row">
-          <div class="review-img">🍗</div>
-          <div class="review-img">🍽️</div>
-        </div>
-      </div>
-
-      <div class="review-card">
-        <div class="review-header">
-          <div class="reviewer-avatar" style="background:#8e44ad;">MQ</div>
-          <div>
-            <div class="reviewer-name">M. Qistan</div>
-            <div class="reviewer-date">5 hari lalu</div>
-          </div>
-          <div class="review-liked"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Suka</div>
-        </div>
-        <p class="review-text">Pesannya gampang, Kak Olip juga ramah. Cuma kemarin agak lama nunggu, tapi overall oke lah buat jadi langganan.</p>
-      </div>
-
-      <div class="review-card">
-        <div class="review-header">
-          <div class="reviewer-avatar" style="background:#2980b9;">SD</div>
-          <div>
-            <div class="reviewer-name">Sari Dewi</div>
-            <div class="reviewer-date">1 minggu lalu</div>
-          </div>
-          <div class="review-liked" style="color:var(--gray-400);"><svg viewBox="0 0 24 24" style="stroke:var(--gray-400);fill:none;"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Kurang</div>
-        </div>
-        <p class="review-text">Rasanya enak sih, tapi porsi tempe+tahunya kurang. Semoga next time bisa diperbanyak ya kak!</p>
-      </div>
-
-    </div>
+    <div class="review-list" id="reviewList"></div>
   </div>
 
   <div class="divider"></div>
@@ -724,113 +671,18 @@
   <!-- Produk serupa -->
   <div class="fadeup" style="animation-delay:0.2s">
     <p class="section-title">Produk Serupa</p>
-    <div class="similar-row">
-      <a class="sim-card" href="product.html"><div class="sim-img">🍖</div><div class="sim-name">Ayam Bakar</div><div class="sim-price">Rp 15.000</div></a>
-      <a class="sim-card" href="product.html"><div class="sim-img">🍱</div><div class="sim-name">Nasi Kotak</div><div class="sim-price">Rp 12.000</div></a>
-      <a class="sim-card" href="product.html"><div class="sim-img">🍜</div><div class="sim-name">Mie Ayam</div><div class="sim-price">Rp 10.000</div></a>
-      <a class="sim-card" href="product.html"><div class="sim-img">🥘</div><div class="sim-name">Nasi Uduk</div><div class="sim-price">Rp 8.000</div></a>
-      <a class="sim-card" href="product.html"><div class="sim-img">🌮</div><div class="sim-name">Cireng Isi</div><div class="sim-price">Rp 5.000</div></a>
-    </div>
+    <div class="similar-row"></div>
   </div>
 
 </main>
 
 <!-- Toast notifikasi -->
 <div id="toast">
-  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
   <span id="toastMsg">Berhasil ditambahkan ke keranjang!</span>
 </div>
 
-<script>
-  let qty = 1;
-  let liked = false;
-  let likeCount = 24;
-
-  function changeQty(delta) {
-    qty = Math.max(1, qty + delta);
-    document.getElementById('qtyNum').textContent = qty;
-  }
-
-  function addToCart() {
-    showToast('🛒 ' + qty + ' item ditambahkan ke keranjang!');
-    const badge = document.querySelectorAll('.badge');
-  }
-
-  function setThumb(el, emoji) {
-    document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    document.getElementById('mainImg').textContent = emoji;
-  }
-
-  function toggleLike() {
-    liked = !liked;
-    const btn = document.getElementById('likeToggleBtn');
-    btn.classList.toggle('liked', liked);
-    btn.querySelector('svg').style.fill = liked ? 'var(--red)' : 'none';
-    btn.innerHTML = (liked
-      ? '<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--red);fill:var(--red);stroke-width:2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Sudah like!'
-      : '<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--gray-400);fill:none;stroke-width:2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Berikan like');
-    if (liked) btn.classList.add('liked'); else btn.classList.remove('liked');
-    likeCount += liked ? 1 : -1;
-    document.getElementById('likeCountDisplay').textContent = likeCount;
-  }
-
-  function handleFiles(e) {
-    const files = Array.from(e.target.files);
-    const preview = document.getElementById('previewArea');
-    files.forEach(f => {
-      const item = document.createElement('div');
-      item.className = 'wr-preview-item';
-      if (f.type.startsWith('image/')) {
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(f);
-        item.appendChild(img);
-      } else {
-        item.textContent = '🎬';
-      }
-      const rm = document.createElement('div');
-      rm.className = 'remove-img';
-      rm.textContent = '×';
-      rm.onclick = () => item.remove();
-      item.appendChild(rm);
-      preview.appendChild(item);
-    });
-  }
-
-  function kirimUlasan() {
-    const txt = document.getElementById('reviewText').value.trim();
-    if (!txt) { showToast('⚠️ Tulis ulasanmu dulu ya!'); return; }
-
-    const list = document.getElementById('reviewList');
-    const card = document.createElement('div');
-    card.className = 'review-card fadeup';
-    card.innerHTML = `
-      <div class="review-header">
-        <div class="reviewer-avatar" style="background:var(--green-mid);">CA</div>
-        <div>
-          <div class="reviewer-name">Cindy Aulia <span style="font-size:11px;color:var(--green-dark);font-weight:400;">· kamu</span></div>
-          <div class="reviewer-date">Baru saja</div>
-        </div>
-        <div class="review-liked" style="${liked ? '' : 'color:var(--gray-400);'}">
-          <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:${liked ? 'var(--red)' : 'var(--gray-400)'};fill:${liked ? 'var(--red)' : 'none'};"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-          ${liked ? 'Suka' : 'Kurang'}
-        </div>
-      </div>
-      <p class="review-text">${txt}</p>
-    `;
-    list.insertBefore(card, list.firstChild);
-    document.getElementById('reviewText').value = '';
-    document.getElementById('previewArea').innerHTML = '';
-    showToast('✅ Ulasan berhasil dikirim!');
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    document.getElementById('toastMsg').textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2800);
-  }
-</script>
+<script src="js/auth.js"></script>
+<script src="js/product.js"></script>
 
 </body>
 </html>
