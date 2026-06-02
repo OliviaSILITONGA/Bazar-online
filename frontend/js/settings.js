@@ -121,30 +121,6 @@ async function doLogout() {
     console.error(err);
   }
 }
-async function doHapusAkun() {
-  try {
-    const konfirm = document.getElementById("hapusConfirm").value.trim();
-    if (konfirm !== "HAPUS AKUN") {
-      toast("⚠️ Ketik HAPUS AKUN dengan benar untuk konfirmasi");
-      return;
-    }
-
-    const response = await authenticatedFetch(`${API_URL}/users/me`, {
-      method: "DELETE",
-      credentials: "include",
-    });
-    const result = await response.json();
-
-    if (!response.ok) throw new Error(result.message);
-
-    document.getElementById("modal-hapusAkun").classList.remove("show");
-    toast("🗑️ Akun berhasil dihapus. Sampai jumpa!");
-    localStorage.removeItem("accessToken");
-    setTimeout(() => (window.location.href = "login.html"), 2000);
-  } catch (err) {
-    console.error(err);
-  }
-}
 function toast(msg) {
   const t = document.getElementById("toast");
   t.textContent = msg;

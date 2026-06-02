@@ -56,29 +56,6 @@ const logout = async (req, res) => {
   });
 };
 
-// GOOGLE LOGIN
-const googleLogin = async (req, res) => {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: "http://127.0.0.1:3000/auth/callback",
-    },
-  });
-
-  if (error)
-    return res.status(400).json({
-      success: false,
-      error: error.message,
-    });
-
-  // data.url adalah link login Google
-  return res.status(200).json({
-    success: true,
-    message: "Redirect URL berhasil dibuat",
-    url: data.url,
-  });
-};
-
 // REFRESH TOKEN
 const refreshToken = async (req, res) => {
   const token = req.cookies.refreshToken;
@@ -108,6 +85,5 @@ module.exports = {
   register,
   login,
   logout,
-  googleLogin,
   refreshToken,
 };

@@ -315,19 +315,6 @@ async function saveModal() {
   }
 }
 
-/* ── Share ── */
-function shareProfile() {
-  if (navigator.share) {
-    navigator.share({
-      title: `BazarUSU — ${user.name}`,
-      url: window.location.href,
-    });
-  } else {
-    navigator.clipboard.writeText(window.location.href);
-    showToast("🔗 Link profil disalin!");
-  }
-}
-
 function openFollowers() {
   showToast("👥 20 followers");
 }

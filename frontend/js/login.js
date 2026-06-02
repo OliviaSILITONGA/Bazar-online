@@ -214,25 +214,6 @@ async function doRegister() {
   }
 }
 
-async function googleLogin() {
-  try {
-    const res = await fetch(`${API_URL}/auth/google`, {
-      method: "POST",
-      credentials: "include",
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.message || "Google login gagal");
-    }
-
-    // redirect ke Google OAuth
-    window.location.href = data.url;
-  } catch (err) {
-    toast("❌ " + err.message);
-  }
-}
-
 function toast(msg) {
   const t = document.getElementById("toast");
   t.textContent = msg;
