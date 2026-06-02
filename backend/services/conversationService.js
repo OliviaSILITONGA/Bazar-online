@@ -6,14 +6,32 @@ const { messageNotification } = require("../utils/notificationGenerator"); // <-
 // GET ALL CONVERSATIONS
 // =====================================================
 const getConversations = async (userId) => {
-  const { data, error } = await supabase
+  const { data: conversations, error } = await supabase
     .from("conversations")
     .select("*")
     .or(`user_a_id.eq.${userId},user_b_id.eq.${userId}`)
     .order("last_at", { ascending: false });
 
   if (error) throw new Error(error.message);
-  return data;
+
+  const result = await Promise.all(
+    conversations.map(async (conv) => {
+      const otherUserId =
+        conv.user_a_id === userId ? conv.user_b_id : conv.user_a_id;
+
+      const { data: user } = await supabase
+        .from("users")
+        .select("id,name,username,avatar_url")
+        .eq("id", otherUserId)
+        .single();
+
+      return {
+        ...conv,
+        other_user: user,
+      };
+    }),
+  );
+  return result;
 };
 
 // =====================================================
@@ -105,6 +123,37 @@ const sendMessage = async (conversationId, senderId, messageData) => {
     mediaUrl = publicUrlData.publicUrl;
   }
 
+  // =====================================================
+  // GET CONVERSATION (UNTUK MENENTUKAN PENERIMA)
+  // =====================================================
+  const { data: conversation, error: conversationError } = await supabase
+    .from("conversations")
+    .select("*")
+    .eq("id", conversationId)
+    .single();
+
+  if (conversationError) throw new Error(conversationError.message);
+
+  const receiverId =
+    conversation.user_a_id === senderId
+      ? conversation.user_b_id
+      : conversation.user_a_id;
+
+  if (
+    conversation.user_a_id !== senderId &&
+    conversation.user_b_id !== senderId
+  ) {
+    throw new Error("Unauthorized access to conversation");
+  }
+
+  const { data: sender, error: senderError } = await supabase
+    .from("users")
+    .select("name")
+    .eq("id", senderId)
+    .single();
+
+  if (senderError) throw new Error(senderError.message);
+
   // -------------------------------
   // INSERT MESSAGE
   // -------------------------------
@@ -116,36 +165,13 @@ const sendMessage = async (conversationId, senderId, messageData) => {
         sender_id: senderId,
         body: messageData.body || null,
         media_url: mediaUrl,
+        message_type: mediaUrl ? "image" : "text",
       },
     ])
     .select()
     .single();
 
-  if (messageError) throw new Error(error.message);
-
-  // =====================================================
-  // GET CONVERSATION (UNTUK MENENTUKAN PENERIMA)
-  // =====================================================
-  const { data: conversation, error: conversationError } = await supabase
-    .from("conversations")
-    .select("user_a_id, user_b_id")
-    .eq("id", conversationId)
-    .single();
-
-  if (conversationError) throw new Error(conversationError.message);
-
-  const receiverId =
-    conversation.user_a_id === senderId
-      ? conversation.user_b_id
-      : conversation.user_a_id;
-
-  const { data: sender, error: senderError } = await supabase
-    .from("users")
-    .select("name")
-    .eq("id", senderId)
-    .single();
-
-  if (senderError) throw new Error(error.message);
+  if (messageError) throw new Error(messageError.message);
 
   // =====================================================
   // CREATE NOTIFICATION
