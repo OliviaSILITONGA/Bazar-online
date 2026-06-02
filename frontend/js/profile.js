@@ -195,9 +195,7 @@ function renderLikedProducts(products) {
 }
 
 async function loadMyReviews() {
-  const res = await authenticatedFetch(
-    `${API_URL}/users/${currentUser.id}/reviews`,
-  );
+  const res = await authenticatedFetch(`${API_URL}/users/me/reviews`);
   const data = await res.json();
 
   if (!res.ok) throw new Error(data.message);

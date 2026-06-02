@@ -38,6 +38,39 @@ const getMyProfile = async (userId) => {
   return data;
 };
 
+/*
+========================================
+REVIEW USER
+========================================
+*/
+const getMyReviews = async (userId) => {
+  const { data, error } = await supabase
+    .from("reviews")
+    .select(
+      `
+        id,
+        rating,
+        body,
+        created_at,
+        products(
+          id,
+          name,
+          seller:users!fk_product_seller(name)
+        )
+      `,
+    )
+    .eq("reviewer_id", userId);
+
+  if (error) {
+    throw {
+      statusCode: 500,
+      message: error.message,
+    };
+  }
+
+  return data;
+};
+
 const toggleVisibility = async (userId) => {
   const { data: user, error: userError } = await supabase
     .from("users")
@@ -288,34 +321,53 @@ const getUserProducts = async (userId) => {
   return data;
 };
 
-/*
-========================================
-REVIEW USER
-========================================
-*/
+// =====================================================
+// GET USER REVIEWS
+// =====================================================
 const getUserReviews = async (userId) => {
+  // ambil semua produk milik seller
+  const { data: products, error: productError } = await supabase
+    .from("products")
+    .select("id")
+    .eq("seller_id", userId);
+
+  if (productError) {
+    throw new Error(productError.message);
+  }
+
+  if (!products.length) {
+    return [];
+  }
+
+  const productIds = products.map((p) => p.id);
+
   const { data, error } = await supabase
     .from("reviews")
     .select(
       `
+      id,
+      rating,
+      body,
+      created_at,
+
+      reviewer:users!fk_review_user (
         id,
-        rating,
-        body,
-        created_at,
-        products(
-          id,
-          name,
-          seller:users!fk_product_seller(name)
-        )
-      `,
+        name,
+        username,
+        avatar_url
+      ),
+
+      product:products!fk_review_product (
+        id,
+        name
+      )
+    `,
     )
-    .eq("reviewer_id", userId);
+    .in("product_id", productIds)
+    .order("created_at", { ascending: false });
 
   if (error) {
-    throw {
-      statusCode: 500,
-      message: error.message,
-    };
+    throw new Error(error.message);
   }
 
   return data;
@@ -323,6 +375,7 @@ const getUserReviews = async (userId) => {
 
 module.exports = {
   getMyProfile,
+  getMyReviews,
   toggleVisibility,
   updateMyProfile,
   uploadAvatar,

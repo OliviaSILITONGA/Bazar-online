@@ -16,6 +16,10 @@ PRIVATE ROUTES (login diperlukan)
 // Ambil profil user yang sedang login
 router.get("/me", authMiddleware, userController.getMyProfile);
 
+// GET /users/me/reviews
+// Review yang dibuat user
+router.get("/me/reviews", userController.getMyReviews);
+
 // POST /users/me/visibility
 // Update sifat profil (publik/privat)
 router.post("/me/visibility", authMiddleware, userController.toggleVisibility);
@@ -52,7 +56,7 @@ router.get("/:id", privateProfileMiddleware, userController.getUserById);
 router.get("/:id/products", userController.getUserProducts);
 
 // GET /users/:id/reviews
-// Review yang dibuat user
+// Review yang diterima user
 router.get("/:id/reviews", userController.getUserReviews);
 
 module.exports = router;

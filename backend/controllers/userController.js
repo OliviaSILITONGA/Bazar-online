@@ -36,6 +36,30 @@ const getMyProfile = async (req, res) => {
   }
 };
 
+/*
+========================================
+GET /users/me/reviews
+Review user
+========================================
+*/
+const getMyReviews = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const reviews = await userService.getMyReviews(userId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Review user berhasil diambil",
+      data: reviews,
+    });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Terjadi kesalahan server",
+    });
+  }
+};
+
 // =====================================================
 // TOGGLE USER VISIBILITY
 // =====================================================
@@ -205,32 +229,31 @@ const getUserProducts = async (req, res) => {
   }
 };
 
-/*
-========================================
-GET /users/:id/reviews
-Review user
-========================================
-*/
+// =====================================================
+// GET /users/:id/reviews
+// =====================================================
 const getUserReviews = async (req, res) => {
   try {
     const userId = req.params.id;
-    const reviews = await userService.getUserReviews(userId);
+
+    const result = await userService.getUserReviews(userId);
 
     return res.status(200).json({
       success: true,
-      message: "Review user berhasil diambil",
-      data: reviews,
+      message: "Berhasil mengambil review pengguna",
+      data: result,
     });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({
+    return res.status(500).json({
       success: false,
-      message: error.message || "Terjadi kesalahan server",
+      message: error.message,
     });
   }
 };
 
 module.exports = {
   getMyProfile,
+  getMyReviews,
   toggleVisibility,
   updateMyProfile,
   uploadAvatar,
