@@ -10,6 +10,7 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const conversationRoutes = require("./routes/conversationRoutes");
 const promoRoutes = require("./routes/promoRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const configRoutes = require("./routes/configRoutes");
 
 const app = express();
 
@@ -30,5 +31,6 @@ app.use("/reviews", reviewRoutes);
 app.use("/conversations", conversationRoutes);
 app.use("/promos", promoRoutes);
 app.use("/notifications", notificationRoutes);
+app.use("/config", configRoutes);
 
 module.exports = app;

@@ -19,15 +19,28 @@ const getConversations = async (userId) => {
       const otherUserId =
         conv.user_a_id === userId ? conv.user_b_id : conv.user_a_id;
 
-      const { data: user } = await supabase
+      const { data: user, error: userError } = await supabase
         .from("users")
         .select("id,name,username,avatar_url")
         .eq("id", otherUserId)
         .single();
 
+      if (userError) throw new Error(userError.message);
+
+      const { count: unreadCount } = await supabase
+        .from("messages")
+        .select("*", {
+          count: "exact",
+          head: true,
+        })
+        .eq("conversation_id", conv.id)
+        .neq("sender_id", userId)
+        .eq("is_read", false);
+
       return {
         ...conv,
         other_user: user,
+        unread_count: unreadCount || 0,
       };
     }),
   );
@@ -37,7 +50,7 @@ const getConversations = async (userId) => {
 // =====================================================
 // GET MESSAGES BY CONVERSATION
 // =====================================================
-const getMessages = async (conversationId, userId) => {
+const getMessages = async (conversationId, userId, page = 1, limit = 50) => {
   // optional: validasi ownership conversation
   const { data: conv, error: convErr } = await supabase
     .from("conversations")
@@ -51,9 +64,22 @@ const getMessages = async (conversationId, userId) => {
     throw new Error("Unauthorized access to conversation");
   }
 
+  await supabase
+    .from("messages")
+    .update({ is_read: true })
+    .eq("conversation_id", conversationId)
+    .neq("sender_id", userId)
+    .eq("is_read", false)
+    .range((page - 1) * limit, page * limit - 1);
+
   const { data, error } = await supabase
     .from("messages")
-    .select("*")
+    .select(
+      `
+      *,
+      sender:users!fk_message_sender(id, name, avatar_url)
+    `,
+    )
     .eq("conversation_id", conversationId)
     .order("created_at", { ascending: true });
 

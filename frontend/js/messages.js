@@ -1,6 +1,52 @@
+let realtimeChannel = null;
+let supabaseRealtime = null;
+
 let activeConversationId = null;
 let currentUser = null;
 let conversations = [];
+
+async function initializeRealtime() {
+  try {
+    const response = await authenticatedFetch(`${API_URL}/config/realtime`);
+    const result = await response.json();
+
+    if (!response.ok) throw new Error(result.message);
+
+    supabaseRealtime = supabase.createClient(
+      result.data.supabaseUrl,
+      result.data.supabaseAnonKey,
+    );
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function subscribeConversation(conversationId) {
+  if (!supabaseRealtime) return;
+
+  if (realtimeChannel) supabaseRealtime.removeChannel(realtimeChannel);
+
+  realtimeChannel = supabaseRealtime
+    .channel(`conversation-${conversationId}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "messages",
+      },
+      async (payload) => {
+        const message = payload.new;
+
+        if (Number(message.conversation_id) !== Number(conversationId))
+          return;
+
+        await loadChat(conversationId);
+        await loadConversations();
+      },
+    )
+    .subscribe();
+}
 
 /* -- Tampilkan user yang sedang login -- */
 async function loadCurrentUser() {
@@ -93,6 +139,7 @@ async function openConversation(conversation) {
         .slice(0, 2)
         .join("")
         .toUpperCase();
+  subscribeConversation(conversation.id);
   await loadChat(conversation.id);
   await markConversationAsRead(conversation.id);
   await loadConversations();
@@ -182,8 +229,6 @@ async function kirimPesan() {
       },
     );
     input.value = "";
-    await loadChat(activeConversationId);
-    await loadConversations();
   } catch (err) {
     console.error(err);
   }
@@ -208,9 +253,7 @@ async function kirimGambar(event) {
         body: formData,
       },
     );
-
-    await loadChat(activeConversationId);
-    await loadConversations();
+    document.getElementById("msgInput").value = "";
   } catch (err) {
     console.error(err);
   }
@@ -280,6 +323,7 @@ function kembaliKontak() {
 
 window.onload = async () => {
   await loadCurrentUser();
+  await initializeRealtime();
   await loadConversations();
   if (conversations.length > 0) {
     await openConversation(conversations[0]);
