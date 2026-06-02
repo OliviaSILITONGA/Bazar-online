@@ -50,8 +50,6 @@ async function loadProduct() {
 
 function renderProduct(product) {
   document.getElementById("productTitle").textContent = product.name || "-";
-  document.getElementById("productSubtitle").textContent =
-    product.short_description || "";
   document.getElementById("productPrice").textContent =
     `Rp ${Number(product.price || 0).toLocaleString("id-ID")}`;
   document.getElementById("deliveryFee").textContent =

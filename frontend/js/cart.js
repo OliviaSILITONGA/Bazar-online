@@ -153,20 +153,24 @@ function renderCart(items) {
         const price = product.price || 0;
         const qty = item.quantity || 1;
         const stock = product.stock || 99;
-        const imageUrl = product.product_images?.[0]?.image_url;
+        const imageUrl = product.product_images?.[0]?.image_url || "https://placehold.co/400x400?text=No+Image\\nAvailable";
 
         // Simpan ke state lokal
-        data[itemId] = { price, qty, on: true, stock };
+        data[itemId] = {
+          price,
+          qty,
+          on: true,
+          stock,
+          note: item.note || ""
+        };
 
         return `
           <div class="cart-item selected" id="item-${itemId}">
             <input class="item-check" type="checkbox" checked
               onchange="cekItem(this,'${itemId}')">
             <a class="item-img" href="product.html?id=${product.id}">
-              ${imageUrl
-                ? `<img src="${imageUrl}" alt="${product.name}"
-                    style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`
-                : "🛍️"}
+              <img src="${imageUrl}" alt="${product.name}"
+                style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
             </a>
             <div class="item-body">
               <div class="item-name">${product.name || "Produk"}</div>
@@ -206,8 +210,13 @@ function renderCart(items) {
         <a class="btn-chat" href="messages.html">💬 Chat</a>
       </div>
       <div class="cart-list">${itemsHTML}</div>
-      <input type="text" class="note-input"
-        placeholder="📝 Catatan untuk ${group.name} (opsional)">
+      <input
+        type="text"
+        class="note-input"
+        data-cart-id="${group.items[0].id}"
+        value="${group.items[0].note || ""}"
+        placeholder="📝 Catatan untuk ${group.name} (opsional)"
+        onblur="updateNote(this)">
     `;
     return groupEl;
   });
@@ -351,6 +360,22 @@ function keCheckout() {
   }
   sessionStorage.setItem("checkoutItems", JSON.stringify(sel));
   window.location.href = "checkout.html";
+}
+
+async function updateNote(input) {
+  const cartId = input.dataset.cartId;
+  const note = input.value.trim();
+
+  const res = await apiCart("PUT", "/note" + cartId, { note });
+  if (!res) return;
+
+  const result = await res.json();
+  if (!res.ok) {
+    toast("❌ " + result.message);
+    return;
+  }
+
+  toast("📝 Catatan tersimpan");
 }
 
 // ── Init ─────────────────────────────────────────────────────
