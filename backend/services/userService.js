@@ -38,6 +38,29 @@ const getMyProfile = async (userId) => {
   return data;
 };
 
+const toggleVisibility = async (userId) => {
+  const { data: user, error: userError } = await supabase
+    .from("users")
+    .select("is_public")
+    .eq("id", userId)
+    .single();
+
+  if (userError) throw new Error(userError.message);
+
+  const { data, error } = await supabase
+    .from("users")
+    .update({
+      is_public: !user.is_public,
+    })
+    .eq("id", userId)
+    .select("id, is_public")
+    .single();
+
+  if (error) throw new Error(error.message);
+
+  return data;
+};
+
 /*
 ========================================
 UPDATE PROFIL
@@ -300,6 +323,7 @@ const getUserReviews = async (userId) => {
 
 module.exports = {
   getMyProfile,
+  toggleVisibility,
   updateMyProfile,
   uploadAvatar,
   deleteMyProfile,

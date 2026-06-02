@@ -25,6 +25,12 @@ async function loadCurrentUser() {
     userName.textContent = user.name;
     userEmail.textContent = user.email;
 
+    if (!user.is_seller) {
+      document
+        .querySelectorAll(".seller-only")
+        .forEach((n) => (n.style.display = "none"));
+    }
+
     document.getElementById("settingEmail").textContent = user.email;
     document.getElementById("settingPhone").textContent = user.phone
       ? user.phone
@@ -95,13 +101,26 @@ async function simpan(id, msg) {
     toast(err.message || "Gagal menyimpan perubahan");
   }
 }
-function toggleSwitch(el) {
-  el.classList.toggle("on");
-  toast(
-    el.classList.contains("on")
-      ? "🔔 Notifikasi diaktifkan"
-      : "🔕 Notifikasi dinonaktifkan",
-  );
+async function toggleSwitch(el) {
+  try {
+    const response = await authenticatedFetch(
+      `${API_URL}/users/me/visibility`,
+      { method: "POST" },
+    );
+    const result = await response.json();
+
+    if (!response.ok) throw new Error(result.message);
+
+    el.classList.toggle("on");
+    toast(
+      el.classList.contains("on")
+        ? "👤 Profil dijadikan publik"
+        : "👤 Profil dijadikan privat",
+    );
+  } catch (err) {
+    console.error(err);
+    toast(err.message || "Gagal mengubah status profil");
+  }
 }
 async function doLogout() {
   try {
@@ -119,6 +138,7 @@ async function doLogout() {
     setTimeout(() => (window.location.href = "login.html"), 1800);
   } catch (err) {
     console.error(err);
+    toast(err.message || "Gagal logout");
   }
 }
 function toast(msg) {

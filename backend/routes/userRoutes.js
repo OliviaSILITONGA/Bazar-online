@@ -4,6 +4,7 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const upload = require("../middlewares/uploadMiddleware");
+const privateProfileMiddleware = require("../middlewares/privateProfileMiddleware");
 
 /*
 ========================================
@@ -14,6 +15,10 @@ PRIVATE ROUTES (login diperlukan)
 // GET /users/me
 // Ambil profil user yang sedang login
 router.get("/me", authMiddleware, userController.getMyProfile);
+
+// POST /users/me/visibility
+// Update sifat profil (publik/privat)
+router.post("/me/visibility", authMiddleware, userController.toggleVisibility);
 
 // PUT /users/me
 // Update profil sendiri
@@ -40,7 +45,7 @@ PUBLIC ROUTES
 
 // GET /users/:id
 // Profil publik user lain
-router.get("/:id", userController.getUserById);
+router.get("/:id", privateProfileMiddleware, userController.getUserById);
 
 // GET /users/:id/products
 // Produk milik user

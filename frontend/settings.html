@@ -157,7 +157,7 @@
 
     <div class="setting-row" onclick="bukaModal('email')">
       <div class="setting-icon" style="background:#faeeda;"><svg viewBox="0 0 24 24" style="stroke:#d97706"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-      <div class="setting-body"><div class="setting-label">Email</div><div class="setting-desc">Digunakan untuk login dan notifikasi</div></div>
+      <div class="setting-body"><div class="setting-label">Email</div><div class="setting-desc">Digunakan untuk login</div></div>
       <div class="setting-right"><span class="setting-value" id="settingEmail">unknown@students.usu.ac.id</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
     </div>
 
@@ -167,39 +167,10 @@
       <div class="setting-right"><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
     </div>
 
-    <div class="setting-row" onclick="bukaModal('nohp')">
+    <div class="setting-row seller-only" onclick="bukaModal('nohp')">
       <div class="setting-icon" style="background:#eaf3de;"><svg viewBox="0 0 24 24" style="stroke:var(--green-mid)"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.34a16 16 0 006.29 6.29l1.41-1.41a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
-      <div class="setting-body"><div class="setting-label">Nomor HP</div><div class="setting-desc">Untuk dihubungi penjual/pembeli</div></div>
+      <div class="setting-body"><div class="setting-label">Nomor WhatsApp</div><div class="setting-desc">Untuk dihubungi pembeli</div></div>
       <div class="setting-right"><span class="setting-value" id="settingPhone">Belum diisi</span><div class="setting-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>
-    </div>
-  </div>
-
-  <!-- NOTIFIKASI -->
-  <div class="settings-section">
-    <div class="section-header"><div class="section-title">Notifikasi</div></div>
-
-    <div class="setting-row">
-      <div class="setting-icon" style="background:#faeeda;"><svg viewBox="0 0 24 24" style="stroke:#d97706"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
-      <div class="setting-body"><div class="setting-label">Notifikasi Pesanan</div><div class="setting-desc">Update status pesanan kamu</div></div>
-      <div class="toggle on" onclick="toggleSwitch(this)"></div>
-    </div>
-
-    <div class="setting-row">
-      <div class="setting-icon" style="background:#e6f1fb;"><svg viewBox="0 0 24 24" style="stroke:#0c447c"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-      <div class="setting-body"><div class="setting-label">Notifikasi Pesan</div><div class="setting-desc">Pesan baru dari penjual/pembeli</div></div>
-      <div class="toggle on" onclick="toggleSwitch(this)"></div>
-    </div>
-
-    <div class="setting-row">
-      <div class="setting-icon" style="background:#eaf3de;"><svg viewBox="0 0 24 24" style="stroke:var(--green-mid)"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
-      <div class="setting-body"><div class="setting-label">Notifikasi Like</div><div class="setting-desc">Saat ada yang menyukai produkmu</div></div>
-      <div class="toggle" onclick="toggleSwitch(this)"></div>
-    </div>
-
-    <div class="setting-row">
-      <div class="setting-icon" style="background:#f0f0ec;"><svg viewBox="0 0 24 24" style="stroke:var(--gray-600)"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-      <div class="setting-body"><div class="setting-label">Notifikasi Follower Baru</div><div class="setting-desc">Saat ada yang mengikutimu</div></div>
-      <div class="toggle on" onclick="toggleSwitch(this)"></div>
     </div>
   </div>
 

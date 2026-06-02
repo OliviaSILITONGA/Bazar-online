@@ -36,6 +36,29 @@ const getMyProfile = async (req, res) => {
   }
 };
 
+// =====================================================
+// TOGGLE USER VISIBILITY
+// =====================================================
+const toggleVisibility = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const result = await userService.toggleVisibility(userId);
+
+    return res.status(200).json({
+      success: true,
+      message: `Profil berhasil diubah menjadi ${
+        result.is_public ? "publik" : "privat"
+      }`,
+      data: result,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 /*
 ========================================
 PUT /users/me
@@ -208,6 +231,7 @@ const getUserReviews = async (req, res) => {
 
 module.exports = {
   getMyProfile,
+  toggleVisibility,
   updateMyProfile,
   uploadAvatar,
   deleteMyProfile,

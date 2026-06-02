@@ -16,11 +16,15 @@ async function loadCurrentUser() {
     document.getElementById("displayUsername").textContent = user.username;
     document.getElementById("displayBio").textContent =
       user.bio || "Belum ada bio";
-    
+
     if (!user.is_seller) {
-      document.querySelectorAll(".seller-only").forEach((n) =>
-        n.style.display = "none");
+      document
+        .querySelectorAll(".seller-only")
+        .forEach((n) => (n.style.display = "none"));
       switchTab("disukai");
+    } else {
+      document.getElementById("displayPhone").textContent =
+        user.phone || "Nomor WA tidak diketahui";
     }
 
     const avatarCircle = document.getElementById("avatarCircle");
@@ -191,7 +195,9 @@ function renderLikedProducts(products) {
 }
 
 async function loadMyReviews() {
-  const res = await authenticatedFetch(`${API_URL}/users/${currentUser.id}/reviews`);
+  const res = await authenticatedFetch(
+    `${API_URL}/users/${currentUser.id}/reviews`,
+  );
   const data = await res.json();
 
   if (!res.ok) throw new Error(data.message);
