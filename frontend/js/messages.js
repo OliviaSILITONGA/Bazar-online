@@ -1,124 +1,126 @@
-/* ── Data percakapan per kontak ── */
-const chatData = {
-  olip: {
-    name: "Olivia Gabriella",
-    initial: "OG",
-    color: "#7aab22",
-    online: true,
-    messages: [], // sudah dirender di HTML
-  },
-  yana: {
-    name: "Alfiyana",
-    initial: "AL",
-    color: "#e67e22",
-    online: false,
-    messages: [
-      {
-        me: false,
-        text: "Halo kak, pesanan kue kukusnya sudah ready!",
-        time: "Kemarin 14.10",
-      },
-      {
-        me: true,
-        text: "Wah makasih ya kak! Nanti aku jemput jam 2 siang 🙏",
-        time: "Kemarin 14.12",
-      },
-      {
-        me: false,
-        text: "Siap kak! Pesanannya udah ready 😊",
-        time: "Kemarin 14.15",
-      },
-    ],
-  },
-  qistan: {
-    name: "Muhammad Qistan",
-    initial: "MQ",
-    color: "#8e44ad",
-    online: true,
-    messages: [
-      { me: false, text: "Kak, jual jus mangga ga?", time: "Kemarin 10.00" },
-      {
-        me: true,
-        text: "Ada kak! Mau pesan? Rp 10.000 per gelas 😄",
-        time: "Kemarin 10.05",
-      },
-      {
-        me: false,
-        text: "Jus mangganya masih ada kak?",
-        time: "Kemarin 10.08",
-      },
-    ],
-  },
-  sari: {
-    name: "Sari Dewi",
-    initial: "SD",
-    color: "#2980b9",
-    online: false,
-    messages: [
-      {
-        me: false,
-        text: "Halo kak! Donat coklat masih ada ga?",
-        time: "Sen 09.00",
-      },
-      { me: true, text: "Masih ada kak, mau pesan berapa?", time: "Sen 09.05" },
-    ],
-  },
-  rara: {
-    name: "Rara Fitri",
-    initial: "RF",
-    color: "#c0392b",
-    online: false,
-    messages: [
-      {
-        me: false,
-        text: "Makasih pesanannya kak! Enak banget 😍",
-        time: "Ming 15.00",
-      },
-      {
-        me: true,
-        text: "Makasih juga udah pesan ya kak! 🙏",
-        time: "Ming 15.02",
-      },
-    ],
-  },
-};
+let activeConversationId = null;
+let currentUser = null;
+let conversations = [];
 
-let activeContact = "olip";
+/* -- Tampilkan user yang sedang login -- */
+async function loadCurrentUser() {
+  try {
+    const response = await authenticatedFetch(`${API_URL}/users/me`);
+    if (!response.ok) return;
+
+    const result = await response.json();
+    const user = result.data;
+    currentUser = user;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function loadConversations() {
+  try {
+    const response = await authenticatedFetch(`${API_URL}/conversations`);
+    const result = await response.json();
+
+    if (!response.ok) throw new Error(result.message);
+    conversations = result.data || [];
+
+    renderConversationList();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function renderConversationList() {
+  const container = document.getElementById("contactList");
+  container.innerHTML = "";
+  if (conversations.length > 0) {
+    conversations.forEach((conversation) => {
+      const user = conversation.other_user;
+      const div = document.createElement("div");
+      div.className = "contact-item";
+      div.dataset.id = conversation.id;
+      div.innerHTML = `
+      <div class="contact-avatar">
+        ${(user.name || "?")
+          .split(" ")
+          .map((s) => s[0])
+          .slice(0, 2)
+          .join("")}
+      </div>
+      <div class="contact-body">
+        <div class="contact-name">${user.name}</div>
+        <div class="contact-preview ${
+          conversation.unread_count > 0 ? "unread" : ""
+        }">
+          ${conversation.last_message || ""}
+        </div>
+      </div>
+      <div class="contact-meta">
+        ${
+          conversation.unread_count > 0
+            ? `<span class="unread-badge">${conversation.unread_count}</span>`
+            : ""
+        }
+      </div>
+    `;
+      div.onclick = () => openConversation(conversation);
+      container.appendChild(div);
+    });
+  } else {
+    document.getElementById("chatMessages").innerHTML =
+      `<div class="empty-chat">
+      <div class="big">💬</div>
+      <p>Belum ada percakapan</p>
+      <small>Mulai chat dari halaman produk</small>
+    </div>`;
+  }
+}
+
+async function openConversation(conversation) {
+  activeConversationId = conversation.id;
+  document.getElementById("headerName").textContent =
+    conversation.other_user.name;
+  const avatar = document.getElementById("headerAvatar");
+  avatar.innerHTML = conversation.other_user.avatar_url
+    ? `
+  <img
+    src="${conversation.other_user.avatar_url}"
+    style="width:100%;height:100%;border-radius:50%;object-fit:cover;"
+  >`
+    : (conversation.other_user.name || "?")
+        .split(" ")
+        .map((s) => s[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase();
+  await loadChat(conversation.id);
+  await markConversationAsRead(conversation.id);
+  await loadConversations();
+}
+
+async function loadChat(conversationId) {
+  try {
+    const response = await authenticatedFetch(
+      `${API_URL}/conversations/${conversationId}/messages`,
+    );
+    const result = await response.json();
+
+    if (!response.ok) throw new Error(result.message);
+    bukaChat(result.data);
+  } catch (err) {
+    console.error(err);
+  }
+}
 
 /* ── Buka chat ── */
-function bukaChat(el, id) {
-  document
-    .querySelectorAll(".contact-item")
-    .forEach((c) => c.classList.remove("active"));
-  el.classList.add("active");
-  // hapus unread badge
-  const badge = el.querySelector(".unread-badge");
-  if (badge) badge.remove();
-  const preview = el.querySelector(".contact-preview");
-  if (preview) preview.classList.remove("unread");
-
-  activeContact = id;
-  const d = chatData[id];
-
-  // update header
-  document.getElementById("headerAvatar").textContent = d.initial;
-  document.getElementById("headerAvatar").style.background = d.color;
-  document.getElementById("headerName").textContent = d.name;
-  const statusEl = document.getElementById("headerStatus");
-  statusEl.textContent = d.online ? "● Online" : "○ Offline";
-  statusEl.className = "chat-header-status" + (d.online ? "" : " offline");
-
+function bukaChat(messages) {
   // render pesan
   const box = document.getElementById("chatMessages");
-  if (id === "olip") {
-    // sudah ada di HTML, scroll ke bawah saja
-    box.scrollTop = box.scrollHeight;
-    return;
-  }
-  box.innerHTML = '<div class="date-sep"><span>Kemarin</span></div>';
-  d.messages.forEach((m) =>
-    renderBubble(m.text, m.time, m.me, d.initial, d.color),
-  );
+  box.innerHTML = "";
+  messages.forEach((m) => {
+    const isMe = m.sender_id === currentUser.id;
+    renderBubble(m, isMe);
+  });
   box.scrollTop = box.scrollHeight;
 
   // mobile: sembunyikan kontak
@@ -129,93 +131,103 @@ function bukaChat(el, id) {
 }
 
 /* ── Render bubble ── */
-function renderBubble(text, time, isMe, initial, color) {
+function renderBubble(message, isMe) {
   const box = document.getElementById("chatMessages");
   const row = document.createElement("div");
-  row.className = "bubble-row" + (isMe ? " me" : "");
+  row.className = `bubble-row ${isMe ? "me" : ""}`;
 
-  const avatarColor = isMe ? "var(--green-light)" : color;
-  const avatarInitial = isMe ? "CA" : initial;
+  let content = "";
+  if (message.media_url)
+    content += `<img src="${message.media_url}" class="chat-img" alt="media">`;
+  if (message.body)
+    content += `<div style="margin-top:6px;">${message.body}</div>`;
 
   row.innerHTML = `
-      <div class="bubble-avatar" style="background:${avatarColor};">${avatarInitial}</div>
-      <div class="bubble ${isMe ? "me" : "them"}">
-        ${text}
-        <div class="bubble-time">${time}${isMe ? ' <span class="read-tick read">✓✓</span>' : ""}</div>
-      </div>`;
+    <div class="bubble ${isMe ? "me" : "them"}">
+      ${content}
+
+      <div class="bubble-time">
+        ${new Date(message.created_at).toLocaleTimeString("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
+      </div>
+
+      ${
+        isMe
+          ? `<span class="read-tick ${message.is_read ? "read" : ""}">
+              ✓✓
+            </span>`
+          : ""
+      }
+    </div>
+  `;
   box.appendChild(row);
-  box.scrollTop = box.scrollHeight;
 }
 
 /* ── Kirim pesan ── */
-function kirimPesan() {
+async function kirimPesan() {
+  if (!activeConversationId) return;
   const input = document.getElementById("msgInput");
   const text = input.value.trim();
   if (!text) return;
 
-  const now = new Date();
-  const time =
-    now.getHours().toString().padStart(2, "0") +
-    "." +
-    now.getMinutes().toString().padStart(2, "0");
-
-  renderBubble(text, time, true, "", "");
-  input.value = "";
-  input.style.height = "auto";
-
-  // Simpan ke data
-  if (chatData[activeContact].messages) {
-    chatData[activeContact].messages.push({ me: true, text, time });
-  }
-
-  // Update preview kontak
-  const activeEl = document.querySelector(
-    ".contact-item.active .contact-preview",
-  );
-  if (activeEl) {
-    activeEl.textContent = text;
-    activeEl.classList.remove("unread");
-  }
-
-  // Simulasi balas otomatis
-  if (activeContact === "olip") {
-    showTyping();
-    setTimeout(() => {
-      hideTyping();
-      const replies = [
-        "Oke kak siap! 😊",
-        "Noted kak, nanti aku konfirm lagi ya!",
-        "Makasih kak udah chat! 🙏",
-        "Baik kak, segera aku proses!",
-      ];
-      const reply = replies[Math.floor(Math.random() * replies.length)];
-      renderBubble(reply, time, false, "OG", "#7aab22");
-    }, 2000);
+  try {
+    await authenticatedFetch(
+      `${API_URL}/conversations/${activeConversationId}/messages`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ body: text }),
+      },
+    );
+    input.value = "";
+    await loadChat(activeConversationId);
+    await loadConversations();
+  } catch (err) {
+    console.error(err);
   }
 }
 
 /* ── Kirim gambar ── */
-function kirimGambar(e) {
-  const file = e.target.files[0];
+async function kirimGambar(event) {
+  if (!activeConversationId) return;
+  const file = event.target.files[0];
   if (!file) return;
-  const url = URL.createObjectURL(file);
-  const box = document.getElementById("chatMessages");
-  const now = new Date();
-  const time =
-    now.getHours().toString().padStart(2, "0") +
-    "." +
-    now.getMinutes().toString().padStart(2, "0");
-  const row = document.createElement("div");
-  row.className = "bubble-row me";
-  row.innerHTML = `
-      <div class="bubble-avatar" style="background:var(--green-light);">CA</div>
-      <div class="bubble me" style="padding:6px;">
-        <img src="${url}" class="chat-img" alt="gambar">
-        <div class="bubble-time">${time} <span class="read-tick read">✓✓</span></div>
-      </div>`;
-  box.appendChild(row);
-  box.scrollTop = box.scrollHeight;
-  e.target.value = "";
+
+  const formData = new FormData();
+  formData.append("media", file);
+
+  const caption = document.getElementById("msgInput").value.trim();
+  if (caption) formData.append("body", caption);
+  try {
+    await authenticatedFetch(
+      `${API_URL}/conversations/${activeConversationId}/messages`,
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
+
+    await loadChat(activeConversationId);
+    await loadConversations();
+  } catch (err) {
+    console.error(err);
+  }
+  event.target.value = "";
+}
+
+async function markConversationAsRead(conversationId) {
+  try {
+    await authenticatedFetch(
+      `${API_URL}/conversations/${conversationId}/read`,
+      {
+        method: "PUT",
+      },
+    );
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 /* ── Typing indicator ── */
@@ -266,8 +278,10 @@ function kembaliKontak() {
   document.getElementById("btnBack").style.display = "none";
 }
 
-/* scroll ke bawah saat load */
-window.onload = () => {
-  const box = document.getElementById("chatMessages");
-  box.scrollTop = box.scrollHeight;
+window.onload = async () => {
+  await loadCurrentUser();
+  await loadConversations();
+  if (conversations.length > 0) {
+    await openConversation(conversations[0]);
+  }
 };

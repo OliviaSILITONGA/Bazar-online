@@ -197,70 +197,7 @@
       </div>
     </div>
 
-    <div class="contact-list" id="contactList">
-
-      <div class="contact-item active" onclick="bukaChat(this,'olip')" data-name="Olivia Gabriella">
-        <div class="contact-avatar" style="background:var(--green-mid);">OG
-          <span class="contact-online"></span>
-        </div>
-        <div class="contact-body">
-          <div class="contact-name">Olivia Gabriella</div>
-          <div class="contact-preview unread">Oke kak, nanti aku anterin ya!</div>
-        </div>
-        <div class="contact-meta">
-          <span class="contact-time">09:34</span>
-          <span class="unread-badge">2</span>
-        </div>
-      </div>
-
-      <div class="contact-item" onclick="bukaChat(this,'yana')" data-name="Alfiyana">
-        <div class="contact-avatar" style="background:#e67e22;">AL</div>
-        <div class="contact-body">
-          <div class="contact-name">Alfiyana</div>
-          <div class="contact-preview">Siap kak! Pesanannya udah ready 😊</div>
-        </div>
-        <div class="contact-meta">
-          <span class="contact-time">Kemarin</span>
-        </div>
-      </div>
-
-      <div class="contact-item" onclick="bukaChat(this,'qistan')" data-name="Muhammad Qistan">
-        <div class="contact-avatar" style="background:#8e44ad;">MQ
-          <span class="contact-online"></span>
-        </div>
-        <div class="contact-body">
-          <div class="contact-name">Muhammad Qistan</div>
-          <div class="contact-preview">Jus mangganya masih ada kak?</div>
-        </div>
-        <div class="contact-meta">
-          <span class="contact-time">Kemarin</span>
-          <span class="unread-badge">1</span>
-        </div>
-      </div>
-
-      <div class="contact-item" onclick="bukaChat(this,'sari')" data-name="Sari Dewi">
-        <div class="contact-avatar" style="background:#2980b9;">SD</div>
-        <div class="contact-body">
-          <div class="contact-name">Sari Dewi</div>
-          <div class="contact-preview">Donat coklat masih ada ga kak?</div>
-        </div>
-        <div class="contact-meta">
-          <span class="contact-time">Sen</span>
-        </div>
-      </div>
-
-      <div class="contact-item" onclick="bukaChat(this,'rara')" data-name="Rara Fitri">
-        <div class="contact-avatar" style="background:#c0392b;">RF</div>
-        <div class="contact-body">
-          <div class="contact-name">Rara Fitri</div>
-          <div class="contact-preview">Makasih pesanannya kak!</div>
-        </div>
-        <div class="contact-meta">
-          <span class="contact-time">Ming</span>
-        </div>
-      </div>
-
-    </div>
+    <div class="contact-list" id="contactList"></div>
   </div>
 
   <!-- ══ CHAT AREA ══ -->
@@ -289,67 +226,7 @@
     </div>
 
     <!-- Pesan-pesan -->
-    <div class="chat-messages" id="chatMessages">
-
-      <div class="date-sep"><span>Hari ini</span></div>
-
-      <!-- Konteks produk yang ditanyakan -->
-      <div class="bubble-row">
-        <div class="bubble-avatar" style="background:var(--green-mid);">OG</div>
-        <div>
-          <a class="product-bubble" href="product.html">
-            <span class="product-bubble-img">🍢</span>
-            <div class="product-bubble-info">
-              <div class="product-bubble-name">Cireng Isi — Bumbu Rujak</div>
-              <div class="product-bubble-price">Rp 5.000</div>
-            </div>
-          </a>
-          <div class="bubble them">
-            Halo kak! Mau tanya cirengnya masih ada ga hari ini? 😊
-            <div class="bubble-time">09.20</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="bubble-row me">
-        <div class="bubble-avatar" style="background:var(--green-light);">CA</div>
-        <div class="bubble me">
-          Masih ada kak! Mau pesan berapa? Satu porsi isi 5 biji ya 😄
-          <div class="bubble-time">09.22 <span class="read-tick read">✓✓</span></div>
-        </div>
-      </div>
-
-      <div class="bubble-row">
-        <div class="bubble-avatar" style="background:var(--green-mid);">OG</div>
-        <div class="bubble them">
-          Mau 2 porsi kak! Bisa COD di depan gedung B FEB jam 12 siang ga?
-          <div class="bubble-time">09.25</div>
-        </div>
-      </div>
-
-      <div class="bubble-row me">
-        <div class="bubble-avatar" style="background:var(--green-light);">CA</div>
-        <div class="bubble me">
-          Bisa banget kak! Nanti aku hubungi lagi ya kalau udah berangkat 🙏
-          <div class="bubble-time">09.28 <span class="read-tick read">✓✓</span></div>
-        </div>
-      </div>
-
-      <div class="bubble-row">
-        <div class="bubble-avatar" style="background:var(--green-mid);">OG</div>
-        <div class="bubble them">
-          Oke kak, nanti aku anterin ya!
-          <div class="bubble-time">09.34</div>
-        </div>
-      </div>
-
-      <!-- Typing indicator (tersembunyi) -->
-      <div class="bubble-row" id="typingRow" style="display:none;">
-        <div class="bubble-avatar" style="background:var(--green-mid);">OG</div>
-        <div class="typing"><span></span><span></span><span></span></div>
-      </div>
-
-    </div>
+    <div class="chat-messages" id="chatMessages"></div>
 
     <!-- Input area -->
     <div class="chat-input-wrap">
@@ -391,6 +268,7 @@
 
 </div><!-- end chat-wrap -->
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js"></script>
 <script src="js/messages.js"></script>
 </body>
