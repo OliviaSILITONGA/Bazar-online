@@ -31,7 +31,7 @@ async function loadCurrentUser() {
           .join("")
           .toUpperCase();
   } catch (err) {
-    showToast("❌", err.message);
+    showToast("❌ " + err.message);
   }
 }
 
@@ -294,7 +294,7 @@ async function saveModal() {
       payload.name = name;
       payload.username = username;
     } else {
-      const bio = document.getElementById("modalBioInput").value.trim();
+      payload.bio = document.getElementById("modalBioInput").value.trim();
     }
 
     const response = await authenticatedFetch(`${API_URL}/users/me`, {
@@ -311,7 +311,7 @@ async function saveModal() {
     showToast("✅ Profil berhasil diperbarui!");
     await loadCurrentUser();
   } catch (err) {
-    showToast("❌", err.message);
+    showToast("❌ " + err.message);
   }
 }
 
