@@ -139,6 +139,13 @@ function renderProduct(product) {
 
   document.getElementById("likeCountDisplay").textContent = likeCount;
 
+  const whatsappBtn = document.querySelector(".btn-chat");
+
+  if (!product.seller?.phone) {
+    whatsappBtn.disabled = true;
+    whatsappBtn.textContent = "WhatsApp tidak tersedia";
+  }
+
   renderImages(product.product_images);
   renderTags(product.tags);
 
@@ -380,6 +387,36 @@ function updateActionButtons(product) {
     cartBtn.textContent = "Stok Habis";
     cartBtn.classList.add("btn-disabled");
   }
+}
+
+function normalizeWhatsapp(phone) {
+  phone = phone.replace(/\D/g, "");
+
+  if (phone.startsWith("0")) {
+    return "62" + phone.slice(1);
+  }
+
+  return phone;
+}
+
+function openWhatsappSeller() {
+  if (!currentProduct?.seller?.phone) {
+    showToast("Nomor WhatsApp penjual tidak tersedia");
+    return;
+  }
+
+  const phone = normalizeWhatsapp(currentProduct.seller.phone);
+
+  const message =
+    "Halo kak.\n\nSaya tertarik dengan produk:\n\n" +
+    currentProduct.name +
+    "\n\nHarga:\nRp " +
+    Number(currentProduct.price).toLocaleString("id-ID") +
+    "\n\nApakah produk ini masih tersedia?";
+
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+  window.open(url, "_blank");
 }
 
 // =========================

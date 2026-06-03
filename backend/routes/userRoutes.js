@@ -6,12 +6,6 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const upload = require("../middlewares/uploadMiddleware");
 const privateProfileMiddleware = require("../middlewares/privateProfileMiddleware");
 
-/*
-========================================
-PRIVATE ROUTES (login diperlukan)
-========================================
-*/
-
 // GET /users/me
 // Ambil profil user yang sedang login
 router.get("/me", authMiddleware, userController.getMyProfile);
@@ -41,16 +35,6 @@ router.put(
 // Hapus akun
 router.delete("/me", authMiddleware, userController.deleteMyProfile);
 
-// POST /users/:id/follow
-// Follow akun
-router.post("/:id/follow", authMiddleware, userController.toggleFollow);
-
-/*
-========================================
-PUBLIC ROUTES
-========================================
-*/
-
 // GET /users/:id
 // Profil publik user lain
 router.get("/:id", privateProfileMiddleware, userController.getUserById);
@@ -62,5 +46,9 @@ router.get("/:id/products", userController.getUserProducts);
 // GET /users/:id/reviews
 // Review yang diterima user
 router.get("/:id/reviews", userController.getUserReviews);
+
+// POST /users/:id/follow
+// Follow akun
+router.post("/:id/follow", authMiddleware, userController.toggleFollow);
 
 module.exports = router;

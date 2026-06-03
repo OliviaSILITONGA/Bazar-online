@@ -1,22 +1,59 @@
 const params = new URLSearchParams(window.location.search);
-const profileId = params.get("id");
+
+const profileId = Number(params.get("id"));
 
 let profile = null;
 let isFollowing = false;
 let followerCount = 0;
+let followLoading = false;
+
+function escapeHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function getInitials(name = "U") {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
+function normalizeWhatsapp(phone) {
+  phone = phone.replace(/\D/g, "");
+
+  if (phone.startsWith("0")) {
+    return "62" + phone.slice(1);
+  }
+
+  return phone;
+}
 
 window.onload = async () => {
-  if (!profileId) {
+  if (!Number.isInteger(profileId) || profileId <= 0) {
     toast("Profil tidak ditemukan");
     return;
   }
 
   await loadProfile();
-  await loadProducts();
-  await loadReviews();
+  await Promise.all([loadProducts(), loadReviews()]);
 };
 
 async function loadProfile() {
+  const container = document.getElementById("productGrid");
+
+  container.innerHTML = `
+    <div class="loading-state">
+      Memuat produk...
+    </div>
+  `;
   try {
     const response = await authenticatedFetch(`${API_URL}/users/${profileId}`);
 
@@ -27,6 +64,7 @@ async function loadProfile() {
     }
 
     profile = result.data;
+    console.log(profile);
 
     isFollowing = profile.is_following;
     followerCount = profile.follower_count;
@@ -63,13 +101,14 @@ function renderProfile() {
       >
     `;
   } else {
-    avatar.textContent = profile.name
-      .split(" ")
-      .map((s) => s[0])
-      .slice(0, 2)
-      .join("")
-      .toUpperCase();
+    avatar.textContent = avatar.textContent = getInitials(profile.name);
   }
+
+  document.getElementById("profileLocation").textContent =
+    profile.location || "Belum diisi";
+
+  document.getElementById("whatsappMessage").href = `https://wa.me/${normalizeWhatsapp(profile.phone)}`;
+  document.getElementById("whatsappMessage").setAttribute("target", "_blank");
 
   renderStats();
   renderFollowButton();
@@ -84,6 +123,15 @@ function renderStats() {
 
   document.getElementById("followingCount").textContent =
     profile.following_count;
+
+  document.getElementById("profileLikeCount").textContent = profile.total_likes;
+
+  document.getElementById("profileCreationDate").textContent =
+    new Intl.DateTimeFormat("id-ID", {
+      month: "long",
+      year: "numeric",
+      timeZone: "Asia/Jakarta",
+    }).format(new Date(profile.created_at));
 }
 
 function renderFollowButton() {
@@ -114,6 +162,10 @@ function renderFollowButton() {
 }
 
 async function toggleFollow() {
+  if (followLoading) return;
+
+  followLoading = true;
+
   try {
     const response = await authenticatedFetch(
       `${API_URL}/users/${profileId}/follow`,
@@ -130,27 +182,28 @@ async function toggleFollow() {
 
     isFollowing = result.data.following;
 
-    if (isFollowing) {
-      followerCount++;
+    if (typeof result.data.follower_count === "number") {
+      profile.follower_count = result.data.follower_count;
     } else {
-      followerCount--;
+      profile.follower_count = Math.max(
+        0,
+        profile.follower_count + (isFollowing ? 1 : -1),
+      );
     }
-
-    profile.follower_count = followerCount;
 
     renderFollowButton();
     renderStats();
   } catch (err) {
     console.error(err);
     toast(err.message);
+  } finally {
+    followLoading = false;
   }
 }
 
 async function loadProducts() {
   try {
-    const response = await authenticatedFetch(
-      `${API_URL}/users/${profileId}/products`,
-    );
+    const response = await fetch(`${API_URL}/users/${profileId}/products`);
 
     const result = await response.json();
 
@@ -164,17 +217,26 @@ async function loadProducts() {
   }
 }
 
-function renderProducts(products) {
+function renderProducts(products = []) {
   const container = document.getElementById("productGrid");
 
   container.innerHTML = "";
 
+  document.getElementById("produkCount").textContent = products.length;
+
   if (!products.length) {
-    container.innerHTML = "<p>Belum ada produk.</p>";
+    container.innerHTML = `
+      <div class="empty-state">
+        Belum ada produk yang dijual.
+      </div>
+    `;
     return;
   }
 
   products.forEach((product) => {
+    const safeName = escapeHtml(product.name);
+    const safeCategory = escapeHtml(product.category || "");
+
     const image = product.product_images?.[0]?.image_url || "";
 
     container.innerHTML += `
@@ -203,11 +265,11 @@ function renderProducts(products) {
 
         <div class="prod-info">
           <div class="prod-name">
-            ${product.name}
+            ${safeName}
           </div>
 
           <div class="prod-cat">
-            ${product.category || ""}
+            ${safeCategory}
           </div>
 
           <div class="prod-price">
@@ -220,10 +282,15 @@ function renderProducts(products) {
 }
 
 async function loadReviews() {
+  const container = document.getElementById("reviewList");
+
+  container.innerHTML = `
+    <div class="loading-state">
+      Memuat ulasan...
+    </div>
+  `;
   try {
-    const response = await authenticatedFetch(
-      `${API_URL}/users/${profileId}/reviews`,
-    );
+    const response = await fetch(`${API_URL}/users/${profileId}/reviews`);
 
     const result = await response.json();
 
@@ -242,38 +309,54 @@ function renderReviews(data) {
 
   container.innerHTML = "";
 
+  document.getElementById("reviewCount").textContent = data.reviews.length;
+
+  if (!data.reviews?.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        Belum ada ulasan.
+      </div>
+    `;
+    return;
+  }
+
   data.reviews.forEach((review) => {
-    const initials = review.reviewer.name
-      .split(" ")
-      .map((s) => s[0])
-      .slice(0, 2)
-      .join("");
+    const reviewerName = review.reviewer?.name || "Anonim";
+
+    const initials = getInitials(reviewerName);
+
+    const reviewBody = escapeHtml(review.body || "");
+
+    const productName = escapeHtml(review.product?.name || "Produk");
 
     container.innerHTML += `
       <div class="rev-card">
         <div class="rev-header">
+
           <div class="rev-avatar">
             ${initials}
           </div>
 
           <div>
             <div class="rev-name">
-              ${review.reviewer.name}
+              ${escapeHtml(reviewerName)}
             </div>
 
             <div class="rev-date">
               ${new Date(review.created_at).toLocaleDateString("id-ID")}
             </div>
           </div>
+
         </div>
 
         <span class="rev-product">
-          ${review.product.name}
+          ${productName}
         </span>
 
         <p class="rev-text">
-          ${review.body || ""}
+          ${reviewBody}
         </p>
+
       </div>
     `;
   });
@@ -288,18 +371,6 @@ function switchTab(tab) {
     .forEach((p) => p.classList.remove("active"));
   document.getElementById("tab-" + tab).classList.add("active");
   document.getElementById("pane-" + tab).classList.add("active");
-}
-
-function shareProfile() {
-  if (navigator.share) {
-    navigator.share({
-      title: "BazarUSU — Olivia Gabriella",
-      url: window.location.href,
-    });
-  } else {
-    navigator.clipboard.writeText(window.location.href);
-    toast("🔗 Link profil disalin!");
-  }
 }
 
 function toast(msg) {

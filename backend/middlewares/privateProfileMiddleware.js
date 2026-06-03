@@ -2,10 +2,11 @@ const supabase = require("../config/supabase");
 
 const privateProfileMiddleware = async (req, res, next) => {
   try {
-    const currentUserId = req.user.id;
+    // viewer bisa saja belum login
+    const currentUserId = req.user?.id || null;
 
-    // user yang ingin diakses
     const targetUserId =
+      req.params.id ||
       req.params.userId ||
       req.body.userId ||
       req.body.seller_id;
@@ -17,8 +18,8 @@ const privateProfileMiddleware = async (req, res, next) => {
       });
     }
 
-    // pemilik profil tetap boleh mengakses dirinya sendiri
-    if (Number(currentUserId) === Number(targetUserId)) {
+    // pemilik profil tetap boleh akses
+    if (currentUserId && Number(currentUserId) === Number(targetUserId)) {
       return next();
     }
 
@@ -44,6 +45,8 @@ const privateProfileMiddleware = async (req, res, next) => {
 
     next();
   } catch (err) {
+    console.error(err);
+
     return res.status(500).json({
       success: false,
       message: err.message,

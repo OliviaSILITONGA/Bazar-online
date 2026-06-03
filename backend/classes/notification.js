@@ -68,17 +68,6 @@ class Notification {
     );
   }
 
-  // factory abstraction chat
-  static message(user_id, conversation_id, sender_name) {
-    return new Notification(
-      user_id,
-      "new_message",
-      "Pesan Baru",
-      `${sender_name} mengirim pesan baru.`,
-      conversation_id,
-    );
-  }
-
   // factory abstraction review
   static review(user_id, review_id, buyer_name) {
     return new Notification(

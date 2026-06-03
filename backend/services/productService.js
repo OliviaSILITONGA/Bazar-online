@@ -119,7 +119,8 @@ const getProductById = async (productId) => {
           name,
           username,
           location,
-          avatar_url
+          avatar_url,
+          phone
         ),
         product_images(*),
         product_payment_methods(

@@ -300,7 +300,8 @@ const getUserById = async (profileId, viewerId) => {
         bio,
         location,
         is_seller,
-        created_at
+        created_at,
+        phone
       `,
     )
     .eq("id", profileId)
@@ -318,20 +319,20 @@ const getUserById = async (profileId, viewerId) => {
       supabase
         .from("follows")
         .select("*", { count: "exact", head: true })
-        .eq("following_id", userId),
+        .eq("following_id", profileId),
 
       supabase
         .from("follows")
         .select("*", { count: "exact", head: true })
-        .eq("follower_id", userId),
+        .eq("follower_id", profileId),
 
       supabase
         .from("products")
         .select("*", { count: "exact", head: true })
-        .eq("seller_id", userId)
+        .eq("seller_id", profileId)
         .eq("is_active", true),
 
-      supabase.from("products").select("like_count").eq("seller_id", userId),
+      supabase.from("products").select("like_count").eq("seller_id", profileId),
     ]);
 
   const totalLikes =

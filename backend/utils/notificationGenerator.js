@@ -6,12 +6,6 @@ const orderNotification = async ({ user_id, order_id, status }) => {
   return await notification.save();
 };
 
-const messageNotification = async ({ user_id, conversation_id, sender_name }) => {
-  const notification = Notification.message(user_id, conversation_id, sender_name);
-
-  return await notification.save();
-}
-
 const reviewNotification = async ({ user_id, review_id, buyer_name }) => {
   const notification = Notification.review(user_id, review_id, buyer_name);
 
@@ -32,7 +26,6 @@ const promoNotification = async ({ user_ids, promo_code }) => {
 
 module.exports = {
   orderNotification,
-  messageNotification,
   reviewNotification,
   promoNotification,
 };
