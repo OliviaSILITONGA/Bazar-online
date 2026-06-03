@@ -5,21 +5,26 @@ let liked = false;
 let likeCount = 0;
 let selectedFiles = [];
 let currentProduct = null;
+let currentUser = null;
 
 /* -- Tampilkan user yang sedang login -- */
 async function loadCurrentUser() {
   try {
     const response = await authenticatedFetch(`${API_URL}/users/me`);
+
     if (!response.ok) return;
 
     const result = await response.json();
-    const user = result.data;
+
+    currentUser = result.data;
 
     const avatar = document.querySelector(".avatar-placeholder");
+
     if (avatar) {
-      avatar.innerHTML = user.avatar_url
-        ? `<img src="${user.avatar_url}" style="width:100%;height:100%;object-fit:cover;">`
-        : user.name
+      avatar.innerHTML = currentUser.avatar_url
+        ? `<img src="${currentUser.avatar_url}"
+             style="width:100%;height:100%;object-fit:cover;">`
+        : currentUser.name
             .split(" ")
             .map((x) => x[0])
             .slice(0, 2)
@@ -29,6 +34,24 @@ async function loadCurrentUser() {
   } catch (err) {
     console.error(err);
   }
+}
+
+function isSellerViewingOwnProduct() {
+  return (
+    currentUser &&
+    currentUser.is_seller &&
+    currentProduct &&
+    currentProduct.seller?.id === currentUser.id
+  );
+}
+
+function isSellerViewingOtherProduct() {
+  return (
+    currentUser &&
+    currentUser.is_seller &&
+    currentProduct &&
+    currentProduct.seller?.id !== currentUser.id
+  );
 }
 
 // =========================
@@ -56,10 +79,6 @@ function renderProduct(product) {
 
   document.getElementById("productPrice").textContent = `Rp ${Number(
     product.price || 0,
-  ).toLocaleString("id-ID")}`;
-
-  document.getElementById("deliveryFee").textContent = `Rp ${Number(
-    product.delivery_fee || 0,
   ).toLocaleString("id-ID")}`;
 
   document.getElementById("productDescription").textContent =
@@ -148,6 +167,7 @@ function renderProduct(product) {
 
   renderImages(product.product_images);
   renderTags(product.tags);
+  renderActionRow();
 
   updateActionButtons(product);
 }
@@ -419,6 +439,50 @@ function openWhatsappSeller() {
   window.open(url, "_blank");
 }
 
+function renderActionRow() {
+  const actionRow = document.querySelector(".action-row");
+
+  if (!actionRow || !currentProduct) return;
+
+  // =====================
+  // PENJUAL MELIHAT PRODUK SENDIRI
+  // =====================
+
+  if (isSellerViewingOwnProduct()) {
+    actionRow.innerHTML = `
+      <button class="btn-cart" onclick="editProduct()">
+        ✏️ Edit Produk
+      </button>
+
+      <button
+        class="btn-chat"
+        style="
+          color:white;
+          background:var(--red);
+          border-color:var(--red);"
+        onclick="deleteProduct()">
+        🗑️ Hapus
+      </button>
+    `;
+
+    return;
+  }
+
+  // =====================
+  // PENJUAL MELIHAT PRODUK ORANG LAIN
+  // =====================
+
+  if (isSellerViewingOtherProduct()) {
+    actionRow.style.opacity = "0.6";
+
+    actionRow.querySelectorAll("button").forEach((btn) => {
+      btn.onclick = () => {
+        showToast("Hanya pembeli yang dapat melakukan aksi pada produk");
+      };
+    });
+  }
+}
+
 // =========================
 // LIKE REVIEW
 // =========================
@@ -539,6 +603,40 @@ async function checkReviewPermission() {
       : "none";
   } catch (err) {
     console.error(err);
+  }
+}
+
+function editProduct() {
+  window.location.href = `edit-product.html?id=${currentProduct.id}`;
+}
+
+async function deleteProduct() {
+  const confirmed = confirm("Yakin ingin menghapus produk ini?");
+
+  if (!confirmed) return;
+
+  try {
+    const response = await authenticatedFetch(
+      `${API_URL}/products/${currentProduct.id}`,
+      {
+        method: "DELETE",
+      },
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message);
+    }
+
+    showToast("Produk berhasil dihapus");
+
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 1000);
+  } catch (error) {
+    console.error(error);
+    showToast(error.message);
   }
 }
 

@@ -29,10 +29,32 @@ async function loadCurrentUser() {
     }
 
     const greetingText = document.querySelector(".greeting-text");
-    greetingText.innerHTML = `
-      <h2>Halo, ${user.name.split(" ")[0]}! 👋</h2>
-      <p>Memuat produk terbaru...</p>
-    `;
+
+    if (user.is_seller) {
+      greetingText.innerHTML = `
+        <h2>Halo, ${user.name.split(" ")[0]}! 👋</h2>
+        <p>Kelola produk jualanmu dari sini.</p>
+
+        <div class="seller-actions">
+          <button
+            class="seller-btn primary"
+            onclick="window.location.href='add-product.html'">
+            + Tambah Produk
+          </button>
+
+          <button
+            class="seller-btn secondary"
+            onclick="window.location.href='edit-product.html'">
+            ✏️ Edit Produk
+          </button>
+        </div>
+      `;
+    } else {
+      greetingText.innerHTML = `
+        <h2>Halo, ${user.name.split(" ")[0]}! 👋</h2>
+        <p>Memuat produk terbaru...</p>
+      `;
+    }
   } catch (err) {
     console.error(err);
   }
@@ -152,12 +174,13 @@ async function loadRecommendedProducts() {
     /* =========================
        Greeting jumlah produk teman
     ========================= */
-    if (currentUser) {
+    if (currentUser && !currentUser.is_seller) {
       const friendProducts = products.filter(
         (product) => product.seller_id !== currentUser.id,
       );
 
       const greetingText = document.querySelector(".greeting-text");
+
       greetingText.innerHTML = `
         <h2>Halo, ${currentUser.name.split(" ")[0]}! 👋</h2>
         <p>

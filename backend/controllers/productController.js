@@ -35,6 +35,32 @@ const getProducts = async (req, res) => {
   }
 };
 
+const getMyProducts = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const products = await productService.getMyProducts(userId);
+
+    if (!products) {
+      return res.status(404).json({
+        success: false,
+        message: "Products not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Products retrieved successfully",
+      data: products,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to retrieve products",
+      error: err.message,
+    });
+  }
+};
+
 /*
 ========================================
 GET PRODUCT DETAIL
@@ -128,10 +154,9 @@ const updateProduct = async (req, res) => {
       data: product,
     });
   } catch (err) {
-    return res.status(500).json({
+    return res.status(err.statusCode || 500).json({
       success: false,
-      message: "Failed to update product",
-      error: err.message,
+      message: err.message,
     });
   }
 };
@@ -314,6 +339,7 @@ const getSimilarProducts = async (req, res) => {
 
 module.exports = {
   getProducts,
+  getMyProducts,
   getProductById,
   createProduct,
   updateProduct,

@@ -103,6 +103,30 @@ const getProducts = async (filters) => {
   };
 };
 
+const getMyProducts = async (userId) => {
+  const { data, error } = await supabase
+    .from("products")
+    .select(
+      `
+      id,
+      name,
+      price,
+      stock,
+      category,
+      location,
+      created_at
+    `,
+    )
+    .eq("seller_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+};
+
 /*
 ====================================
 GET PRODUCT DETAIL
@@ -199,45 +223,27 @@ const updateProduct = async (productId, sellerId, payload) => {
   if (!existing) return null;
 
   if (existing.seller_id !== sellerId) {
-    throw new Error("Forbidden");
+    const err = new Error("Forbidden");
+    err.statusCode = 403;
+    throw err;
   }
 
   const { payment_methods, ...updateData } = payload;
 
-  if (
-    updateData.category &&
-    !PRODUCT_CATEGORIES.includes(updateData.category)
-  ) {
-    throw new Error("Invalid category");
-  }
-
-  if (
-    updateData.availability &&
-    !PRODUCT_AVAILABILITY.includes(updateData.availability)
-  ) {
-    throw new Error("Invalid availability");
-  }
-
-  if (payment_methods) {
-    const invalid = payment_methods.some(
-      (method) => !PAYMENT_METHODS.includes(method),
-    );
-
-    if (invalid) {
-      throw new Error("Invalid payment method");
-    }
-  }
+  const cleanPayload = Object.fromEntries(
+    Object.entries(updateData).filter(([_, v]) => v !== undefined && v !== ""),
+  );
 
   const { data, error } = await supabase
     .from("products")
-    .update(updateData)
+    .update(cleanPayload)
     .eq("id", productId)
     .select()
     .single();
 
   if (error) throw error;
 
-  if (payment_methods) {
+  if (payment_methods?.length) {
     await supabase
       .from("product_payment_methods")
       .delete()
@@ -262,18 +268,30 @@ DELETE PRODUCT
 const deleteProduct = async (productId, sellerId) => {
   const product = await getProductById(productId);
 
-  if (!product) return null;
-
-  if (product.seller_id !== sellerId) {
+  if (!product || product.seller_id !== sellerId) {
     throw new Error("Forbidden");
   }
 
-  const { error } = await supabase
-    .from("products")
-    .delete()
-    .eq("id", productId);
+  // ambil semua gambar
+  const { data: images } = await supabase
+    .from("product_images")
+    .select("*")
+    .eq("product_id", productId);
 
-  if (error) throw error;
+  // hapus dari storage
+  if (images?.length) {
+    const paths = images.map((img) => img.file_path).filter(Boolean);
+
+    if (paths.length) {
+      await supabase.storage.from("images").remove(paths);
+    }
+  }
+
+  // hapus db images
+  await supabase.from("product_images").delete().eq("product_id", productId);
+
+  // hapus product
+  await supabase.from("products").delete().eq("id", productId);
 
   return true;
 };
@@ -314,6 +332,7 @@ const uploadImages = async (productId, sellerId, files) => {
       .insert({
         product_id: productId,
         image_url: urlData.publicUrl,
+        file_path: fileName,
       })
       .select()
       .single();
@@ -346,6 +365,12 @@ const deleteImage = async (productId, imageId, sellerId) => {
 
   if (!image) return null;
 
+  // 1. DELETE FROM STORAGE
+  if (image.file_path) {
+    await supabase.storage.from("images").remove([image.file_path]); // products/id/file.jpg
+  }
+
+  // 2. DELETE DB
   await supabase.from("product_images").delete().eq("id", imageId);
 
   return true;
@@ -441,6 +466,7 @@ const getSimilarProducts = async (productId) => {
 
 module.exports = {
   getProducts,
+  getMyProducts,
   getProductById,
   createProduct,
   updateProduct,

@@ -371,6 +371,38 @@
     margin-bottom: 1.4rem;
     display: flex; align-items: center; justify-content: space-between;
   }
+  .seller-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .seller-btn {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    transition: .2s;
+  }
+
+  .seller-btn.primary {
+    background: var(--green-mid);
+    color: white;
+  }
+
+  .seller-btn.secondary {
+    background: white;
+    color: var(--green-dark);
+    border: 1px solid var(--green-mid);
+  }
+
+  .seller-btn:hover {
+    transform: translateY(-2px);
+  }
   .greeting-text h2 {
     font-family: 'Nunito', sans-serif;
     font-weight: 800; font-size: 15px;

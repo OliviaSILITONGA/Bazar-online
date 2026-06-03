@@ -5,6 +5,7 @@ const productController = require("../controllers/productController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const sellerMiddleware = require("../middlewares/sellerMiddleware");
 const upload = require("../middlewares/uploadMiddleware");
+const { checkProductOwnership } = require("../middlewares/productOwnership");
 
 // GET /products (public)
 // Query:
@@ -15,6 +16,9 @@ router.get("/", productController.getProducts);
 
 // GET /products/liked (auth)
 router.get("/liked", authMiddleware, productController.getLikedProducts);
+
+// GET /products/me (auth)
+router.get("/me", authMiddleware, sellerMiddleware, productController.getMyProducts);
 
 // GET /products/:id/similar
 router.get("/:id/similar", productController.getSimilarProducts);
@@ -44,6 +48,7 @@ router.put(
   "/:id",
   authMiddleware,
   sellerMiddleware,
+  checkProductOwnership,
   productController.updateProduct,
 );
 
@@ -52,6 +57,7 @@ router.delete(
   "/:id",
   authMiddleware,
   sellerMiddleware,
+  checkProductOwnership,
   productController.deleteProduct,
 );
 
