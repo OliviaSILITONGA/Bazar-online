@@ -185,6 +185,8 @@
   }
   .badge-cat { background: #eaf3de; color: var(--green-dark); }
   .badge-new { background: #faeeda; color: #854f0b; }
+  #stockBadge { background: #eef5ff; color: #2563eb; }
+  .badge-out-stock { background: #fff0f0 !important; color: var(--red) !important; }
 
   .product-title {
     font-family: 'Nunito', sans-serif;
@@ -206,12 +208,13 @@
   }
   .seller-card-mini:hover { box-shadow: var(--shadow-sm); }
   .seller-dot {
-    width: 36px; height: 36px; border-radius: 50%;
+    width: 36px; height: 36px; border-radius: 50%; overflow: hidden;
     background: var(--green-mid);
     display: flex; align-items: center; justify-content: center;
     font-family: 'Nunito', sans-serif; font-weight: 800;
     font-size: 13px; color: #fff; flex-shrink: 0;
   }
+  .seller-dot img { width: 100%; height: 100%; object-fit: cover; }
   .seller-mini-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: var(--gray-800); }
   .seller-mini-loc { font-size: 11px; color: var(--gray-400); }
   .seller-mini-arrow { margin-left: auto; }
@@ -290,6 +293,11 @@
   }
   .btn-cart:hover { opacity: 0.88; transform: translateY(-1px); }
   .btn-cart svg { width: 18px; height: 18px; stroke: var(--green-dark); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
   .btn-chat {
     height: 44px; padding: 0 16px;
     background: var(--white); border: 1.5px solid var(--gray-200);
@@ -542,15 +550,16 @@
     <div class="product-info">
 
       <div class="badge-row">
-        <span class="badge badge-cat">makanan</span>
-        <span class="badge badge-new">baru ditambah</span>
+        <span class="badge badge-cat" id="productCategory"></span>
+        <span class="badge badge-new" id="newBadge" style="display:none;">baru ditambah</span>
+        <span class="badge" id="stockBadge"></span>
       </div>
 
       <h1 class="product-title" id="productTitle"></h1>
 
       <!-- Penjual -->
-      <a class="seller-card-mini" href="profile-orang.html">
-        <div class="seller-dot">OG</div>
+      <a class="seller-card-mini" id="sellerProfileLink">
+        <div class="seller-dot" id="sellerAvatar"></div>
         <div class="seller-mini-info">
           <div class="seller-mini-name"><span id="sellerName"></span> <span style="font-weight:400;color:var(--gray-400);font-size:11px;">· <span id="sellerUsername"></span></span></div>
           <div class="seller-mini-loc" id="sellerLocation"></div>
@@ -634,7 +643,7 @@
     </div>
 
     <!-- Tulis ulasan (tampil hanya jika sudah terima pesanan) -->
-    <div class="write-review-panel">
+    <div class="write-review-panel" id="writeReviewPanel" style="display:none;">
       <div class="wr-title">✍️ Tulis Ulasanmu</div>
       <div class="like-toggle-row">
         <button class="like-toggle-btn" id="likeToggleBtn" onclick="toggleLike()">

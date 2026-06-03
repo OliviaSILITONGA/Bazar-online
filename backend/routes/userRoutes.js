@@ -18,7 +18,7 @@ router.get("/me", authMiddleware, userController.getMyProfile);
 
 // GET /users/me/reviews
 // Review yang dibuat user
-router.get("/me/reviews", userController.getMyReviews);
+router.get("/me/reviews", authMiddleware, userController.getMyReviews);
 
 // POST /users/me/visibility
 // Update sifat profil (publik/privat)
@@ -40,6 +40,10 @@ router.put(
 // DELETE /users/me
 // Hapus akun
 router.delete("/me", authMiddleware, userController.deleteMyProfile);
+
+// POST /users/:id/follow
+// Follow akun
+router.post("/:id/follow", authMiddleware, userController.toggleFollow);
 
 /*
 ========================================

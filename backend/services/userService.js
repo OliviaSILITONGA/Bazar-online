@@ -253,13 +253,43 @@ const deleteMyProfile = async (userId) => {
   return true;
 };
 
+const toggleFollow = async (followerId, followingId) => {
+  if (Number(followerId) === Number(followingId)) {
+    throw new Error("Tidak dapat mengikuti akun sendiri");
+  }
+
+  const { data: existing } = await supabase
+    .from("follows")
+    .select("id")
+    .eq("follower_id", followerId)
+    .eq("following_id", followingId)
+    .maybeSingle();
+
+  if (existing) {
+    await supabase.from("follows").delete().eq("id", existing.id);
+
+    return {
+      following: false,
+    };
+  }
+
+  await supabase.from("follows").insert({
+    follower_id: followerId,
+    following_id: followingId,
+  });
+
+  return {
+    following: true,
+  };
+};
+
 /*
 ========================================
 PROFIL PUBLIK USER
 ========================================
 */
-const getUserById = async (userId) => {
-  const { data, error } = await supabase
+const getUserById = async (profileId, viewerId) => {
+  const { data: user, error } = await supabase
     .from("users")
     .select(
       `
@@ -273,17 +303,64 @@ const getUserById = async (userId) => {
         created_at
       `,
     )
-    .eq("id", userId)
+    .eq("id", profileId)
     .single();
 
-  if (error || !data) {
+  if (error || !user) {
     throw {
       statusCode: 404,
       message: "User tidak ditemukan",
     };
   }
 
-  return data;
+  const [followerResult, followingResult, productResult, likeResult] =
+    await Promise.all([
+      supabase
+        .from("follows")
+        .select("*", { count: "exact", head: true })
+        .eq("following_id", userId),
+
+      supabase
+        .from("follows")
+        .select("*", { count: "exact", head: true })
+        .eq("follower_id", userId),
+
+      supabase
+        .from("products")
+        .select("*", { count: "exact", head: true })
+        .eq("seller_id", userId)
+        .eq("is_active", true),
+
+      supabase.from("products").select("like_count").eq("seller_id", userId),
+    ]);
+
+  const totalLikes =
+    likeResult.data?.reduce(
+      (sum, product) => sum + (product.like_count || 0),
+      0,
+    ) || 0;
+
+  let isFollowing = false;
+
+  if (viewerId) {
+    const { data } = await supabase
+      .from("follows")
+      .select("id")
+      .eq("follower_id", viewerId)
+      .eq("following_id", profileId)
+      .maybeSingle();
+
+    isFollowing = !!data;
+  }
+
+  return {
+    ...user,
+    follower_count: followerResult.count || 0,
+    following_count: followingResult.count || 0,
+    product_count: productResult.count || 0,
+    total_likes: totalLikes,
+    is_following: isFollowing,
+  };
 };
 
 /*
@@ -370,7 +447,25 @@ const getUserReviews = async (userId) => {
     throw new Error(error.message);
   }
 
-  return data;
+  const totalReviews = data.length;
+  const averageRating =
+    totalReviews > 0
+      ? (
+          data.reduce((sum, review) => sum + review.rating, 0) / totalReviews
+        ).toFixed(1)
+      : 0;
+  const positiveReviews = data.filter((r) => r.rating >= 4).length;
+  const negativeReviews = data.filter((r) => r.rating <= 2).length;
+
+  return {
+    summary: {
+      total_reviews: totalReviews,
+      average_rating: averageRating,
+      positive_reviews: positiveReviews,
+      negative_reviews: negativeReviews,
+    },
+    reviews: data,
+  };
 };
 
 module.exports = {
@@ -380,6 +475,7 @@ module.exports = {
   updateMyProfile,
   uploadAvatar,
   deleteMyProfile,
+  toggleFollow,
   getUserById,
   getUserProducts,
   getUserReviews,

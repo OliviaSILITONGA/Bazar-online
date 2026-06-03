@@ -44,7 +44,7 @@ Review user
 */
 const getMyReviews = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.user.id;
     const reviews = await userService.getMyReviews(userId);
 
     return res.status(200).json({
@@ -174,6 +174,28 @@ const deleteMyProfile = async (req, res) => {
   }
 };
 
+const toggleFollow = async (req, res) => {
+  try {
+    const followerId = req.user.id;
+    const followingId = req.params.id;
+
+    const result = await userService.toggleFollow(
+      followerId,
+      followingId,
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 /*
 ========================================
 GET /users/:id
@@ -182,8 +204,10 @@ Profil publik user
 */
 const getUserById = async (req, res) => {
   try {
-    const userId = req.params.id;
-    const user = await userService.getUserById(userId);
+    const profileId = req.params.id;
+    const viewerId = req.user?.id || null;
+
+    const user = await userService.getUserById(profileId, viewerId);
 
     // Inheritance: tampilkan info role dari class
     const userObj = user.is_seller ? new Seller(user) : new Buyer(user);
@@ -258,6 +282,7 @@ module.exports = {
   updateMyProfile,
   uploadAvatar,
   deleteMyProfile,
+  toggleFollow,
   getUserById,
   getUserProducts,
   getUserReviews,

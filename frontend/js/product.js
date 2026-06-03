@@ -4,6 +4,7 @@ let qty = 1;
 let liked = false;
 let likeCount = 0;
 let selectedFiles = [];
+let currentProduct = null;
 
 /* -- Tampilkan user yang sedang login -- */
 async function loadCurrentUser() {
@@ -49,23 +50,99 @@ async function loadProduct() {
 }
 
 function renderProduct(product) {
+  currentProduct = product;
+
   document.getElementById("productTitle").textContent = product.name || "-";
-  document.getElementById("productPrice").textContent =
-    `Rp ${Number(product.price || 0).toLocaleString("id-ID")}`;
-  document.getElementById("deliveryFee").textContent =
-    `Rp ${Number(product.delivery_fee || 0).toLocaleString("id-ID")}`;
+
+  document.getElementById("productPrice").textContent = `Rp ${Number(
+    product.price || 0,
+  ).toLocaleString("id-ID")}`;
+
+  document.getElementById("deliveryFee").textContent = `Rp ${Number(
+    product.delivery_fee || 0,
+  ).toLocaleString("id-ID")}`;
+
   document.getElementById("productDescription").textContent =
     product.description || "-";
+
   document.getElementById("sellerName").textContent =
     product.seller?.name || "-";
+
   document.getElementById("sellerUsername").textContent =
     product.seller?.username || "-";
+
   document.getElementById("sellerLocation").textContent =
-    product.seller?.location || "-";
+    product.seller?.location || "Tidak diketahui";
+
+  // =========================
+  // PROFILE LINK
+  // =========================
+
+  document.getElementById("sellerProfileLink").href =
+    `profile-orang.html?id=${product.seller.id}`;
+
+  // =========================
+  // SELLER AVATAR
+  // =========================
+
+  const avatar = document.getElementById("sellerAvatar");
+
+  if (product.seller?.avatar_url) {
+    avatar.innerHTML = `
+      <img
+        src="${product.seller.avatar_url}"
+        alt="${product.seller.name}">
+    `;
+  } else {
+    avatar.textContent =
+      product.seller?.name
+        ?.split(" ")
+        .map((x) => x[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase() || "?";
+  }
+
+  // =========================
+  // CATEGORY
+  // =========================
+
+  document.getElementById("productCategory").textContent =
+    product.category || "lainnya";
+
+  // =========================
+  // BADGE BARU
+  // =========================
+
+  const newBadge = document.getElementById("newBadge");
+
+  const createdAt = new Date(product.created_at);
+
+  const diffDays = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
+
+  newBadge.style.display = diffDays <= 7 ? "inline-flex" : "none";
+
+  // =========================
+  // STOCK
+  // =========================
+
+  const stockBadge = document.getElementById("stockBadge");
+
+  if ((product.stock || 0) <= 0) {
+    stockBadge.textContent = "stok habis";
+    stockBadge.classList.add("badge-out-stock");
+  } else {
+    stockBadge.textContent = `stok ${product.stock}`;
+  }
+
   likeCount = product.like_count || 0;
+
   document.getElementById("likeCountDisplay").textContent = likeCount;
+
   renderImages(product.product_images);
   renderTags(product.tags);
+
+  updateActionButtons(product);
 }
 
 function renderImages(images = []) {
@@ -151,6 +228,8 @@ function renderReviews(reviews = []) {
   const reviewList = document.getElementById("reviewList");
   reviewList.innerHTML = "";
 
+  renderReviewSummary(reviews);
+
   reviews.forEach((review) => {
     const userName = review.user_name || "Anonim";
     const card = document.createElement("div");
@@ -218,6 +297,20 @@ function renderSimilarProducts(products = []) {
   const container = document.querySelector(".similar-row");
   container.innerHTML = "";
 
+  if (!products.length) {
+    container.innerHTML = `
+      <div style="
+        color:var(--gray-400);
+        padding:12px;
+        font-size:13px;
+        text-align:center;
+        width:100%;">
+        Belum ada produk serupa.
+      </div>
+    `;
+    return;
+  }
+
   products.forEach((product) => {
     const imageUrl =
       product.product_images?.[0]?.image_url ||
@@ -241,7 +334,16 @@ function renderSimilarProducts(products = []) {
 // =========================
 
 function changeQty(delta) {
-  qty = Math.max(1, qty + delta);
+  if (!currentProduct) return;
+
+  qty += delta;
+
+  if (qty < 1) qty = 1;
+
+  if (currentProduct.stock && qty > currentProduct.stock) {
+    qty = currentProduct.stock;
+  }
+
   document.getElementById("qtyNum").textContent = qty;
 }
 
@@ -268,6 +370,15 @@ async function addToCart() {
   } catch (error) {
     console.error(error);
     showToast(error.message);
+  }
+}
+
+function updateActionButtons(product) {
+  const cartBtn = document.querySelector(".btn-cart");
+
+  if ((product.stock || 0) <= 0) {
+    cartBtn.textContent = "Stok Habis";
+    cartBtn.classList.add("btn-disabled");
   }
 }
 
@@ -375,6 +486,25 @@ async function kirimUlasan() {
   }
 }
 
+async function checkReviewPermission() {
+  try {
+    const response = await authenticatedFetch(
+      `${API_URL}/reviews/can-review/${productId}`,
+    );
+
+    if (!response.ok) return;
+
+    const result = await response.json();
+
+    document.getElementById("writeReviewPanel").style.display = result.data
+      .canReview
+      ? "block"
+      : "none";
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 // =========================
 // TOAST
 // =========================
@@ -400,5 +530,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadCurrentUser();
   await loadProduct();
   await loadReviews();
+  await checkReviewPermission();
   await loadSimilarProducts();
 });
